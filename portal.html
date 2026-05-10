@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Submit Assignment — Peak Pros Georgia Contractor Portal</title>
+
+<meta name="description" content="Peak Pros Georgia contractor portal. Approved partners submit roof rejuvenation, wash, and repair assignments directly to Peak Pros USA.">
+
+<style>
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  margin:0;
+  background:#f6f7f9;
+  color:#111;
+}
+
+header{
+  background:white;
+  padding:20px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #ddd;
+  flex-wrap:wrap;
+  gap:15px;
+}
+
+header .brand{
+  font-weight:bold;
+  font-size:20px;
+}
+
+.logout{
+  background:white;
+  color:#111;
+  border:1px solid #ccc;
+  padding:10px 18px;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.hero{
+  padding:60px 40px 40px;
+  background:white;
+  border-bottom:1px solid #eee;
+}
+
+.hero h1{
+  font-size:42px;
+  margin:0 0 16px;
+  line-height:1.1;
+}
+
+.hero p{
+  font-size:18px;
+  max-width:820px;
+  line-height:1.6;
+  margin:0;
+  color:#444;
+}
+
+section.wrap{
+  padding:50px 40px;
+  max-width:1100px;
+  margin:auto;
+}
+
+form{
+  background:white;
+  padding:32px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+
+.section-title{
+  font-size:18px;
+  font-weight:bold;
+  margin:0 0 16px;
+  padding-bottom:10px;
+  border-bottom:2px solid #c8102e;
+  color:#c8102e;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+.section-divider{
+  border:0;
+  border-top:1px solid #eee;
+  margin:32px 0 24px;
+}
+
+label{
+  display:block;
+  font-weight:600;
+  margin-bottom:6px;
+  font-size:14px;
+}
+
+input[type=text],
+input[type=email],
+input[type=tel],
+input[type=number],
+textarea,
+select{
+  width:100%;
+  padding:12px;
+  margin-bottom:18px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:16px;
+  font-family:inherit;
+  box-sizing:border-box;
+  background:white;
+}
+
+textarea{
+  resize:vertical;
+  min-height:96px;
+}
+
+.fgrid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:0 20px;
+}
+
+.fg.full{
+  grid-column:1 / -1;
+}
+
+.checkbox-group{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.checkbox-opt{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#f6f7f9;
+  border:1px solid #ddd;
+  border-radius:6px;
+  padding:12px 14px;
+  cursor:pointer;
+  font-size:15px;
+  transition:all .15s;
+}
+
+.checkbox-opt:hover{
+  border-color:#999;
+}
+
+.checkbox-opt.selected{
+  border-color:#c8102e;
+  background:rgba(200,16,46,.06);
+}
+
+.checkbox-opt input{
+  margin:0;
+  cursor:pointer;
+}
+
+input[type=file].fileinput{
+  display:block;
+  width:100%;
+  padding:14px;
+  background:#f6f7f9;
+  border:1px dashed #bbb;
+  border-radius:6px;
+  font-size:14px;
+  margin-bottom:18px;
+  cursor:pointer;
+  box-sizing:border-box;
+}
+
+input[type=file].fileinput:hover{
+  border-color:#c8102e;
+}
+
+button.submit-btn{
+  background:#c8102e;
+  color:white;
+  border:none;
+  padding:16px 28px;
+  border-radius:6px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+button.submit-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.fnote{
+  font-size:13px;
+  color:#666;
+  margin-top:14px;
+}
+
+.success{
+  display:none;
+  background:#e8f6ec;
+  border:1px solid #b2dcc0;
+  border-radius:10px;
+  padding:32px;
+  text-align:center;
+  margin-top:24px;
+}
+
+.success h3{
+  font-size:24px;
+  margin:0 0 8px;
+  color:#1e7a3a;
+}
+
+.success p{
+  font-size:15px;
+  color:#444;
+  margin:0;
+}
+
+.error{
+  display:none;
+  background:#fdecec;
+  border:1px solid #f5b9b9;
+  border-radius:10px;
+  padding:20px;
+  text-align:center;
+  margin-top:16px;
+}
+
+.error h3{
+  font-size:20px;
+  margin:0 0 6px;
+  color:#c8102e;
+}
+
+.error p{
+  font-size:14px;
+  color:#444;
+  margin:0;
+}
+
+footer{
+  padding:40px;
+  text-align:center;
+  background:#111;
+  color:white;
+  margin-top:40px;
+}
+
+@media (max-width: 768px){
+  .hero h1{ font-size:32px; }
+  .hero{ padding:40px 24px 24px; }
+  section.wrap{ padding:32px 20px; }
+  form{ padding:24px 20px; }
+  header{ padding:16px 20px; }
+  .fgrid{ grid-template-columns:1fr; gap:0; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">Peak Pros Georgia</div>
+  <button class="logout" onclick="doLogout()">&larr; Log Out</button>
+</header>
+
+<div class="hero">
+  <h1>Submit a Job Assignment</h1>
+  <p>
+    Complete all required fields below. Your assignment is routed directly to Peak Pros USA for scheduling and fulfillment.
+  </p>
+</div>
+
+<section class="wrap">
+  <form
+    id="assignForm"
+    name="job-assignment"
+    method="POST"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+    enctype="multipart/form-data"
+  >
+    <input type="hidden" name="form-name" value="job-assignment">
+    <p hidden>
+      <label>Don&rsquo;t fill this out: <input name="bot-field"></label>
+    </p>
+
+    <!-- CONTRACTOR INFO -->
+    <div class="section-title">Contractor Information</div>
+    <div class="fgrid">
+      <div class="fg"><label>Contractor Company Name *</label><input type="text" name="Contractor_Company_Name" placeholder="ABC Roofing LLC" required></div>
+      <div class="fg"><label>Contractor Name *</label><input type="text" name="Contractor_Name" placeholder="First Last" required></div>
+      <div class="fg"><label>Contractor Phone *</label><input type="tel" name="Contractor_Phone" placeholder="(555) 000-0000" required></div>
+      <div class="fg"><label>Contractor Email *</label><input type="email" name="Contractor_Email" placeholder="you@yourcompany.com" required></div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- PROPERTY INFO -->
+    <div class="section-title">Property Information</div>
+    <div class="fgrid">
+      <div class="fg full"><label>Property Address *</label><input type="text" name="Property_Address" placeholder="123 Main St, Atlanta, GA 30301" required></div>
+      <div class="fg"><label>Homeowner Name *</label><input type="text" name="Homeowner_Name" placeholder="John Smith" required></div>
+      <div class="fg"><label>Homeowner Phone *</label><input type="tel" name="Homeowner_Phone" placeholder="(555) 000-0000" required></div>
+    </div>
+
+    <hr class="section-divider">
+
+    <!-- ROOF DETAILS -->
+    <div class="section-title">Roof Details</div>
+    <div class="fgrid">
+      <div class="fg"><label>Roof Squares *</label><input type="number" name="Roof_Squares" placeholder="25" min="1" required></div>
+      <div class="fg"><label>Roof Age</label>
+        <select name="Roof_Age">
+          <option value="">Select age range</option>
+          <option>Under 5 years</option>
+          <option>5–10 years</option>
+          <option>10–15 years</option>
+          <option>15–20 years</option>
+          <option>Over 20 years</option>
+          <option>Unknown</option>
+        </select>
+      </div>
+      <div class="fg full"><label>Roof Type</label>
+        <select name="Roof_Type">
+          <option value="">Select roof type</option>
+          <option>3-Tab Asphalt Shingle</option>
+          <option>Architectural Shingle</option>
+          <option>Tile</option>
+          <option>Metal</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="fg full"><label>Services Requested *</label>
+        <div class="checkbox-group">
+          <label class="checkbox-opt"><input type="checkbox" name="Services_Requested" value="Roof Wash"> Roof Wash</label>
+          <label class="checkbox-opt"><input type="checkbox" name="Services_Requested" value="Shingle Tune Up"> Shingle Tune Up</label>
+          <label class="checkbox-opt"><input type="checkbox" name="Services_Requested" value="Peak 301 Application"> Peak 301 Application</label>
+          <label class="checkbox-opt"><input type="checkbox" name="Services_Requested" value="Homeowner Inspection Report"> Homeowner Inspection Report</label>
+        </div>
+      </div>
+
+      <div class="fg full"><label>Digital Roof Sketch (image upload)</label><input type="file" name="Roof_Sketch" accept="image/*" class="fileinput"></div>
+
+      <div class="fg"><label>Quoted Price *</label><input type="text" name="Quoted_Price" placeholder="$3,125" required></div>
+      <div class="fg full"><label>Additional Notes</label><textarea name="Additional_Notes" rows="4" placeholder="Access issues, gate codes, special instructions, damage description..."></textarea></div>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Assignment to Peak Pros USA →</button>
+    <p class="fnote">This form routes directly to assignment@peakprosusa.com. You will be contacted within 1 business day to confirm scheduling.</p>
+  </form>
+
+  <div class="success" id="successMsg">
+    <h3>✓ Assignment Submitted</h3>
+    <p>Your job has been routed to Peak Pros USA at assignment@peakprosusa.com.<br>Expect confirmation within 1 business day.</p>
+  </div>
+
+  <div class="error" id="errorMsg">
+    <h3>⚠ Submission Failed</h3>
+    <p>Something went wrong submitting your assignment. Please check your connection and try again, or contact Peak Pros USA at gene@peakprosusa.com / 404-323-1869.</p>
+  </div>
+</section>
+
+<footer>
+  Peak Pros Georgia Contractor Portal — Approved Partners Only — Powered by Peak 301® by Colorbiotics
+</footer>
+
+<script>
+// Auth gate
+if(!sessionStorage.getItem('ppga_auth')){
+  window.location.href='login.html';
+}
+
+// Style checkbox toggles
+document.querySelectorAll('.checkbox-opt input[type=checkbox]').forEach(function(c){
+  c.addEventListener('change', function(){
+    this.closest('.checkbox-opt').classList.toggle('selected', this.checked);
+  });
+});
+
+// Submit handler: fetch to Netlify Forms, show success/error inline
+(function(){
+  var form = document.getElementById('assignForm');
+  var successMsg = document.getElementById('successMsg');
+  var errorMsg = document.getElementById('errorMsg');
+  if(!form) return;
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = form.querySelector('button[type=submit]');
+    var originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Submitting…';
+    errorMsg.style.display = 'none';
+    var data = new FormData(form);
+    fetch('/', { method: 'POST', body: data })
+      .then(function(res){
+        if(!res.ok) throw new Error('Network response was not ok');
+        form.style.display = 'none';
+        successMsg.style.display = 'block';
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      })
+      .catch(function(){
+        errorMsg.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      });
+  });
+})();
+
+function doLogout(){
+  sessionStorage.removeItem('ppga_auth');
+  window.location.href='login.html';
+}
+</script>
+
+</body>
+</html>
