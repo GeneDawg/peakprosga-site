@@ -1,146 +1,28 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Peak Pros GA Partner Login</title>
-
-<style>
-body{
-  font-family: Arial, Helvetica, sans-serif;
-  margin:0;
-  background:#f6f7f9;
-  color:#111;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-header{
-  background:white;
-  padding:20px 40px;
-  border-bottom:1px solid #ddd;
-  font-weight:bold;
-  font-size:20px;
-}
-
-main{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:40px 20px;
-}
-
-.login-card{
-  background:white;
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:40px;
-  max-width:420px;
-  width:100%;
-  box-sizing:border-box;
-}
-
-h1{
-  font-size:28px;
-  margin:0 0 8px;
-}
-
-.subtitle{
-  color:#555;
-  margin:0 0 24px;
-  font-size:15px;
-}
-
-label{
-  display:block;
-  font-weight:600;
-  margin-bottom:6px;
-  font-size:14px;
-}
-
-input[type=email],
-input[type=password]{
-  width:100%;
-  padding:12px;
-  margin-bottom:18px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  font-size:16px;
-  box-sizing:border-box;
-  font-family:inherit;
-}
-
-button{
-  background:#c8102e;
-  color:white;
-  border:none;
-  padding:14px 22px;
-  border-radius:6px;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-  width:100%;
-}
-
-.error{
-  display:none;
-  color:#c8102e;
-  font-size:14px;
-  margin:0 0 14px;
-}
-
-.fnote{
-  margin-top:20px;
-  font-size:13px;
-  color:#666;
-  text-align:center;
-}
-</style>
 </head>
 
 <body>
 
-<header>Peak Pros Georgia</header>
+<h1>Peak Pros GA Partner Portal</h1>
 
-<main>
-  <div class="login-card">
-    <h1>Partner Login</h1>
-    <p class="subtitle">Approved contractor partners log in to submit job assignments.</p>
+<p>Approved contractor partners can log in below to submit assignments.</p>
 
-    <p class="error" id="loginError">Invalid email or access code. Contact Peak Pros USA if you need help.</p>
+<form>
+<label>Email</label><br>
+<input type="email"><br><br>
 
-    <form id="loginForm">
-      <label>Email</label>
-      <input type="email" id="email" autocomplete="username" required>
+<label>Password</label><br>
+<input type="password"><br><br>
 
-      <label>Access Code</label>
-      <input type="password" id="password" autocomplete="current-password" required>
+<button>Login</button>
+</form>
 
-      <button type="submit">Log In</button>
-    </form>
+<br><br>
 
-    <p class="fnote">Need access? Email gene@peakprosusa.com or call 404-323-1869.</p>
-  </div>
-</main>
-
-<script>
-document.getElementById('loginForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  var email = document.getElementById('email').value.trim();
-  var pw = document.getElementById('password').value;
-  if(email && pw){
-    sessionStorage.setItem('ppga_auth', '1');
-    sessionStorage.setItem('ppga_user', email);
-    window.location.href = 'portal.html';
-  } else {
-    document.getElementById('loginError').style.display = 'block';
-  }
-});
-</script>
+<a href="portal.html">Enter Partner Portal</a>
 
 </body>
 </html>
