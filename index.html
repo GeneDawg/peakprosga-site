@@ -86,6 +86,13 @@
     transition: background 0.2s !important;
   }
   .nav-cta:hover { background: var(--red-dark) !important; }
+  .nav-cta-assign {
+    background: transparent !important;
+    border: 1.5px solid var(--red) !important;
+    color: var(--red) !important;
+    margin-right: 0.25rem;
+  }
+  .nav-cta-assign:hover { background: var(--red) !important; color: var(--white) !important; }
   .hamburger {
     display: none;
     flex-direction: column;
@@ -724,6 +731,7 @@
       <li><a href="#earn">Earnings</a></li>
       <li><a href="#why">Why Partner</a></li>
       <li><a href="#structure">Platform</a></li>
+      <li><a href="login.html" class="nav-cta nav-cta-assign">Submit Job Assignment</a></li>
       <li><a href="#apply" class="nav-cta">Become a Partner</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -738,6 +746,7 @@
   <a href="#earn" class="mobile-link">Earnings</a>
   <a href="#why" class="mobile-link">Why Partner</a>
   <a href="#structure" class="mobile-link">Platform Structure</a>
+  <a href="login.html" class="nav-cta mobile-link nav-cta-assign">Submit Job Assignment</a>
   <a href="#apply" class="nav-cta mobile-link">Become a Partner</a>
 </div>
 
