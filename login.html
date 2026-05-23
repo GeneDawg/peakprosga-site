@@ -1,28 +1,542 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Peak Pros GA Partner Login</title>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peak Pros Georgia — Partner Portal</title>
+<meta name="description" content="Approved Peak Pros Georgia partners log in to submit roof rejuvenation assignments directly to Peak Pros USA.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --red: #CC2229;
+    --red-dark: #a31a1f;
+    --black: #111111;
+    --dark: #1a1a1a;
+    --gray-dark: #2a2a2a;
+    --gray: #555555;
+    --border: #333333;
+    --white: #ffffff;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
 
+  /* NAV */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(17,17,17,0.96);
+    border-bottom: 1px solid rgba(204,34,41,0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--white);
+  }
+  .nav-logo .logo-accent { color: var(--red); }
+  .nav-back {
+    font-size: 0.875rem;
+    color: #aaa;
+    font-weight: 500;
+  }
+  .nav-back:hover { color: var(--white); }
+
+  /* PAGE */
+  .page-header {
+    padding: 3rem 1.5rem 2rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .page-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(204,34,41,0.12);
+    border: 1px solid rgba(204,34,41,0.4);
+    color: #ff7a7f;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.4rem 0.9rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+  .page-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+  }
+  .page-sub {
+    font-size: 1rem;
+    color: #aaa;
+    max-width: 720px;
+  }
+
+  /* LOGIN BOX */
+  .login-wrap {
+    max-width: 480px;
+    margin: 2rem auto 4rem auto;
+    padding: 0 1.5rem;
+  }
+  .login-box {
+    background: var(--gray-dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2.5rem;
+  }
+  .login-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .login-sub {
+    font-size: 0.875rem;
+    color: #888;
+    margin-bottom: 2rem;
+  }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    color: var(--white);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--red);
+  }
+  .form-group textarea { resize: vertical; min-height: 90px; }
+  .form-group select option { background: var(--black); }
+  .login-btn {
+    width: 100%;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    padding: 1rem;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .login-btn:hover { background: var(--red-dark); }
+  .login-error {
+    background: rgba(204,34,41,0.12);
+    border: 1px solid rgba(204,34,41,0.4);
+    color: #ff7a7f;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+    display: none;
+  }
+  .login-help {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .login-help a { color: var(--red); }
+
+  /* PORTAL */
+  #portal { display: none; }
+  .portal-wrap {
+    max-width: 1100px;
+    margin: 0 auto 4rem auto;
+    padding: 0 1.5rem;
+  }
+  .portal-box {
+    background: var(--gray-dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2.5rem;
+  }
+  .section-block {
+    margin-bottom: 2rem;
+  }
+  .section-block:last-of-type { margin-bottom: 1rem; }
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon { font-size: 1.25rem; }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+  /* Radio cards */
+  .radio-card {
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .radio-card:hover { border-color: var(--gray); }
+  .radio-card input[type="radio"] {
+    width: 16px; height: 16px;
+    accent-color: var(--red);
+  }
+  .radio-card .radio-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #ccc;
+  }
+  .radio-card.selected {
+    border-color: var(--red);
+    background: rgba(204,34,41,0.06);
+  }
+  .radio-card.selected .radio-label { color: var(--white); }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    padding: 1.1rem;
+    border-radius: 5px;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+    margin-top: 1rem;
+  }
+  .submit-btn:hover { background: var(--red-dark); }
+  .submit-note {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 1rem;
+    line-height: 1.5;
+  }
+  .success-box {
+    display: none;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    color: #4ade80;
+    padding: 1.5rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #555;
+  }
+
+  @media (max-width: 700px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .login-box, .portal-box { padding: 1.75rem; }
+    .page-header { padding: 2rem 1.5rem 1rem 1.5rem; }
+  }
+</style>
+</head>
 <body>
 
-<h1>Peak Pros GA Partner Portal</h1>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Peak Pros <span class="logo-accent">GA</span></a>
+    <a href="index.html" class="nav-back">&larr; Back to Site</a>
+  </div>
+</nav>
 
-<p>Approved contractor partners can log in below to submit assignments.</p>
+<!-- ====================  LOGIN SCREEN ==================== -->
+<div id="login-screen">
+  <div class="page-header">
+    <div class="page-tag">Approved Partners Only</div>
+    <h1 class="page-title">Partner Portal</h1>
+    <p class="page-sub">Log in with your access code to submit roof rejuvenation assignments directly to Peak Pros USA for scheduling and fulfillment.</p>
+  </div>
 
-<form>
-<label>Email</label><br>
-<input type="email"><br><br>
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-title">Contractor Login</div>
+      <div class="login-sub">Enter your Peak Pros Georgia partner access code.</div>
 
-<label>Password</label><br>
-<input type="password"><br><br>
+      <div class="form-group">
+        <label for="access-code">Access Code</label>
+        <input type="password" id="access-code" placeholder="••••••••••" autocomplete="off">
+      </div>
 
-<button>Login</button>
-</form>
+      <button class="login-btn" onclick="attemptLogin()">Enter Portal &rarr;</button>
 
-<br><br>
+      <div class="login-error" id="login-error">Invalid access code. Please try again or contact partners@peakprosga.com.</div>
 
-<a href="portal.html">Enter Partner Portal</a>
+      <div class="login-help">
+        Need access? Email <a href="mailto:partners@peakprosga.com">partners@peakprosga.com</a> or call 404-323-1869
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====================  ASSIGNMENT PORTAL ==================== -->
+<div id="portal">
+  <div class="page-header">
+    <div class="page-tag">Partner Portal</div>
+    <h1 class="page-title">Submit Assignment</h1>
+    <p class="page-sub">Submit a roof rejuvenation job directly to Peak Pros USA. You will be contacted within 1 business day to confirm scheduling.</p>
+  </div>
+
+  <div class="portal-wrap">
+    <div class="portal-box">
+      <div class="success-box" id="success-box">
+        ✓ Assignment submitted successfully. Peak Pros USA will contact you within 1 business day to confirm scheduling. Invoice will be issued at $85/sq upon job confirmation.
+      </div>
+
+      <form name="PeakProsGA-Assignment" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="assignment-form">
+        <input type="hidden" name="form-name" value="PeakProsGA-Assignment">
+        <input type="hidden" name="state" value="Georgia">
+        <input type="hidden" name="routes-to" value="assignment@peakprosusa.com">
+        <p style="display:none;">
+          <label>Don't fill this out: <input name="bot-field"></label>
+        </p>
+
+        <!-- YOUR INFO -->
+        <div class="section-block">
+          <div class="section-heading"><span class="section-icon">👥</span><span>Your Information</span></div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Your Company Name *</label>
+              <input type="text" name="company" required placeholder="ABC Roofing LLC">
+            </div>
+            <div class="form-group">
+              <label>Your Name *</label>
+              <input type="text" name="contact_name" required placeholder="First Last">
+            </div>
+            <div class="form-group">
+              <label>Your Phone *</label>
+              <input type="tel" name="contact_phone" required placeholder="(555) 000-0000">
+            </div>
+            <div class="form-group">
+              <label>Your Email *</label>
+              <input type="email" name="contact_email" required placeholder="you@yourcompany.com">
+            </div>
+          </div>
+        </div>
+
+        <!-- PROPERTY INFO -->
+        <div class="section-block">
+          <div class="section-heading"><span class="section-icon">🏠</span><span>Property Information</span></div>
+          <div class="form-group">
+            <label>Property Address *</label>
+            <input type="text" name="property_address" required placeholder="123 Main St, Atlanta, GA 30301">
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Homeowner Name *</label>
+              <input type="text" name="homeowner_name" required placeholder="John Smith">
+            </div>
+            <div class="form-group">
+              <label>Homeowner Phone *</label>
+              <input type="tel" name="homeowner_phone" required placeholder="(555) 000-0000">
+            </div>
+          </div>
+        </div>
+
+        <!-- ROOF DETAILS -->
+        <div class="section-block">
+          <div class="section-heading"><span class="section-icon">📋</span><span>Roof Details</span></div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Roof Size (Squares) *</label>
+              <input type="number" name="roof_size" required placeholder="25" min="1">
+            </div>
+            <div class="form-group">
+              <label>Approximate Roof Age</label>
+              <select name="roof_age">
+                <option value="">Select age range</option>
+                <option>Under 5 years</option>
+                <option>5–10 years</option>
+                <option>10–15 years</option>
+                <option>15–20 years</option>
+                <option>20+ years</option>
+                <option>Unknown</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Roof Type / Material</label>
+              <select name="roof_type">
+                <option value="">Select roof type</option>
+                <option>Asphalt Shingle (3-tab)</option>
+                <option>Asphalt Shingle (Architectural)</option>
+                <option>Wood Shake</option>
+                <option>Metal</option>
+                <option>Tile</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Price Quoted to Homeowner *</label>
+              <input type="text" name="quoted_price" required placeholder="$3,125">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Is this a two-story home? *</label>
+            <div class="grid-2" style="margin-top:0.5rem;">
+              <label class="radio-card"><input type="radio" name="two_story" value="Yes — two story" required><span class="radio-label">Yes — Two Story</span></label>
+              <label class="radio-card"><input type="radio" name="two_story" value="No — single story"><span class="radio-label">No — Single Story</span></label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Is the roof pitch steep? (7/12 or greater) *</label>
+            <div class="grid-3" style="margin-top:0.5rem;">
+              <label class="radio-card"><input type="radio" name="pitch" value="Yes — steep pitch" required><span class="radio-label">Yes — Steep Pitch</span></label>
+              <label class="radio-card"><input type="radio" name="pitch" value="No — standard pitch"><span class="radio-label">No — Standard Pitch</span></label>
+              <label class="radio-card"><input type="radio" name="pitch" value="Not sure"><span class="radio-label">Not Sure</span></label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Existing damage or repairs needed?</label>
+            <div class="grid-3" style="margin-top:0.5rem;">
+              <label class="radio-card"><input type="radio" name="damage" value="Yes — damage present"><span class="radio-label">Yes — Damage Present</span></label>
+              <label class="radio-card"><input type="radio" name="damage" value="No — roof in good condition"><span class="radio-label">No — Roof in Good Condition</span></label>
+              <label class="radio-card"><input type="radio" name="damage" value="Not sure"><span class="radio-label">Not Sure</span></label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Requested Service Date</label>
+            <input type="date" name="service_date">
+          </div>
+
+          <div class="form-group">
+            <label>Scope Notes / Additional Info</label>
+            <textarea name="scope_notes" placeholder="Access issues, gate codes, special instructions, damage description..."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Assignment to Peak Pros USA &rarr;</button>
+        <p class="submit-note">This form routes directly to assignment@peakprosusa.com. You will be contacted within 1 business day to confirm scheduling. Invoice issued at $85/sq upon job confirmation.</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2025 Peak Pros Georgia · Powered by Peak 301® · Approved partner access only<br>
+  <span style="color:#444;">404-323-1869 · partners@peakprosga.com</span>
+</footer>
+
+<script>
+  // === LOGIN ===
+  const ACCESS_CODE = 'PEAKGA2026';
+
+  function attemptLogin() {
+    const input = document.getElementById('access-code').value.trim();
+    const errorBox = document.getElementById('login-error');
+    if (input.toUpperCase() === ACCESS_CODE) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('portal').style.display = 'block';
+      sessionStorage.setItem('ppga_authed', 'true');
+      window.scrollTo(0,0);
+    } else {
+      errorBox.style.display = 'block';
+      document.getElementById('access-code').value = '';
+    }
+  }
+
+  // Auto-login if already authenticated in this session
+  if (sessionStorage.getItem('ppga_authed') === 'true') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('portal').style.display = 'block';
+  }
+
+  // Enter key submits login
+  document.getElementById('access-code').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') attemptLogin();
+  });
+
+  // === RADIO CARD SELECTION HIGHLIGHTING ===
+  document.querySelectorAll('.radio-card input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      // Clear other radios in same group
+      document.querySelectorAll(`input[name="${this.name}"]`).forEach(r => {
+        r.closest('.radio-card').classList.remove('selected');
+      });
+      // Highlight selected
+      if (this.checked) {
+        this.closest('.radio-card').classList.add('selected');
+      }
+    });
+  });
+</script>
 
 </body>
 </html>
