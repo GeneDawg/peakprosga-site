@@ -1,4 +1,4 @@
-import type { Config } from "@netlify/functions";
+import type { Config, Context } from "@netlify/functions";
 import { accounts, env, handleError, HttpError, jn, json, loadJobs } from "../lib/portal.mts";
 
 // TEMPORARY setup check. Shows which JobNimbus fields come through for the partner jobs so the
@@ -15,9 +15,9 @@ async function probe(path: string, params: Record<string, string> = {}) {
   }
 }
 
-export default async (req: Request) => {
+export default async (req: Request, context: Context) => {
   try {
-    const t = new URL(req.url).searchParams.get("t");
+    const t = context.params.token;
     if (!t || t !== env("PORTAL_CHECK_TOKEN")) throw new HttpError(404, "Not found");
     const { jobs, raw } = await loadJobs(accounts());
     const firstJob = raw.jobs[0];
@@ -54,4 +54,4 @@ export default async (req: Request) => {
   }
 };
 
-export const config: Config = { path: "/api/portal/check", method: "GET" };
+export const config: Config = { path: "/api/portal/check/:token", method: "GET" };
