@@ -1,0 +1,11 @@
+{
+  "name": "peakprosga-site",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^4.0.0"
+  }
+}
