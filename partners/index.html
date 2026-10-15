@@ -363,7 +363,7 @@ function render(){
     const ac = acct(j.account);
     return `<tr>
       ${all?`<td><span class="lbl">Contractor</span><span class="pill p-info">${esc(ac.prefix)}</span> ${esc(ac.name)}</td>`:""}
-      <td class="who-cell"><span class="lbl">Homeowner</span><b>${esc(j.owner)}</b><span>${esc(j.address || j.name)}</span></td>
+      <td class="who-cell"><span class="lbl">Homeowner</span><b>${esc(j.owner)}</b><span>${esc(j.address || ("Job #" + j.number))}</span></td>
       <td class="date"><span class="lbl">Date of Assignment</span>${fmtD(j.assigned) || '<span class="muted">—</span>'}</td>
       <td class="date"><span class="lbl">Date of Fulfillment</span>${fmtD(j.fulfilled) || '<span class="muted">Not yet</span>'}${j.fulfilled?`<small>${daysSince(j.fulfilled)} days ago</small>`:""}</td>
       <td><span class="lbl">Photos</span>${j.photos && j.photos.length ? `<div class="thumbs"><button class="btn sm" type="button" data-photos="${i}">View ${j.photos.length}</button></div>` : `<span class="muted">${j.fulfilled ? "Sent with your completion email" : "After service"}</span>`}</td>

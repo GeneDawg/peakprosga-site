@@ -9,7 +9,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 const JN_BASE = "https://app.jobnimbus.com/api1";
 const SESSION_HOURS = 12;
 
-export type Account = { key: string; name: string; prefix: string; contact?: string; code: string };
+export type Account = { key: string; name: string; prefix: string; contact?: string; code: string; sources?: string[] };
 export type Session = { role: "admin" | "partner"; key?: string; exp: number };
 
 export function env(name: string): string {
@@ -128,35 +128,32 @@ export async function jnAll(path: string, params: Record<string, string> = {}, m
 /* ---------- mapping JobNimbus records to portal jobs ---------- */
 
 const PAID_EPSILON = 0.005;
+const TZ = "America/New_York";
+/** JobNimbus epoch seconds -> YYYY-MM-DD in Eastern time (GDRR's local day). */
 const toISO = (sec: any): string | null => {
   const n = Number(sec);
   if (!n || n < 0) return null;
-  return new Date(n * 1000).toISOString().slice(0, 10);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(n * 1000));
 };
+const norm = (s: any) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim();
 
 export function prefixRegex(prefix: string): RegExp {
   const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`^\\s*${esc}\\s*>\\s*`, "i");
 }
 
-/** Statuses that mean Peak 301 has been applied. Override with PORTAL_DONE_STATUSES (comma list). */
-function doneStatuses(): string[] {
+/** Job statuses that mean the Peak 301 work is done. Override with PORTAL_DONE_STATUSES (comma list). */
+function isDone(status: string): boolean {
   const custom = Netlify.env.get("PORTAL_DONE_STATUSES");
-  return (custom ? custom.split(",") : ["complete", "completed", "invoiced", "paid", "closed", "job complete", "job completed"])
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
+  const list = (custom ? custom.split(",") : ["job completed", "complete", "pending payment", "paid", "closed", "invoic"]).map(norm).filter(Boolean);
+  const s = norm(status);
+  return list.some((d) => s.includes(d));
 }
 
-/**
- * Date the job was fulfilled. Uses the job's end date when one is set; otherwise the date the
- * job moved into a completed-type status.
- */
+/** Fulfillment = the job's scheduled start date (when the crew applied Peak 301), once the job is in a done status. */
 function fulfillmentDate(job: any): string | null {
-  const end = toISO(job.date_end);
-  if (end) return end;
-  const status = String(job.status_name || "").toLowerCase();
-  const done = doneStatuses().some((d) => status === d || status.includes(d));
-  return done ? toISO(job.date_status_change) : null;
+  if (!isDone(job.status_name)) return null;
+  return toISO(job.date_start) || toISO(job.date_end) || toISO(job.date_status_change);
 }
 
 function address(job: any): string {
@@ -164,16 +161,35 @@ function address(job: any): string {
   return [job.address_line1, job.address_line2, line2].filter(Boolean).join(", ");
 }
 
-function jobLabels(job: any): string[] {
-  const out = [job.name, job.primary?.name];
-  for (const r of job.related || []) if (r?.name) out.push(r.name);
-  return out.filter((x) => typeof x === "string" && x.trim()) as string[];
+function cleanName(s: string): string {
+  return s.replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Which partner sent this job. Checked in order:
+ *  1. the customer's Lead Source in JobNimbus matches one of the account's `sources`
+ *  2. the job's tags include one of the account's `sources` or its prefix
+ *  3. the job or customer name starts with the account prefix, e.g. "PP>Pam Cisneros"
+ */
+function matchAccount(job: any, contact: any, accts: Account[]): { acct: Account; owner: string } | null {
+  const owner = cleanName(String(job.primary?.name || contact?.display_name || job.name || ""));
+  const source = norm(contact?.source_name);
+  const tags = [...(job.tags || []), ...(contact?.tags || [])].map((x: any) => norm(typeof x === "string" ? x : x?.name));
+  for (const acct of accts) {
+    const sources = (acct.sources || []).map(norm);
+    if (source && sources.includes(source)) return { acct, owner };
+    if (tags.some((tg) => sources.includes(tg) || tg === norm(acct.prefix))) return { acct, owner };
+    for (const label of [job.name, job.primary?.name, contact?.display_name]) {
+      if (typeof label === "string" && prefixRegex(acct.prefix).test(label)) return { acct, owner: cleanName(label.replace(prefixRegex(acct.prefix), "")) };
+    }
+  }
+  return null;
 }
 
 export type PortalJob = {
   jnid: string;
   account: string;
-  name: string;
+  number: string;
   owner: string;
   address: string;
   status: string;
@@ -191,15 +207,16 @@ export type PortalJob = {
 };
 
 export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; raw: { jobs: any[]; invoices: any[] } }> {
-  const jobsRaw = await jnAll("/jobs", { sort_field: "date_created", sort_direction: "desc" });
-  const mine: { job: any; acct: Account; label: string }[] = [];
+  const [jobsRaw, contactsRaw] = await Promise.all([
+    jnAll("/jobs", { sort_field: "date_created", sort_direction: "desc" }),
+    jnAll("/contacts", { fields: "jnid,display_name,source_name,tags" }),
+  ]);
+  const contacts = new Map(contactsRaw.map((c: any) => [c.jnid, c]));
+  const mine: { job: any; acct: Account; owner: string }[] = [];
   for (const job of jobsRaw) {
     if (job.is_archived || job.is_active === false) continue;
-    // The partner code ("NG>", "PP>") may be on the job name or on the job's customer (contact) name.
-    for (const label of jobLabels(job)) {
-      const acct = accts.find((a) => prefixRegex(a.prefix).test(label));
-      if (acct) { mine.push({ job, acct, label }); break; }
-    }
+    const m = matchAccount(job, contacts.get(job.primary?.id), accts);
+    if (m) mine.push({ job, ...m });
   }
   if (!mine.length) return { jobs: [], raw: { jobs: [], invoices: [] } };
 
@@ -208,7 +225,7 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
     (inv) => !inv.is_archived && inv.is_active !== false && (inv.related || []).some((r: any) => ids.has(r.id)),
   );
 
-  const jobs = mine.map(({ job, acct, label }): PortalJob => {
+  const jobs = mine.map(({ job, acct, owner }): PortalJob => {
     const invs = invoicesRaw.filter((inv) => (inv.related || []).some((r: any) => r.id === job.jnid));
     let invoice: PortalJob["invoice"] = null;
     if (invs.length) {
@@ -216,7 +233,7 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
       const due = invs.reduce((a, i) => a + Number(i.due ?? Math.max(0, Number(i.total || 0) - Number(i.total_paid || 0))), 0);
       const dates = invs.map((i) => toISO(i.date_invoice) || toISO(i.date_created)).filter(Boolean).sort() as string[];
       const paidDates = invs.map((i) => toISO(i.date_paid_in_full)).filter(Boolean).sort() as string[];
-      const isPaid = total > 0 && due <= PAID_EPSILON;
+      const isPaid = due <= PAID_EPSILON && (total > 0 || invs.some((i) => toISO(i.date_paid_in_full)));
       invoice = {
         numbers: invs.map((i) => String(i.number ?? "")).filter(Boolean),
         total,
@@ -230,8 +247,8 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
     return {
       jnid: job.jnid,
       account: acct.key,
-      name: label.trim(),
-      owner: label.replace(prefixRegex(acct.prefix), "").trim(),
+      number: String(job.number ?? ""),
+      owner,
       address: address(job),
       status: String(job.status_name || ""),
       assigned: toISO(job.date_created),
