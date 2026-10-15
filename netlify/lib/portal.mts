@@ -164,6 +164,12 @@ function address(job: any): string {
   return [job.address_line1, job.address_line2, line2].filter(Boolean).join(", ");
 }
 
+function jobLabels(job: any): string[] {
+  const out = [job.name, job.primary?.name];
+  for (const r of job.related || []) if (r?.name) out.push(r.name);
+  return out.filter((x) => typeof x === "string" && x.trim()) as string[];
+}
+
 export type PortalJob = {
   jnid: string;
   account: string;
@@ -186,11 +192,14 @@ export type PortalJob = {
 
 export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; raw: { jobs: any[]; invoices: any[] } }> {
   const jobsRaw = await jnAll("/jobs", { sort_field: "date_created", sort_direction: "desc" });
-  const mine: { job: any; acct: Account }[] = [];
+  const mine: { job: any; acct: Account; label: string }[] = [];
   for (const job of jobsRaw) {
     if (job.is_archived || job.is_active === false) continue;
-    const acct = accts.find((a) => prefixRegex(a.prefix).test(String(job.name || "")));
-    if (acct) mine.push({ job, acct });
+    // The partner code ("NG>", "PP>") may be on the job name or on the job's customer (contact) name.
+    for (const label of jobLabels(job)) {
+      const acct = accts.find((a) => prefixRegex(a.prefix).test(label));
+      if (acct) { mine.push({ job, acct, label }); break; }
+    }
   }
   if (!mine.length) return { jobs: [], raw: { jobs: [], invoices: [] } };
 
@@ -199,7 +208,7 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
     (inv) => !inv.is_archived && inv.is_active !== false && (inv.related || []).some((r: any) => ids.has(r.id)),
   );
 
-  const jobs = mine.map(({ job, acct }): PortalJob => {
+  const jobs = mine.map(({ job, acct, label }): PortalJob => {
     const invs = invoicesRaw.filter((inv) => (inv.related || []).some((r: any) => r.id === job.jnid));
     let invoice: PortalJob["invoice"] = null;
     if (invs.length) {
@@ -221,8 +230,8 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
     return {
       jnid: job.jnid,
       account: acct.key,
-      name: String(job.name || "").trim(),
-      owner: String(job.name || "").replace(prefixRegex(acct.prefix), "").trim(),
+      name: label.trim(),
+      owner: label.replace(prefixRegex(acct.prefix), "").trim(),
       address: address(job),
       status: String(job.status_name || ""),
       assigned: toISO(job.date_created),

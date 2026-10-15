@@ -27,7 +27,7 @@ export default async (req: Request, context: Context) => {
       settings: { accounts: accounts().map((a) => ({ key: a.key, prefix: a.prefix })) },
       jobCount: recent.count,
       recentJobKeys: recentRows[0] ? Object.keys(recentRows[0]) : [],
-      recentJobs: recentRows.map((j: any) => pick(j, ["name", "display_name", "number", "record_type_name", "status_name", "date_created"])),
+      recentJobs: recentRows.map((j: any) => ({ ...pick(j, ["name", "number", "status_name", "date_created", "date_status_change", "date_start", "date_end"]), primaryName: j.primary?.name, relatedNames: (j.related || []).map((r: any) => r.name) })),
       mapped: jobs,
       rawJobs: raw.jobs.map((j) =>
         pick(j, ["jnid", "name", "number", "status_name", "record_type_name", "date_created", "date_status_change", "date_start", "date_end", "address_line1", "city", "state_text", "zip", "primary", "related", "source_name"]),
