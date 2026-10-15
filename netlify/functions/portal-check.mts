@@ -30,7 +30,7 @@ export default async (req: Request, context: Context) => {
       recentJobs: recentRows.slice(0, 5).map((j: any) => ({ ...pick(j, ["name", "number", "status_name", "date_created", "date_status_change", "date_start", "date_end"]), primaryName: j.primary?.name, relatedNames: (j.related || []).map((r: any) => r.name) })),
       mapped: jobs,
       rawJobs: raw.jobs.map((j) =>
-        pick(j, ["jnid", "name", "number", "status_name", "record_type_name", "date_created", "date_status_change", "date_start", "date_end", "address_line1", "city", "state_text", "zip", "primary", "related", "source_name"]),
+        pick(j, ["jnid", "name", "number", "status_name", "record_type_name", "tags", "date_created", "date_status_change", "date_start", "date_end", "address_line1", "city", "state_text", "zip", "primary", "related", "source_name"]),
       ),
       rawInvoices: raw.invoices.map((i) => ({
         keys: Object.keys(i),

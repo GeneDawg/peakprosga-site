@@ -166,12 +166,24 @@ function cleanName(s: string): string {
 }
 
 /**
- * Which partner sent this job. Checked in order:
+ * Which partner sent this Peak 301 job. Checked in order:
  *  1. the customer's Lead Source in JobNimbus matches one of the account's `sources`
  *  2. the job's tags include one of the account's `sources` or its prefix
  *  3. the job or customer name starts with the account prefix, e.g. "PP>Pam Cisneros"
  */
+/**
+ * Only Peak 301 jobs belong in the partner portal. A job counts when it carries the Peak 301 tag
+ * (PORTAL_PEAK_TAG, default "Peak 301") or its job type / workflow name contains that text.
+ * A referral lead source alone is not enough: partners also refer regular GDRR roofing work.
+ */
+export function isPeakJob(job: any): boolean {
+  const marker = norm(Netlify.env.get("PORTAL_PEAK_TAG") || "Peak 301");
+  const tags = (job.tags || []).map((x: any) => norm(typeof x === "string" ? x : x?.name));
+  return tags.includes(marker) || norm(job.record_type_name).includes(marker);
+}
+
 function matchAccount(job: any, contact: any, accts: Account[]): { acct: Account; owner: string } | null {
+  if (!isPeakJob(job)) return null;
   const owner = cleanName(String(job.primary?.name || contact?.display_name || job.name || ""));
   const source = norm(contact?.source_name);
   const tags = [...(job.tags || []), ...(contact?.tags || [])].map((x: any) => norm(typeof x === "string" ? x : x?.name));
