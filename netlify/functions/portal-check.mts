@@ -53,6 +53,24 @@ export default async (req: Request, context: Context) => {
         out.sampleFiles = String(e.message || e).slice(0, 200);
       }
     }
+    const SIX = ["garfield", "roger", "karelly", "pam cisneros", "david johnston", "neil"];
+    const six = recentRows.filter((j: any) => SIX.some((s) => String(j.primary?.name || "").toLowerCase().replace(/\s+/g, " ").includes(s)));
+    const others = recentRows.filter((j: any) => !six.includes(j)).slice(0, 3);
+    out.partnerJobDetail = [];
+    for (const j of [...six, ...others]) {
+      const row: any = {
+        primaryName: j.primary?.name,
+        partnerCandidate: six.includes(j),
+        tags: j.tags, sales_rep_name: j.sales_rep_name, created_by_name: j.created_by_name, owners: j.owners,
+        misc: j.misc, cf_boolean_1: j.cf_boolean_1, subcontractors: j.subcontractors, location: j.location, record_type_name: j.record_type_name,
+        approved_invoice_total: j.approved_invoice_total, approved_invoice_due: j.approved_invoice_due, last_invoice: j.last_invoice, last_invoice_date_invoice: j.last_invoice_date_invoice,
+      };
+      try {
+        const c = await jn(`/contacts/${j.primary?.id}`);
+        row.contact = Object.fromEntries(Object.entries(c).filter(([k, v]) => v !== null && v !== "" && v !== 0 && !/phone|email|fax|geo|image|external|rules|location|owners$/i.test(k) && (typeof v !== "object" || k === "tags" || k === "related")));
+      } catch (e: any) { row.contact = String(e.message || e).slice(0, 120); }
+      out.partnerJobDetail.push(row);
+    }
     return json(out);
   } catch (e) {
     return handleError(e);
