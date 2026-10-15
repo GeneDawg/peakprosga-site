@@ -233,7 +233,8 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
       const due = invs.reduce((a, i) => a + Number(i.due ?? Math.max(0, Number(i.total || 0) - Number(i.total_paid || 0))), 0);
       const dates = invs.map((i) => toISO(i.date_invoice) || toISO(i.date_created)).filter(Boolean).sort() as string[];
       const paidDates = invs.map((i) => toISO(i.date_paid_in_full)).filter(Boolean).sort() as string[];
-      const isPaid = due <= PAID_EPSILON && (total > 0 || invs.some((i) => toISO(i.date_paid_in_full)));
+      // Nothing left to pay. A $0 invoice counts as paid once it is out of Draft.
+      const isPaid = due <= PAID_EPSILON && (total > 0 || invs.some((i) => toISO(i.date_paid_in_full) || norm(i.status_name) !== "draft"));
       invoice = {
         numbers: invs.map((i) => String(i.number ?? "")).filter(Boolean),
         total,
