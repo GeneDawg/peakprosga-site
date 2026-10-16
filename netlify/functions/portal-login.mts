@@ -12,7 +12,7 @@ export default async (req: Request, context: Context) => {
   try {
     if (req.method !== "POST") throw new HttpError(405, "Use POST.");
     const ip = context.ip || req.headers.get("x-nf-client-connection-ip") || "unknown";
-    const store = getStore("portal-logins");
+    const store = getStore({ name: "portal-logins", consistency: "strong" });
     const key = `ip-${ip.replace(/[^0-9a-fA-F:.]/g, "_")}`;
     let rec: { fails: number; first: number } | null = null;
     try { rec = (await store.get(key, { type: "json" })) as any; } catch (e) { console.error("login throttle read failed", e); }
