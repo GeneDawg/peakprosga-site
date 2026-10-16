@@ -45,13 +45,18 @@ export default async (req: Request, context: Context) => {
     // Intake test: ?intake=dry shows the plan; ?intake=run creates one assignment marked "TEST - ".
     const intake = new URL(req.url).searchParams.get("intake");
     if (intake) {
-      const sample = {
+      const sample: Record<string, string> = {
         company: "Peach Peak Roofing", contact_name: "Neil Embry", contact_phone: "470-585-5184", contact_email: "neal@peachpeakroofing.com",
         property_address: "100 Test Lane, Marietta, GA 30066", homeowner_name: "Test Homeowner", homeowner_phone: "404-323-1869",
         roof_size: "30", roof_age: "10–15 years", roof_type: "Asphalt Shingle (Architectural)", quoted_price: "$2,550",
         two_story: "No — single story", pitch: "No — standard pitch", damage: "No — roof in good condition",
         service_date: "", scope_notes: "TEST assignment from Claude. Archive this job and its two tasks.",
       };
+      const q = new URL(req.url).searchParams;
+      if (q.get("addr")) sample.property_address = q.get("addr")!;
+      if (q.get("name")) sample.homeowner_name = q.get("name")!;
+      if (q.get("size")) sample.roof_size = q.get("size")!;
+      if (q.get("price")) sample.quoted_price = q.get("price")!;
       const acct = matchContractor(sample);
       if (intake === "dry") return json({ writeKeySet: !!Netlify.env.get("JOBNIMBUS_WRITE_KEY"), contractor: acct?.name || null, ...summarize(sample, acct) });
       if (intake === "run") return json({ created: await createFromAssignment(sample, { test: true }) });
