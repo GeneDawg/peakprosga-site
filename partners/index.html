@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Peak 301 Partner Portal</title>
+<link rel="icon" href="/partners/assets/peak301-pros.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: access-code gate, then white logo header + black account band, summary strip, and a column ledger (table on desktop, cards on phone) */
+:root{
+  --bg:#f4f4f5; --surface:#ffffff; --ink:#111214; --muted:#5d6068; --line:#dcdde0; --soft:#ececee;
+  --red:#d6232f; --band:#111214; --band-ink:#ffffff;
+  --ok:#1f7a3f; --ok-bg:#e3f3e8; --warn:#9a5b00; --warn-bg:#fdf0d8; --due:#b31a25; --due-bg:#fbe3e5; --info:#2f4b7a; --info-bg:#e5ebf5;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d0e10; --surface:#17181b; --ink:#f1f1f3; --muted:#a2a5ad; --line:#2c2e33; --soft:#222428;
+  --red:#ef3b46; --band:#000000; --band-ink:#ffffff;
+  --ok:#5fd18a; --ok-bg:#163522; --warn:#f2b552; --warn-bg:#3a2a0e; --due:#ff7a82; --due-bg:#3d1518; --info:#9db8e8; --info-bg:#1a2438; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d0e10; --surface:#17181b; --ink:#f1f1f3; --muted:#a2a5ad; --line:#2c2e33; --soft:#222428;
+  --red:#ef3b46; --band:#000000; --band-ink:#ffffff;
+  --ok:#5fd18a; --ok-bg:#163522; --warn:#f2b552; --warn-bg:#3a2a0e; --due:#ff7a82; --due-bg:#3d1518; --info:#9db8e8; --info-bg:#1a2438; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.demo{background:var(--warn-bg);color:var(--warn);font-size:13px;font-weight:600;text-align:center;padding-block:6px}
+.btn{font:600 14px var(--body);border-radius:6px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+/* gate */
+.gate{min-height:100%;display:grid;place-items:center;padding-block:48px;background:var(--band)}
+.gate-card{background:#fff;color:#111214;width:min(420px,100%);border-radius:12px;overflow:hidden;border-top:6px solid var(--red)}
+.gate-card .in{padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+.gate-card img{height:64px;width:auto;align-self:center}
+.gate-card h1{font:italic 800 30px/1 var(--display);text-transform:uppercase;margin:0;text-align:center}
+.gate-card p{margin:0;color:#5d6068;text-align:center;font-size:14px}
+.gate-card label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#5d6068}
+.gate-card input{font:500 18px var(--mono);padding:12px;border:2px solid #cfd0d4;border-radius:8px;text-transform:uppercase;letter-spacing:.06em;width:100%;background:#fff;color:#111214}
+.gate-card .err{color:#b31a25;font-weight:600;font-size:14px;text-align:center}
+.gate-card .hint{background:#f4f4f5;border-radius:8px;padding:10px 12px;font-size:13px;color:#5d6068}
+.gate-card .hint b{font-family:var(--mono);color:#111214;font-weight:500}
+/* app */
+header.top{background:#fff;border-bottom:4px solid var(--red)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:10px;flex-wrap:wrap}
+header.top img{height:56px;width:auto;display:block}
+.hdr-right{display:flex;align-items:center;gap:12px;color:#111214;font-size:14px;flex-wrap:wrap}
+.hdr-right .who{font-weight:600}
+header.top .btn{background:#fff;color:#111214;border-color:#cfd0d4}
+.band{background:var(--band);color:var(--band-ink)}
+.band .wrap{padding-block:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.eyebrow{font:600 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:#ff8a91}
+.band h1{font:italic 800 clamp(30px,5vw,44px)/1 var(--display);margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.acct{font:500 13px var(--mono);color:#bfc1c7;margin-top:6px}
+.band label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#bfc1c7;display:block;margin-bottom:4px}
+.band select{font:600 15px var(--body);padding:8px 10px;border-radius:6px;background:#1f2024;color:#fff;border:1px solid #3a3c42;max-width:100%}
+.adminbadge{display:inline-block;background:var(--red);color:#fff;font:700 11px var(--body);letter-spacing:.1em;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-block:22px}
+.stat{background:var(--surface);padding:14px 16px}
+.stat .k{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stat .v{font:800 30px/1.1 var(--display);font-variant-numeric:tabular-nums;margin-top:4px}
+.stat .s{font-size:13px;color:var(--muted)}
+.stat.due .v{color:var(--due)}
+@media (max-width:720px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar h2{font:800 22px var(--display);text-transform:uppercase;margin:0 auto 0 0;letter-spacing:.02em}
+.chip{font:600 13px var(--body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.ledger{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 14px;border-bottom:2px solid var(--ink);white-space:nowrap;vertical-align:bottom}
+thead th small{display:block;font-weight:500;letter-spacing:0;text-transform:none;font-size:11px}
+tbody td{padding:14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
+.who-cell b{display:block;font-weight:600}
+.who-cell span{font:500 12px var(--mono);color:var(--muted)}
+.date{font-variant-numeric:tabular-nums;white-space:nowrap}
+.date small{display:block;color:var(--muted);font-size:12px}
+.muted{color:var(--muted)}
+.pill{display:inline-block;font:600 12px var(--body);padding:3px 10px;border-radius:999px;white-space:nowrap}
+.p-paid{background:var(--ok-bg);color:var(--ok)}
+.p-due{background:var(--due-bg);color:var(--due)}
+.p-wait{background:var(--warn-bg);color:var(--warn)}
+.p-info{background:var(--info-bg);color:var(--info)}
+.inv{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.inv .meta{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs{display:flex;align-items:center;gap:8px}
+.thumbs .stack{display:flex}
+.thumbs .stack i{width:30px;height:30px;border-radius:5px;border:2px solid var(--surface);background:linear-gradient(135deg,#7d8590,#3f454d);margin-left:-10px}
+.thumbs .stack i:first-child{margin-left:0;background:linear-gradient(135deg,#9a9fa6,#5a6068)}
+.thumbs .stack i:nth-child(2){background:linear-gradient(135deg,#6b7f6a,#2f3d30)}
+.lbl{display:none}
+@media (max-width:820px){
+  .ledger{overflow:visible;background:transparent;border:0}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tbody tr{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr}
+  tbody td{border-bottom:1px solid var(--line);min-width:0}
+  tbody td.who-cell,tbody td.c-inv,tbody td.c-act,tbody td.c-war{grid-column:1/-1}
+  tbody td.c-war{grid-column:1/-1;border-bottom:0}
+  tbody tr:hover td{background:transparent}
+  .lbl{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:2px}
+}
+.lock{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.lock svg{flex:none}
+.btn.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.cert{border:2px solid var(--ink);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+.cert .ct{font:italic 800 26px/1 var(--display);text-transform:uppercase;text-align:center}
+.cert .cs{text-align:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);font-weight:700}
+.cert .row{display:flex;justify-content:space-between;gap:12px;font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.cert .row span:first-child{color:var(--muted)}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
+.foot{margin-top:36px;background:var(--band);color:#c9cbd0}
+.foot .wrap{padding-block:24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+.logos{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.logos .chipimg{background:#fff;border-radius:6px;padding:6px 10px;display:flex;align-items:center}
+.logos img{height:40px;width:auto}
+.foot p{margin:0;font-size:13px;max-width:60ch}
+.foot .copy{font-family:var(--mono);color:#fff}
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);display:grid;place-items:center;padding:16px;z-index:10}
+.modal{background:var(--surface);color:var(--ink);border-radius:12px;width:min(640px,100%);max-height:90vh;overflow:auto;border-top:6px solid var(--red)}
+.modal header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal h3{font:800 22px var(--display);text-transform:uppercase;margin:0}
+.modal .body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.photos div{aspect-ratio:4/3;border-radius:6px;background:var(--soft);display:grid;place-items:center;font-size:12px;color:var(--muted);text-align:center;padding:6px;max-width:100%}
+.invdoc{border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.invdoc .row{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.invdoc .row span:first-child{color:var(--muted)}
+.invdoc .tot{border-top:2px solid var(--ink);padding-top:10px;font-weight:700}
+.pdfview{display:flex;flex-direction:column;gap:10px;background:var(--soft);padding:10px;border-radius:8px}
+.pdfview img{width:100%;height:auto;display:block;border:1px solid var(--line);background:#fff;max-width:100%}
+.note{color:var(--muted);font-size:13px;margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-top:22px}
+.tab{font:800 18px var(--display);text-transform:uppercase;letter-spacing:.03em;padding:10px 18px;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.tab:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.photos img{background:var(--soft)}
+.loading{padding:28px 16px;text-align:center;color:var(--muted)}
+.errbox{background:var(--due-bg);color:var(--due);border-radius:8px;padding:12px 14px;font-weight:600;margin-top:16px}
+.updated{font-size:12px;color:var(--muted);margin-top:10px}
+.photos a{display:block;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:var(--soft)}
+.photos a img{width:100%;height:100%;object-fit:cover;display:block}
+</style>
+</head>
+<body>
+
+<section class="gate" id="gate">
+  <form class="gate-card" id="gateform" autocomplete="off">
+    <div class="in">
+      <img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros">
+      <h1>Partner Portal</h1>
+      <p>Enter the access code Go Dawgs Roof Roof gave your company to see your jobs, photos, invoices and warranties.</p>
+      <div>
+        <label for="code">Access code</label>
+        <input id="code" name="code" placeholder="XXXX-0000" spellcheck="false" autocapitalize="characters">
+      </div>
+      <div class="err" id="err" hidden></div>
+      <button class="btn primary" type="submit" id="gatebtn">View my account</button>
+    </div>
+  </form>
+</section>
+
+<div id="app" hidden>
+<header class="top">
+  <div class="wrap">
+    <img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros">
+    <div class="hdr-right">
+      <span id="adminbadge" class="adminbadge" hidden>Admin</span>
+      <span>Signed in as <span class="who" id="who">Partner</span></span>
+      <button class="btn" id="signout" type="button">Sign out</button>
+    </div>
+  </div>
+</header>
+
+<section class="band">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Referral Partner Portal · Serviced by Go Dawgs Roof Roof</div>
+      <h1 id="pname">Partner</h1>
+      <div class="acct" id="acct"></div>
+    </div>
+    <div id="switchwrap" hidden>
+      <label for="partner">View contractor</label>
+      <select id="partner"></select>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-jobs" aria-selected="true" type="button">Jobs</button>
+    <button class="tab" role="tab" id="tab-inv" aria-selected="false" type="button">Invoices</button>
+  </div>
+  <div class="stats" id="stats"></div>
+  <section id="view-jobs">
+
+  <div class="toolbar">
+    <h2>Assigned Jobs</h2>
+    <button class="chip" data-f="all" aria-pressed="true" type="button">All</button>
+    <button class="chip" data-f="due" aria-pressed="false" type="button">Outstanding</button>
+    <button class="chip" data-f="paid" aria-pressed="false" type="button">Paid</button>
+    <button class="chip" data-f="toinv" aria-pressed="false" type="button">Not yet invoiced</button>
+  </div>
+
+  <div class="ledger">
+    <table>
+      <thead><tr>
+        <th id="h-partner" hidden>Contractor</th>
+        <th>Homeowner<small>Property</small></th>
+        <th>Date of Assignment<small>via peakprosga.com</small></th>
+        <th>Date of Fulfillment<small>Peak 301 applied</small></th>
+        <th>Photos</th>
+        <th>Invoice<small>Paid / Outstanding</small></th>
+        <th>Invoice PDF &amp; Payment</th>
+        <th>Peak 301 Warranty<small>Released when paid</small></th>
+      </tr></thead>
+      <tbody id="rows"><tr><td colspan="8" class="loading">Loading your jobs…</td></tr></tbody>
+    </table>
+  </div>
+  </section>
+
+  <section id="view-inv" hidden>
+    <div class="toolbar"><h2>Invoices</h2></div>
+    <div class="ledger">
+      <table>
+        <thead><tr>
+          <th id="hi-partner" hidden>Contractor</th>
+          <th>Invoice</th>
+          <th>Homeowner<small>Property</small></th>
+          <th>Sent</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Invoice PDF &amp; Payment</th>
+        </tr></thead>
+        <tbody id="invrows"></tbody>
+      </table>
+    </div>
+  </section>
+  <div class="errbox" id="loaderr" hidden></div>
+  <div class="updated" id="updated"></div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="logos">
+      <span class="chipimg"><img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros"></span>
+      <span class="chipimg"><img src="/partners/assets/colorbiotics.png" alt="Colorbiotics, a Sika company"></span>
+      <span class="chipimg"><img src="/partners/assets/sika.png" alt="Sika"></span>
+    </div>
+    <p>Questions about a job or invoice? Call <a class="copy" href="tel:4043231869">404-323-1869</a> or email <a class="copy" href="mailto:assignment@peakprosusa.com">assignment@peakprosusa.com</a></p>
+  </div>
+</footer>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+    <header><h3 id="mtitle"></h3><button class="btn sm" id="mclose" type="button">Close</button></header>
+    <div class="body" id="mbody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+const PAY_PHONE = "404-323-1869";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtD = s => s ? new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : null;
+const money = n => n==null ? null : Number(n).toLocaleString("en-US",{style:"currency",currency:"USD"});
+const today = () => { const d=new Date(); d.setHours(12,0,0,0); return d; };
+const daysSince = s => Math.max(0, Math.round((today() - new Date(s+"T12:00:00"))/864e5));
+const addYears = (s,n) => { const d=new Date(s+"T12:00:00"); d.setFullYear(d.getFullYear()+n); return d.toISOString().slice(0,10); };
+
+let session = null; // {token, role, accounts}
+let current = "all", filter = "all", jobs = [], viewJobs = [];
+
+function save(){ try{ sessionStorage.setItem("p3p_portal", JSON.stringify(session)); }catch(e){} }
+function restore(){ try{ return JSON.parse(sessionStorage.getItem("p3p_portal")||"null"); }catch(e){ return null; } }
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,3200); }
+
+async function api(path){
+  const res = await fetch(path, { headers: { authorization: "Bearer " + session.token } });
+  if (res.status === 401){ signOut(); throw new Error("Please sign in again."); }
+  return res;
+}
+
+function status(j){
+  if (j.invoice && j.invoice.isPaid) return {k:"paid", t:"Paid", c:"p-paid"};
+  if (j.invoice && j.invoice.processing) return {k:"paid", t:"Payment processing", c:"p-wait"};
+  if (j.invoice) return {k:"due", t:"Outstanding", c:"p-due"};
+  if (j.fulfilled) return {k:"toinv", t:"Not invoiced yet", c:"p-wait"};
+  return {k:"open", t:"Awaiting service", c:"p-info"};
+}
+
+/* ---------- sign in ---------- */
+$("gateform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const code = $("code").value.trim();
+  if (!code) return;
+  $("gatebtn").disabled = true; $("gatebtn").textContent = "Checking…"; $("err").hidden = true;
+  try {
+    const res = await fetch("/api/portal/login", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ code }) });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || "Sign-in failed.");
+    session = body; save(); $("code").value = ""; startApp();
+  } catch (err) {
+    $("err").textContent = err.message; $("err").hidden = false;
+  } finally {
+    $("gatebtn").disabled = false; $("gatebtn").textContent = "View my account";
+  }
+});
+
+function signOut(){
+  session = null; try{ sessionStorage.removeItem("p3p_portal"); }catch(e){}
+  jobs = []; filter = "all"; resetChips();
+  $("app").hidden = true; $("gate").hidden = false; $("code").focus();
+}
+$("signout").addEventListener("click", signOut);
+
+const sel = $("partner");
+function startApp(){
+  $("gate").hidden = true; $("app").hidden = false; window.scrollTo(0,0);
+  const admin = session.role === "admin";
+  $("adminbadge").hidden = !admin; $("switchwrap").hidden = !admin;
+  if (admin){
+    sel.innerHTML = '<option value="all">All contractors</option>' + session.accounts.map(a=>`<option value="${esc(a.key)}">${esc(a.name)} (${esc(a.prefix)})</option>`).join("");
+    current = "all"; sel.value = "all";
+  } else current = session.accounts[0].key;
+  load();
+}
+sel.addEventListener("change", () => { current = sel.value; render(); });
+function resetChips(){ document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.f==="all")); }
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+  filter=b.dataset.f; document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b)); render();
+}));
+
+async function load(){
+  $("loaderr").hidden = true;
+  $("rows").innerHTML = '<tr><td colspan="8" class="loading">Loading your jobs from JobNimbus…</td></tr>';
+  try {
+    const res = await api("/api/portal/jobs?account=all");
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || "Could not load jobs.");
+    jobs = body.jobs || [];
+    $("updated").textContent = "Updated " + new Date(body.updated).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+    render();
+  } catch (err) {
+    $("rows").innerHTML = "";
+    $("loaderr").textContent = err.message + " If this keeps happening, call " + PAY_PHONE + ".";
+    $("loaderr").hidden = false;
+  }
+}
+
+/* ---------- tabs ---------- */
+let view = "jobs";
+function setView(v){
+  view = v;
+  $("tab-jobs").setAttribute("aria-selected", v==="jobs"); $("tab-inv").setAttribute("aria-selected", v==="inv");
+  $("view-jobs").hidden = v!=="jobs"; $("view-inv").hidden = v!=="inv";
+}
+$("tab-jobs").addEventListener("click",()=>setView("jobs"));
+$("tab-inv").addEventListener("click",()=>setView("inv"));
+
+/* ---------- render ---------- */
+const LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+function acct(key){ return session.accounts.find(a=>a.key===key) || {name:key,prefix:"?"}; }
+
+function render(){
+  const all = current === "all";
+  const a = all ? null : acct(current);
+  $("pname").textContent = all ? "All Contractors" : a.name;
+  $("who").textContent = session.role === "admin" ? "Go Dawgs Roof Roof" : (session.accounts[0].contact || session.accounts[0].name);
+  $("acct").textContent = all ? `${session.accounts.length} referral partners` : `Account code ${a.prefix}`;
+  $("h-partner").hidden = !all;
+  const js = all ? jobs : jobs.filter(j=>j.account===current);
+  const due = js.filter(j=>j.invoice && !j.invoice.isPaid && !j.invoice.processing), paid = js.filter(j=>j.invoice && (j.invoice.isPaid || j.invoice.processing)), toinv = js.filter(j=>!j.invoice);
+  const dueAmt = due.reduce((s,j)=>s+j.invoice.due,0), paidAmt = paid.reduce((s,j)=>s+j.invoice.total,0);
+  const oldest = due.length ? Math.max(...due.map(j=>daysSince(j.invoice.date||j.fulfilled||j.assigned))) : 0;
+  $("stats").innerHTML = `
+    <div class="stat due"><div class="k">Outstanding</div><div class="v num">${money(dueAmt)}</div><div class="s">${due.length} invoice${due.length===1?"":"s"}${due.length?" · oldest "+oldest+" days":""}</div></div>
+    <div class="stat"><div class="k">Paid</div><div class="v num">${money(paidAmt)}</div><div class="s">${paid.length} invoice${paid.length===1?"":"s"}</div></div>
+    <div class="stat"><div class="k">Jobs fulfilled</div><div class="v num">${js.filter(j=>j.fulfilled).length}</div><div class="s">of ${js.length} assigned</div></div>
+    <div class="stat"><div class="k">Not yet invoiced</div><div class="v num">${toinv.length}</div><div class="s">invoice coming soon</div></div>`;
+  viewJobs = js.filter(j=> filter==="all" || status(j).k===filter).sort((x,y)=>(y.fulfilled||y.assigned||"").localeCompare(x.fulfilled||x.assigned||""));
+  $("rows").innerHTML = viewJobs.length ? viewJobs.map((j,i)=>{
+    const s = status(j), inv = j.invoice;
+    const ac = acct(j.account);
+    return `<tr>
+      ${all?`<td><span class="lbl">Contractor</span><span class="pill p-info">${esc(ac.prefix)}</span> ${esc(ac.name)}</td>`:""}
+      <td class="who-cell"><span class="lbl">Homeowner</span><b>${esc(j.owner)}</b><span>${esc(j.address || ("Job #" + j.number))}</span></td>
+      <td class="date"><span class="lbl">Date of Assignment</span>${fmtD(j.assigned) || '<span class="muted">—</span>'}</td>
+      <td class="date"><span class="lbl">Date of Fulfillment</span>${fmtD(j.fulfilled) || '<span class="muted">Not yet</span>'}${j.fulfilled?`<small>${daysSince(j.fulfilled)} days ago</small>`:""}</td>
+      <td><span class="lbl">Photos</span>${j.files.photos.length ? `<div class="thumbs"><button class="btn sm" type="button" data-photos="${i}">View ${j.files.photos.length}</button></div>` : `<span class="muted">${j.fulfilled ? "Not posted yet" : "After service"}</span>`}</td>
+      <td class="c-inv"><span class="lbl">Invoice</span>${inv ? `<div class="inv"><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>
+        <span class="meta">${inv.numbers.length?"#"+esc(inv.numbers.join(", #"))+" · ":""}${inv.total>0?money(inv.total):"Complimentary"}${inv.date?" · sent "+fmtD(inv.date):""}${s.k==="due"&&inv.paid>0?" · "+money(inv.due)+" left":""}${inv.paidDate?" · paid "+fmtD(inv.paidDate):""}</span></div>` : `<span class="pill ${s.c}">${s.t}</span>`}</td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-pdf="${i}">Invoice PDF</button>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : inv.processing ? `<span class="pill p-wait">Payment received</span>` : `<button class="btn sm primary" type="button" data-pay="${i}">Pay invoice</button>`}</div>` : (session.role==="admin" ? '<span class="muted">Estimate in JobNimbus (Peak 301 Only layout); invoice follows at Job Completed</span>' : '<span class="muted">Available once invoiced</span>')}</td>
+      <td class="c-war"><span class="lbl">Peak 301 Warranty</span>${inv && inv.processing ? `<span class="lock">${LOCK}Unlocks when payment clears${inv.clearsOn?" (about "+fmtD(inv.clearsOn)+")":""}</span>` : inv && inv.isPaid ? `<button class="btn sm ok" type="button" data-war="${i}">Download warranty</button>${j.fulfilled?`<div class="inv"><span class="meta">6 yrs · through ${fmtD(addYears(j.fulfilled,6))}</span></div>`:""}` : `<span class="lock">${LOCK}${inv ? "Unlocks when invoice is paid" : "Issued after payment"}</span>`}</td>
+    </tr>`;}).join("") : `<tr><td colspan="8" class="empty">${jobs.length ? "No jobs match this filter." : "No jobs yet. Jobs you assign through peakprosga.com will appear here."}</td></tr>`;
+  renderInvoices(js, all);
+}
+
+let invJobs = [];
+function renderInvoices(js, all){
+  $("hi-partner").hidden = !all;
+  invJobs = js.filter(j=>j.invoice).sort((x,y)=>(y.invoice.date||"").localeCompare(x.invoice.date||""));
+  $("invrows").innerHTML = invJobs.length ? invJobs.map((j,i)=>{
+    const s = status(j), inv = j.invoice, ac = acct(j.account);
+    return `<tr>
+      ${all?`<td><span class="lbl">Contractor</span><span class="pill p-info">${esc(ac.prefix)}</span> ${esc(ac.name)}</td>`:""}
+      <td class="who-cell"><span class="lbl">Invoice</span><b>${inv.numbers.length?"#"+esc(inv.numbers.join(", #")):"—"}</b><span>Job #${esc(j.number)}</span></td>
+      <td><span class="lbl">Homeowner</span>${esc(j.owner)}<div class="inv"><span class="meta">${esc(j.address)}</span></div></td>
+      <td class="date"><span class="lbl">Sent</span>${fmtD(inv.date)||"—"}</td>
+      <td class="num"><span class="lbl">Amount</span>${inv.total>0?money(inv.total):"Complimentary"}${!inv.isPaid&&inv.paid>0?`<div class="inv"><span class="meta">${money(inv.due)} left</span></div>`:""}</td>
+      <td><span class="lbl">Status</span><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>${inv.paidDate?`<div class="inv"><span class="meta">Paid ${fmtD(inv.paidDate)}</span></div>`:""}</td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span><div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-ipdf="${i}">Invoice PDF</button>`:'<span class="muted">PDF not posted yet</span>'}${inv.isPaid||inv.processing?"":`<button class="btn sm primary" type="button" data-ipay="${i}">Pay invoice</button>`}</div></td>
+    </tr>`;}).join("") : `<tr><td colspan="7" class="empty">No invoices yet.</td></tr>`;
+}
+
+/* ---------- actions ---------- */
+function openModal(title, html){ $("mtitle").textContent=title; $("mbody").innerHTML=html; $("scrim").hidden=false; $("mclose").focus(); }
+function closeModal(){ $("scrim").hidden=true; }
+$("mclose").addEventListener("click",closeModal);
+$("scrim").addEventListener("click",e=>{ if(e.target.id==="scrim") closeModal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("scrim").hidden) closeModal(); });
+
+async function openFile(j, file, btn){
+  const w = window.open("", "_blank");
+  const label = btn ? btn.textContent : ""; if (btn){ btn.disabled = true; btn.textContent = "Opening…"; }
+  try {
+    const res = await api(`/api/portal/file?job=${encodeURIComponent(j.jnid)}&file=${encodeURIComponent(file.id)}`);
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || "Could not open the file.");
+    if (w) w.location.href = body.url; else window.location.href = body.url;
+  } catch (err) { if (w) w.close(); toast(err.message); }
+  finally { if (btn){ btn.disabled = false; btn.textContent = label; } }
+}
+function payModal(j){
+  openModal("Pay invoice · " + j.owner, `<div class="invdoc">
+    <div class="row"><span>Invoice</span><span>${j.invoice.numbers.length?"#"+esc(j.invoice.numbers.join(", #")):"—"}</span></div>
+    <div class="row"><span>Sent</span><span>${fmtD(j.invoice.date)||"—"}</span></div>
+    <div class="row tot"><span>Amount due</span><span>${money(j.invoice.due)}</span></div></div>
+    ${j.files.invoices.length?`<button class="btn primary" type="button" id="paypdf">Open invoice to pay</button>`:""}
+    <p class="note">Pay with the <b>Pay Now</b> link on the invoice, or call <b>${PAY_PHONE}</b> to pay by phone. Your Peak 301 warranty unlocks here as soon as the payment posts.</p>`);
+  const b = $("paypdf"); if (b) b.addEventListener("click", ()=>openFile(j, j.files.invoices[0], b));
+}
+async function photoModal(j){
+  openModal("Photos · " + j.owner, `<div class="photos" id="ph">${j.files.photos.map((p,k)=>`<a href="#" data-k="${k}" aria-label="Open photo ${k+1}"><img alt="Job photo ${k+1}" id="ph${k}"></a>`).join("")}</div>
+    ${j.files.reports.length?`<button class="btn" type="button" id="phrep">Open photo report (PDF)</button>`:""}
+    <p class="note">${j.files.photos.length} photos from ${esc(j.address)}. Tap a photo to open it full size.</p>`);
+  const r = $("phrep"); if (r) r.addEventListener("click", ()=>openFile(j, j.files.reports[0], r));
+  $("ph").addEventListener("click", e=>{ const a=e.target.closest("a[data-k]"); if(!a) return; e.preventDefault(); openFile(j, j.files.photos[+a.dataset.k]); });
+  // Load thumbnails a few at a time.
+  const list = j.files.photos.map((p,k)=>[p,k]);
+  async function worker(){ while(list.length && !$("scrim").hidden){ const [p,k]=list.shift(); try{ const res=await api(`/api/portal/file?job=${encodeURIComponent(j.jnid)}&file=${encodeURIComponent(p.id)}`); const b=await res.json(); const img=$("ph"+k); if(res.ok && img) img.src=b.url; }catch(e){} } }
+  await Promise.all([worker(),worker(),worker(),worker()]);
+}
+
+function billModal(j){
+  openModal("Estimate · " + j.owner, `<form id="billform" class="invdoc">
+      <div class="row"><span>Job</span><span>#${esc(j.number)} · ${esc(j.address)}</span></div>
+      <label for="sq" class="note">EagleView squares (from the QuickSquares report)</label>
+      <input id="sq" type="number" step="0.01" min="0.1" inputmode="decimal" required style="font:600 18px var(--body);padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
+      <div class="row"><span>Peak 301 Referral Partner Install at $85/SQ</span><span id="sqprice">—</span></div>
+      <div class="row"><span>Eddie's labor at $20/SQ</span><span id="sqlabor">—</span></div>
+      <button class="btn primary" type="submit" id="billgo">Create estimate in JobNimbus</button>
+    </form>
+    <p class="note">The estimate goes on this job addressed to the contractor, and Shadie gets a task to send it for signature. When they sign, the job moves to Scheduled. When it is marked Job Completed, the invoice (due 7 days after completion) is created automatically.</p>`);
+  const sq = $("sq");
+  sq.addEventListener("input", ()=>{ const n=+sq.value||0; $("sqprice").textContent = n?money(n*85):"—"; $("sqlabor").textContent = n?money(n*20):"—"; });
+  sq.focus();
+  $("billform").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const go=$("billgo"); go.disabled=true; go.textContent="Creating…";
+    try{
+      const res = await fetch("/api/portal/billing",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+session.token},body:JSON.stringify({job:j.jnid,squares:+sq.value})});
+      const b = await res.json();
+      if(!res.ok) throw new Error(b.error||"Could not create them.");
+      closeModal(); toast(`Created estimate #${b.estimate.number??""} for ${money(b.price)}. Shadie has the send-for-signature task.`); load();
+    }catch(err){ toast(err.message); go.disabled=false; go.textContent="Create estimate in JobNimbus"; }
+  });
+}
+
+async function downloadWarranty(j, btn){
+  btn.disabled = true; const label = btn.textContent; btn.textContent = "Preparing…";
+  try {
+    const res = await api("/api/portal/warranty?job=" + encodeURIComponent(j.jnid));
+    if (!res.ok){ const b = await res.json().catch(()=>({})); throw new Error(b.error || "Could not create the warranty."); }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "Peak301_Warranty_" + j.owner.replace(/[^A-Za-z0-9]+/g,"_") + ".pdf";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 60000);
+    toast("Warranty downloaded.");
+  } catch (err) { toast(err.message); }
+  finally { btn.disabled = false; btn.textContent = label; }
+}
+
+$("rows").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.war != null) downloadWarranty(viewJobs[+b.dataset.war], b);
+  if (b.dataset.photos != null) photoModal(viewJobs[+b.dataset.photos]);
+  if (b.dataset.pdf != null){ const j = viewJobs[+b.dataset.pdf]; openFile(j, j.files.invoices[0], b); }
+  if (b.dataset.pay != null) payModal(viewJobs[+b.dataset.pay]);
+  if (b.dataset.bill != null) billModal(viewJobs[+b.dataset.bill]);
+});
+
+$("invrows").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.ipdf != null){ const j = invJobs[+b.dataset.ipdf]; openFile(j, j.files.invoices[0], b); }
+  if (b.dataset.ipay != null) payModal(invJobs[+b.dataset.ipay]);
+});
+
+const saved = restore();
+if (saved && saved.token){ session = saved; startApp(); }
+})();
+</script>
+</body>
+</html>
