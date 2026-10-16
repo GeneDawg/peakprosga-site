@@ -139,6 +139,17 @@ export default async (req: Request, context: Context) => {
       const lines = Object.entries(e).filter(([k]) => !["items", "sections", "related", "owners"].includes(k)).map(([k, v]) => `${k}=${JSON.stringify(v).slice(0, 120)}`);
       return new Response(lines.join("\n"), { headers: { "content-type": "text/plain" } });
     }
+    // ?contacts=<text> lists matching contacts' emails; add &id=<jnid>&email=<new> to change one contact's email.
+    const cq = new URL(req.url).searchParams.get("contacts");
+    if (cq) {
+      const q = new URL(req.url).searchParams;
+      if (q.get("id") && q.get("email")) {
+        const { jnWrite } = await import("../lib/billing.mts");
+        await jnWrite("PUT", `/contacts/${q.get("id")}`, { email: q.get("email") });
+      }
+      const rows = (await jnAll("/contacts", { fields: "jnid,display_name,email,company,record_type_name" })).filter((c: any) => JSON.stringify([c.display_name, c.company, c.email]).toLowerCase().includes(cq.toLowerCase()));
+      return new Response(rows.map((c: any) => `${c.jnid} | ${c.display_name} | ${c.company || ""} | ${c.email || ""} | ${c.record_type_name || ""}`).join("\n") || "none", { headers: { "content-type": "text/plain" } });
+    }
     // Board automation: ?pipeline=dry shows what would move; ?pipeline=run does it.
     const pipe = new URL(req.url).searchParams.get("pipeline");
     if (pipe) return json(await runPipeline({ dry: pipe !== "run" }));
