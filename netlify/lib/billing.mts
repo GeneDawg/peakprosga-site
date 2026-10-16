@@ -6,9 +6,9 @@
 import { accounts, env, HttpError, jn, jnAll } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
-// Price list item "Peak 301 Referral Partner Install": $84/SQ = $64 material line (cost $14) + $20 labor (cost $20).
+// Price list item "Peak 301 Referral Partner Install": $85/SQ = $65 material line (cost $14) + $20 labor (cost $20).
 const PRODUCT_NAME = Netlify.env.get("PORTAL_PRODUCT_NAME") || "Peak 301 Referral Partner Install";
-const FALLBACK = { material: { cost: 14, price: 64 }, labor: { cost: 20, price: 20 } };
+const FALLBACK = { material: { cost: 14, price: 65 }, labor: { cost: 20, price: 20 } };
 const LABOR_PER_SQ = Number(Netlify.env.get("PORTAL_LABOR_PER_SQ") || 20);
 const NET_DAYS = Number(Netlify.env.get("PORTAL_NET_DAYS") || 5);
 
@@ -35,7 +35,7 @@ export async function buildEstimateAndInvoice(jobId: string, squares: number) {
   const products = await jnAll("/v2/products", {}, 5).catch(() => [] as any[]);
   const product = products.find((p: any) => p.name === PRODUCT_NAME && p.is_active !== false);
   const unit = product?.uoms?.find((u: any) => u.uom === "SQ") || product?.uoms?.[0] || FALLBACK;
-  const mat = { cost: Number(unit.material?.cost ?? 14), price: Number(unit.material?.price ?? 64) };
+  const mat = { cost: Number(unit.material?.cost ?? 14), price: Number(unit.material?.price ?? 65) };
   const lab = { cost: Number(unit.labor?.cost ?? 20), price: Number(unit.labor?.price ?? 20) };
   const PRICE_PER_SQ = mat.price + lab.price;
 

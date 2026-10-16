@@ -62,6 +62,17 @@ export default async (req: Request, context: Context) => {
       const src = prods.find((p: any) => p.name === "Peak 301 Referral Install");
       const existing = prods.find((p: any) => p.name === "Peak 301 Referral Partner Install");
       if (productMode === "show") return new Response([...flat(src?.uoms), "item_type=" + src?.item_type, "existing=" + (existing?.jnid || "none")].join("\n"), { headers: { "content-type": "text/plain" } });
+      if (productMode === "reprice" && existing) {
+        const matPrice = Number(new URL(req.url).searchParams.get("mat"));
+        if (!(matPrice > 0)) throw new HttpError(400, "mat required");
+        const uoms = existing.uoms.map((u: any) => ({ ...u, material: { ...u.material, price: matPrice } }));
+        const key = Netlify.env.get("JOBNIMBUS_WRITE_KEY") || env("JOBNIMBUS_API_KEY");
+        const r = await fetch(`https://app.jobnimbus.com/api1/v2/products/${existing.jnid}`, { method: "PUT", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify({ ...existing, uoms }) });
+        const t = await r.text();
+        let after: string[] = [];
+        try { after = flat(JSON.parse(t).uoms); } catch {}
+        return new Response([`status=${r.status}`, ...after, t.slice(0, 200)].join("\n"), { headers: { "content-type": "text/plain" } });
+      }
       if (productMode === "create") {
         if (existing) return json({ already: existing.jnid });
         const body = JSON.parse(JSON.stringify(src));
