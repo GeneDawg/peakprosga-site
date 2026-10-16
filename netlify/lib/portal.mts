@@ -10,7 +10,9 @@ const JN_BASE = "https://app.jobnimbus.com/api1";
 const SESSION_HOURS = 12;
 
 export type Account = { key: string; name: string; prefix: string; contact?: string; code: string; sources?: string[]; contactNames?: string[]; emailDomains?: string[]; contactId?: string; estimateTemplateId?: string; invoiceTemplateId?: string; service?: "peak" | "full" };
-export type Session = { role: "admin" | "partner"; key?: string; exp: number };
+// v = fingerprint of the code used to sign in. Changing a partner's code in PORTAL_ACCOUNTS (or the admin code)
+// ends every session made with the old code on the next request.
+export type Session = { role: "admin" | "partner"; key?: string; exp: number; v?: string };
 
 export function env(name: string): string {
   const v = Netlify.env.get(name);
@@ -54,11 +56,13 @@ function safeEqual(a: string, b: string): boolean {
   return x.length === y.length && timingSafeEqual(x, y);
 }
 
+const codePrint = (code: string) => createHmac("sha256", env("PORTAL_SESSION_SECRET")).update("code:" + code.trim().toUpperCase()).digest("base64url").slice(0, 12);
+
 export function matchCode(code: string): Session | null {
   const exp = Date.now() + SESSION_HOURS * 3600_000;
-  if (safeEqual(code, env("PORTAL_ADMIN_CODE"))) return { role: "admin", exp };
+  if (safeEqual(code, env("PORTAL_ADMIN_CODE"))) return { role: "admin", exp, v: codePrint(env("PORTAL_ADMIN_CODE")) };
   const acct = accounts().find((a) => safeEqual(code, a.code));
-  return acct ? { role: "partner", key: acct.key, exp } : null;
+  return acct ? { role: "partner", key: acct.key, exp, v: codePrint(acct.code) } : null;
 }
 
 const b64u = (s: string | Buffer) => Buffer.from(s).toString("base64url");
@@ -79,7 +83,19 @@ export function readSession(req: Request): Session {
     throw new HttpError(401, "Please sign in with your access code.");
   const s: Session = JSON.parse(Buffer.from(body, "base64url").toString());
   if (s.exp < Date.now()) throw new HttpError(401, "Your session ended. Please sign in again.");
+  // The code behind this session must still be current, and the partner must still exist.
+  const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : accounts().find((a) => a.key === s.key)?.code;
+  if (!current || s.v !== codePrint(current)) throw new HttpError(401, "Your access code has changed. Please sign in again.");
   return s;
+}
+
+/** Same checks as readSession, for a token passed some other way (e.g. inside a form submission). */
+export function sessionFromToken(token: string): Session | null {
+  try {
+    return readSession(new Request("https://x/", { headers: { authorization: `Bearer ${token}` } }));
+  } catch {
+    return null;
+  }
 }
 
 /** Accounts this session may see. Partners only ever get their own. */

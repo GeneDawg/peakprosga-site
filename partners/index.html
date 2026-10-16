@@ -42,6 +42,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 .gate-card{background:#fff;color:#111214;width:min(420px,100%);border-radius:12px;overflow:hidden;border-top:6px solid var(--red)}
 .gate-card .in{padding:28px 24px;display:flex;flex-direction:column;gap:14px}
 .gate-card img{height:64px;width:auto;align-self:center}
+.showcode{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;margin-top:8px;color:#555}
+.gatehelp{font-size:13px;color:#666;text-align:center;margin:0;line-height:1.5}
+.gatehelp a{color:#111214}
 .gate-card h1{font:italic 800 30px/1 var(--display);text-transform:uppercase;margin:0;text-align:center}
 .gate-card p{margin:0;color:#5d6068;text-align:center;font-size:14px}
 .gate-card label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#5d6068}
@@ -164,13 +167,15 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
     <div class="in">
       <img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros">
       <h1>Partner Portal</h1>
-      <p>Enter the access code Go Dawgs Roof Roof gave your company to see your jobs, photos, invoices and warranties.</p>
+      <p>Enter your company's private access code to see your jobs, photos, invoices and warranties. You'll only ever see your own company's jobs.</p>
       <div>
         <label for="code">Access code</label>
-        <input id="code" name="code" placeholder="XXXX-0000" spellcheck="false" autocapitalize="characters">
+        <input id="code" name="code" type="password" placeholder="XXXX-XXXX-XXXX" spellcheck="false" autocapitalize="characters" autocomplete="off">
+        <label class="showcode"><input type="checkbox" id="showcode"> Show code</label>
       </div>
       <div class="err" id="err" hidden></div>
       <button class="btn primary" type="submit" id="gatebtn">View my account</button>
+      <p class="gatehelp">Keep your code within your company. Need your code or a new one? Call 404-323-1869.<br><a href="/">&larr; Back to peakprosga.com</a></p>
     </div>
   </form>
 </section>
@@ -182,6 +187,7 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
     <div class="hdr-right">
       <span id="adminbadge" class="adminbadge" hidden>Admin</span>
       <span>Signed in as <span class="who" id="who">Partner</span></span>
+      <a class="btn primary" href="/login.html" id="newjob">Submit new assignment</a>
       <button class="btn" id="signout" type="button">Sign out</button>
     </div>
   </div>
@@ -332,6 +338,18 @@ function signOut(){
   $("app").hidden = true; $("gate").hidden = false; $("code").focus();
 }
 $("signout").addEventListener("click", signOut);
+$("showcode").addEventListener("change", e => { $("code").type = e.target.checked ? "text" : "password"; });
+
+// Privacy on shared computers: sign out after 60 minutes with no activity.
+const IDLE_MS = 60 * 60 * 1000;
+let lastActive = Date.now();
+["click","keydown","scroll","touchstart"].forEach(ev => document.addEventListener(ev, () => { lastActive = Date.now(); }, { passive: true }));
+setInterval(() => {
+  if (session && Date.now() - lastActive > IDLE_MS) {
+    signOut();
+    $("err").textContent = "You were signed out after an hour of inactivity."; $("err").hidden = false;
+  }
+}, 60 * 1000);
 
 const sel = $("partner");
 function startApp(){

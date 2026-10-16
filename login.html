@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Peak Pros Georgia — Partner Portal</title>
 <meta name="description" content="Approved Peak Pros Georgia partners log in to submit roof rejuvenation assignments directly to Peak Pros USA.">
 <style>
@@ -320,22 +321,22 @@
   <div class="page-header">
     <div class="page-tag">Approved Partners Only</div>
     <h1 class="page-title">Partner Portal</h1>
-    <p class="page-sub">Log in with your access code to submit roof rejuvenation assignments directly to Peak Pros USA for scheduling and fulfillment.</p>
+    <p class="page-sub">Sign in with your company's partner access code to submit Peak 301 assignments. It's the same code you use for your Partner Dashboard.</p>
   </div>
 
   <div class="login-wrap">
     <div class="login-box">
       <div class="login-title">Contractor Login</div>
-      <div class="login-sub">Enter your Peak Pros Georgia partner access code.</div>
+      <div class="login-sub">Enter your company's partner access code (format XXXX-XXXX-XXXX).</div>
 
       <div class="form-group">
         <label for="access-code">Access Code</label>
-        <input type="password" id="access-code" placeholder="••••••••••" autocomplete="off">
+        <input type="password" id="access-code" placeholder="XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false">
       </div>
 
-      <button class="login-btn" onclick="attemptLogin()">Enter Portal &rarr;</button>
+      <button class="login-btn" id="login-btn" onclick="attemptLogin()">Enter Portal &rarr;</button>
 
-      <div class="login-error" id="login-error">Invalid access code. Please try again or contact partners@peakprosga.com.</div>
+      <div class="login-error" id="login-error">That code didn't match an account. Check it and try again, or call 404-323-1869.</div>
 
       <div class="login-help">
         Need access? Email <a href="mailto:partners@peakprosga.com">partners@peakprosga.com</a> or call 404-323-1869
@@ -350,6 +351,7 @@
     <div class="page-tag">Partner Portal</div>
     <h1 class="page-title">Submit Assignment</h1>
     <p class="page-sub">Submit a roof rejuvenation job directly to Peak Pros USA. You will be contacted within 1 business day to confirm scheduling.</p>
+    <p class="page-sub" id="signed-in-bar" style="margin-top:.75rem;font-size:.9rem;">Signed in as <b id="signed-in-name" style="color:#fff"></b> &middot; <a href="/partners/" style="color:#fff">Partner Dashboard</a> &middot; <a href="#" id="sign-out" style="color:#fff">Sign out</a></p>
   </div>
 
   <div class="portal-wrap">
@@ -362,6 +364,7 @@
         <input type="hidden" name="form-name" value="PeakProsGA-Assignment">
         <input type="hidden" name="state" value="Georgia">
         <input type="hidden" name="routes-to" value="assignment@peakprosusa.com">
+        <input type="hidden" name="partner_token" id="partner-token" value="">
         <p style="display:none;">
           <label>Don't fill this out: <input name="bot-field"></label>
         </p>
@@ -497,29 +500,79 @@
 
 <script>
   // === LOGIN ===
-  const ACCESS_CODE = 'PEAKGA2026';
+  // Same access code and same sign-in as the Partner Dashboard (checked on the server).
+  // The signed-in session rides along with the form so the job is filed under the right partner.
+  function readPortal() {
+    try {
+      const s = JSON.parse(sessionStorage.getItem('p3p_portal') || 'null');
+      if (!s || !s.token) return null;
+      const body = JSON.parse(atob(s.token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/')));
+      if (!body.exp || body.exp < Date.now()) { sessionStorage.removeItem('p3p_portal'); return null; }
+      return s;
+    } catch (e) { return null; }
+  }
 
-  function attemptLogin() {
-    const input = document.getElementById('access-code').value.trim();
+  function showPortal(s) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('portal').style.display = 'block';
+    document.getElementById('partner-token').value = s.token;
+    const acct = (s.accounts || [])[0];
+    const name = s.role === 'admin' ? 'GDRR admin' : (acct ? acct.name : 'partner');
+    document.getElementById('signed-in-name').textContent = name;
+    const company = document.querySelector('input[name="company"]');
+    if (s.role === 'partner' && acct && company) { company.value = acct.name; company.readOnly = true; company.style.opacity = '.8'; }
+  }
+
+  async function attemptLogin() {
+    const input = document.getElementById('access-code');
+    const code = input.value.trim();
     const errorBox = document.getElementById('login-error');
-    if (input.toUpperCase() === ACCESS_CODE) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('portal').style.display = 'block';
-      sessionStorage.setItem('ppga_authed', 'true');
-      window.scrollTo(0,0);
-    } else {
+    const btn = document.getElementById('login-btn');
+    if (!code) return;
+    errorBox.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Checking…';
+    try {
+      const res = await fetch('/api/portal/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ code }) });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || 'Sign-in failed.');
+      try { sessionStorage.setItem('p3p_portal', JSON.stringify(body)); } catch (e) {}
+      input.value = '';
+      showPortal(body);
+      window.scrollTo(0, 0);
+    } catch (err) {
+      errorBox.textContent = err.message;
       errorBox.style.display = 'block';
-      document.getElementById('access-code').value = '';
+      input.value = '';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Enter Portal →';
     }
   }
 
-  // Auto-login if already authenticated in this session
-  if (sessionStorage.getItem('ppga_authed') === 'true') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('portal').style.display = 'block';
-  }
+  document.getElementById('sign-out').addEventListener('click', function (e) {
+    e.preventDefault();
+    try { sessionStorage.removeItem('p3p_portal'); } catch (x) {}
+    location.reload();
+  });
 
-  // Enter key submits login
+  // Make sure the session is still good right before sending.
+  document.getElementById('assignment-form').addEventListener('submit', function (e) {
+    const s = readPortal();
+    if (!s) {
+      e.preventDefault();
+      document.getElementById('portal').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'block';
+      const eb = document.getElementById('login-error');
+      eb.textContent = 'Your sign-in expired. Sign in again, then press Submit; your entries are still on the form.';
+      eb.style.display = 'block';
+      window.scrollTo(0, 0);
+      return;
+    }
+    document.getElementById('partner-token').value = s.token;
+  });
+
+  const existing = readPortal();
+  if (existing) showPortal(existing);
+
   document.getElementById('access-code').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') attemptLogin();
   });

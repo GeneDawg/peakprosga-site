@@ -97,11 +97,14 @@ export function summarize(a: Assignment, acct: Account | null) {
 const day = 86400;
 const now = () => Math.floor(Date.now() / 1000);
 
-export async function createFromAssignment(a: Assignment, opts: { test?: boolean } = {}) {
-  const acct = matchContractor(a);
+// opts.account: the partner proven by their signed-in session. When given, it wins over name/email matching.
+// opts.unverified: the form arrived without a valid partner sign-in; the job is created but flagged for Shadie
+// and not attached to any contractor until a person checks it.
+export async function createFromAssignment(a: Assignment, opts: { test?: boolean; account?: Account | null; unverified?: boolean } = {}) {
+  const acct = opts.unverified ? null : opts.account || matchContractor(a);
   const { text, sq, price } = summarize(a, acct);
   const addr = parseAddress(a.property_address || "");
-  const tag = opts.test ? "TEST - " : "";
+  const tag = opts.test ? "TEST - " : opts.unverified ? "CHECK - " : "";
 
   // 1. Homeowner contact
   const homeowner = await jnWrite("POST", "/contacts", {
