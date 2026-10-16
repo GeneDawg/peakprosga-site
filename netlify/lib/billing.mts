@@ -3,11 +3,12 @@
 // The estimate is addressed to the contractor (they hire GDRR as their subcontractor) and uses the JobNimbus
 // estimate template set in PORTAL_ESTIMATE_TEMPLATE_ID (or the contractor's own estimateTemplateId), so the
 // template's terms of service and signature block come with it. The invoice is Net 5 by default (PORTAL_NET_DAYS).
-import { accounts, env, HttpError, jn } from "./portal.mts";
+import { accounts, env, HttpError, jn, jnAll } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
-const PEAK_PRODUCT = Netlify.env.get("PORTAL_PEAK_PRODUCT_ID") || "mo2z6ippky2uk4r5cw2wqf5"; // "Peak 301", per SQ
-const PRICE_PER_SQ = Number(Netlify.env.get("PORTAL_PRICE_PER_SQ") || 85);
+// Price list item "Peak 301 Referral Partner Install": $84/SQ = $64 material line (cost $14) + $20 labor (cost $20).
+const PRODUCT_NAME = Netlify.env.get("PORTAL_PRODUCT_NAME") || "Peak 301 Referral Partner Install";
+const FALLBACK = { material: { cost: 14, price: 64 }, labor: { cost: 20, price: 20 } };
 const LABOR_PER_SQ = Number(Netlify.env.get("PORTAL_LABOR_PER_SQ") || 20);
 const NET_DAYS = Number(Netlify.env.get("PORTAL_NET_DAYS") || 5);
 
@@ -31,7 +32,12 @@ export async function buildEstimateAndInvoice(jobId: string, squares: number) {
   const sq = round2(squares);
   const job = await jn(`/jobs/${encodeURIComponent(jobId)}`);
   if (!job?.jnid) throw new HttpError(404, "Job not found in JobNimbus.");
-  const product = await jn(`/v2/products/${PEAK_PRODUCT}`).catch(() => null);
+  const products = await jnAll("/v2/products", {}, 5).catch(() => [] as any[]);
+  const product = products.find((p: any) => p.name === PRODUCT_NAME && p.is_active !== false);
+  const unit = product?.uoms?.find((u: any) => u.uom === "SQ") || product?.uoms?.[0] || FALLBACK;
+  const mat = { cost: Number(unit.material?.cost ?? 14), price: Number(unit.material?.price ?? 64) };
+  const lab = { cost: Number(unit.labor?.cost ?? 20), price: Number(unit.labor?.price ?? 20) };
+  const PRICE_PER_SQ = mat.price + lab.price;
 
   // Contractor first (they sign and pay), then the homeowner for reference.
   const acct = accounts().find((a) => a.contactId && (job.related || []).some((r: any) => r.id === a.contactId));
@@ -41,17 +47,18 @@ export async function buildEstimateAndInvoice(jobId: string, squares: number) {
   const estimateTemplate = acct?.estimateTemplateId || Netlify.env.get("PORTAL_ESTIMATE_TEMPLATE_ID") || undefined;
   const invoiceTemplate = acct?.invoiceTemplateId || Netlify.env.get("PORTAL_INVOICE_TEMPLATE_ID") || undefined;
   const amount = round2(sq * PRICE_PER_SQ);
+  const costTotal = round2(sq * (mat.cost + lab.cost));
   const item = {
-    jnid: PEAK_PRODUCT,
-    name: product?.name || "Peak 301",
-    description: product?.description || "Peak 301 roof rejuvenation",
-    item_type: "material",
+    jnid: product?.jnid,
+    name: product?.name || PRODUCT_NAME,
+    description: product?.description || "Peak 301 roof rejuvenation installed by Go Dawgs Roof Roof as subcontractor for a Peak 301 referral partner.",
+    item_type: "labor+material",
     uom: "SQ",
     quantity: sq,
-    price: PRICE_PER_SQ,
-    cost: PRICE_PER_SQ,
-    amount,
-    labor: { price: 0, cost: 0, amount: 0 },
+    price: mat.price,
+    cost: mat.cost,
+    amount: round2(sq * mat.price),
+    labor: { price: lab.price, cost: lab.cost, amount: round2(sq * lab.price) },
   };
   const now = Math.floor(Date.now() / 1000);
   const common = {
@@ -60,7 +67,8 @@ export async function buildEstimateAndInvoice(jobId: string, squares: number) {
     sections: [],
     subtotal: amount,
     total: amount,
-    cost: amount,
+    cost: costTotal,
+    margin: amount ? round2(((amount - costTotal) / amount) * 100) : 0,
     tax: 0,
     sales_rep: job.sales_rep || undefined,
     owners: job.owners || undefined,
@@ -86,5 +94,5 @@ export async function buildEstimateAndInvoice(jobId: string, squares: number) {
   } catch (e) {
     console.error("Eddie task update failed", e);
   }
-  return { squares: sq, price: amount, labor, contractor: acct?.name || null, netDays: NET_DAYS, estimateTemplate: estimateTemplate || null, estimate: { jnid: estimate.jnid, number: estimate.number }, invoice: { jnid: invoice.jnid, number: invoice.number }, eddieUpdated };
+  return { squares: sq, price: amount, cost: costTotal, product: product?.jnid || null, labor, contractor: acct?.name || null, netDays: NET_DAYS, estimateTemplate: estimateTemplate || null, estimate: { jnid: estimate.jnid, number: estimate.number }, invoice: { jnid: invoice.jnid, number: invoice.number }, eddieUpdated };
 }
