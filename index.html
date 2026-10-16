@@ -811,6 +811,61 @@
         <p class="step-desc">Peak Pros Georgia coordinates application through the authorized Peak 301® territory operator. You pay $85/sq. Keep everything above that.</p>
       </div>
     </div>
+
+    <!-- PARTNER ACCESS PORTAL -->
+    <div id="partner-access" class="pa-card">
+      <div class="pa-copy">
+        <div class="pa-tag">Partner Access</div>
+        <h3 class="pa-title">Already a partner? Sign in to your dashboard.</h3>
+        <p class="pa-desc">Track every job you've sent us: assignment and completion dates, photos, invoices with pay links, payment status and your completed Peak 301&reg; warranties.</p>
+      </div>
+      <form class="pa-form" id="paform" autocomplete="off">
+        <label for="pacode" class="pa-label">Access code</label>
+        <div class="pa-row">
+          <input id="pacode" name="code" type="text" placeholder="XXXX-XXXX-XXXX" autocapitalize="characters" spellcheck="false" required>
+          <button type="submit" id="pabtn">Open Dashboard &rarr;</button>
+        </div>
+        <p class="pa-err" id="paerr" hidden></p>
+        <p class="pa-alt">New job? <a href="login.html">Submit an assignment</a> &middot; No code yet? <a href="#apply">Become a partner</a></p>
+      </form>
+    </div>
+    <style>
+      .pa-card{margin-top:3rem;display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:center;background:#0b0b0b;border:1px solid #2a2a2a;border-left:4px solid var(--red);border-radius:10px;padding:2rem;text-align:left}
+      .pa-tag{font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:.5rem}
+      .pa-title{font-size:1.35rem;font-weight:800;line-height:1.25;margin-bottom:.5rem;color:#fff}
+      .pa-desc{color:#9a9a9a;line-height:1.6;font-size:.95rem}
+      .pa-label{display:block;font-size:.8rem;font-weight:700;color:#ccc;margin-bottom:.4rem}
+      .pa-row{display:flex;gap:.5rem}
+      .pa-row input{flex:1;min-width:0;padding:.8rem 1rem;border-radius:5px;border:1px solid #333;background:#151515;color:#fff;font-size:1rem;letter-spacing:.06em;text-transform:uppercase}
+      .pa-row input:focus{outline:2px solid var(--red);outline-offset:1px}
+      .pa-row button{background:var(--red);color:#fff;border:0;border-radius:5px;padding:.8rem 1.2rem;font-weight:700;font-size:.95rem;cursor:pointer;white-space:nowrap}
+      .pa-row button:disabled{opacity:.6;cursor:wait}
+      .pa-err{color:#ff6b6b;font-size:.85rem;margin-top:.5rem}
+      .pa-alt{color:#888;font-size:.85rem;margin-top:.75rem}
+      .pa-alt a{color:#fff;text-decoration:underline}
+      @media (max-width:760px){.pa-card{grid-template-columns:1fr;padding:1.5rem}.pa-row{flex-direction:column}}
+    </style>
+    <script>
+      (function(){
+        var f=document.getElementById("paform"); if(!f) return;
+        f.addEventListener("submit", async function(e){
+          e.preventDefault();
+          var code=document.getElementById("pacode").value.trim(), btn=document.getElementById("pabtn"), err=document.getElementById("paerr");
+          if(!code) return;
+          btn.disabled=true; btn.textContent="Checking…"; err.hidden=true;
+          try{
+            var res=await fetch("/api/portal/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({code:code})});
+            var body=await res.json();
+            if(!res.ok) throw new Error(body.error||"That code didn't work.");
+            try{ sessionStorage.setItem("p3p_portal", JSON.stringify(body)); }catch(x){}
+            window.location.href="/partners/";
+          }catch(x){
+            err.textContent=x.message||"Sign-in failed."; err.hidden=false;
+            btn.disabled=false; btn.textContent="Open Dashboard →";
+          }
+        });
+      })();
+    </script>
   </div>
 </section>
 
