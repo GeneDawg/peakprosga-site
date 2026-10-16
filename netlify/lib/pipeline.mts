@@ -72,7 +72,7 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
         } else {
           log(job, `no estimate yet - Shadie task to enter the EagleView squares`);
           if (!dry) await addTask(job, `Shadie: job completed but no estimate - ${job.name}`,
-            `This job is marked ${STATUS.completed} but has no estimate. In the partner portal (admin), click Create estimate and enter the EagleView squares; the invoice follows automatically.`, USERS.gene);
+            `This job is marked ${STATUS.completed} but has no estimate. Create the estimate on this job from the \"Peak 301 Only\" layout with the EagleView squares and get it signed; the invoice is created on the next check.`, USERS.gene);
         }
         continue;
       }

@@ -139,9 +139,9 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
   // 3. Shadie: order EagleView
   const t = now();
   const shadie = await jnWrite("POST", "/tasks", {
-    title: `${tag}Shadie: order EagleView QuickSquares - ${addr.address_line1 || clean(a.property_address)}`,
+    title: `${tag}Shadie: EagleView + estimate - ${addr.address_line1 || clean(a.property_address)}`,
     record_type_name: "Task",
-    description: `Order the EagleView QuickSquares report for ${clean(a.property_address)}.\nContractor estimate: ${sq ? sq + " sq" : "not given"}.\nWhen it arrives, attach it to the job and update Eddie's labor amount ($${LABOR_PER_SQ}/sq).`,
+    description: `1. Order the EagleView QuickSquares report for ${clean(a.property_address)} (contractor says ${sq ? sq + " sq" : "size not given"}).\n2. When it arrives, create the estimate on this job from the "Peak 301 Only" layout using the EagleView squares.\n3. Send it for signature to ${acct ? acct.name : "the contractor"}. The board moves to Estimate Sent, then Scheduled when they sign; Eddie gets the schedule task with labor at $${LABOR_PER_SQ}/sq.`,
     related: [{ id: job.jnid }],
     owners: [{ id: USERS.gene }],
     date_start: t,
