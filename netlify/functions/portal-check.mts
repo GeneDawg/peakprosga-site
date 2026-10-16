@@ -82,6 +82,14 @@ export default async (req: Request, context: Context) => {
       const src = prods.find((p: any) => p.name === "Peak 301 Referral Install");
       const existing = prods.find((p: any) => p.name === "Peak 301 Referral Partner Install");
       if (productMode === "show") return new Response([...flat(src?.uoms), "item_type=" + src?.item_type, "existing=" + (existing?.jnid || "none")].join("\n"), { headers: { "content-type": "text/plain" } });
+      if (productMode === "list" || productMode === "hide") {
+        if (productMode === "hide" && src && src.is_active !== false) {
+          const { jnWrite } = await import("../lib/billing.mts");
+          await jnWrite("PUT", `/v2/products/${src.jnid}`, { ...src, is_active: false });
+        }
+        const again = await jnAll("/v2/products", {}, 5);
+        return new Response(again.filter((p: any) => /referral/i.test(p.name || "")).map((p: any) => `${p.jnid} | ${p.name} | is_active=${p.is_active}`).join("\n"), { headers: { "content-type": "text/plain" } });
+      }
       if (productMode === "reprice" && existing) {
         const matPrice = Number(new URL(req.url).searchParams.get("mat"));
         if (!(matPrice > 0)) throw new HttpError(400, "mat required");
