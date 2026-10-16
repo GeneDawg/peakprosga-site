@@ -211,6 +211,44 @@ function matchAccount(job: any, contact: any, accts: Account[]): { acct: Account
   return null;
 }
 
+export type PortalFile = { id: string; name: string; date: string | null };
+
+/** Files on a job that partners may open: invoice PDFs, photo reports and photos. Warranty files stay private. */
+export async function jobFiles(jnid: string): Promise<PortalJob["files"]> {
+  const out: PortalJob["files"] = { invoices: [], reports: [], photos: [] };
+  let rows: any[] = [];
+  try {
+    rows = await jnAll("/files", { filter: JSON.stringify({ must: [{ term: { "related.id": jnid } }] }) }, 3);
+  } catch (e) {
+    console.error("files lookup failed", e);
+    return out;
+  }
+  for (const f of rows) {
+    if (f.is_archived || f.is_active === false || f.is_private) continue;
+    const kind = norm(f.record_type_name);
+    const name = String(f.filename || "");
+    const file = { id: String(f.jnid), name, date: toISO(f.date_file_created || f.date_created) };
+    if (kind === "invoice" && /\.pdf$/i.test(name)) out.invoices.push(file);
+    else if (kind === "photo" && /^image\//.test(String(f.content_type || ""))) out.photos.push(file);
+    else if (/photo[_ ]?report/i.test(name) && /\.pdf$/i.test(name)) out.reports.push(file);
+  }
+  const byDate = (a: PortalFile, b: PortalFile) => String(b.date).localeCompare(String(a.date));
+  out.invoices.sort(byDate); out.reports.sort(byDate);
+  out.photos = out.photos.slice(0, 60);
+  return out;
+}
+
+/** A short-lived JobNimbus download link for one file. */
+export async function fileLink(fileId: string): Promise<string> {
+  const res = await fetch(`${JN_BASE}/files/${encodeURIComponent(fileId)}`, {
+    headers: { Authorization: `Bearer ${env("JOBNIMBUS_API_KEY")}` },
+    redirect: "manual",
+  });
+  const loc = res.headers.get("location");
+  if (res.status >= 300 && res.status < 400 && loc) return loc;
+  throw new HttpError(502, `JobNimbus did not return the file (status ${res.status}).`);
+}
+
 export type PortalJob = {
   jnid: string;
   account: string;
@@ -220,6 +258,7 @@ export type PortalJob = {
   status: string;
   assigned: string | null;
   fulfilled: string | null;
+  files: { invoices: PortalFile[]; reports: PortalFile[]; photos: PortalFile[] };
   invoice: null | {
     numbers: string[];
     total: number;
@@ -231,7 +270,7 @@ export type PortalJob = {
   };
 };
 
-export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; raw: { jobs: any[]; invoices: any[] } }> {
+export async function loadJobs(accts: Account[], withFiles = false): Promise<{ jobs: PortalJob[]; raw: { jobs: any[]; invoices: any[] } }> {
   const [jobsRaw, contactsRaw] = await Promise.all([
     jnAll("/jobs", { sort_field: "date_created", sort_direction: "desc" }),
     jnAll("/contacts", { fields: "jnid,display_name,source_name,tags" }),
@@ -250,6 +289,10 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
     (inv) => !inv.is_archived && inv.is_active !== false && (inv.related || []).some((r: any) => ids.has(r.id)),
   );
 
+  const filesByJob = new Map<string, PortalJob["files"]>();
+  if (withFiles) {
+    await Promise.all(mine.map(async ({ job }) => filesByJob.set(job.jnid, await jobFiles(job.jnid))));
+  }
   const jobs = mine.map(({ job, acct, owner }): PortalJob => {
     const invs = invoicesRaw.filter((inv) => (inv.related || []).some((r: any) => r.id === job.jnid));
     let invoice: PortalJob["invoice"] = null;
@@ -279,6 +322,7 @@ export async function loadJobs(accts: Account[]): Promise<{ jobs: PortalJob[]; r
       status: String(job.status_name || ""),
       assigned: toISO(job.date_created),
       fulfilled: fulfillmentDate(job),
+      files: filesByJob.get(job.jnid) || { invoices: [], reports: [], photos: [] },
       invoice,
     };
   });

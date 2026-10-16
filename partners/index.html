@@ -145,6 +145,11 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
 .note{color:var(--muted);font-size:13px;margin:0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-weight:600;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-top:22px}
+.tab{font:800 18px var(--display);text-transform:uppercase;letter-spacing:.03em;padding:10px 18px;border:0;background:none;color:var(--muted);cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+.tab:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.photos img{background:var(--soft)}
 .loading{padding:28px 16px;text-align:center;color:var(--muted)}
 .errbox{background:var(--due-bg);color:var(--due);border-radius:8px;padding:12px 14px;font-weight:600;margin-top:16px}
 .updated{font-size:12px;color:var(--muted);margin-top:10px}
@@ -197,7 +202,12 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
 </section>
 
 <main class="wrap">
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-jobs" aria-selected="true" type="button">Jobs</button>
+    <button class="tab" role="tab" id="tab-inv" aria-selected="false" type="button">Invoices</button>
+  </div>
   <div class="stats" id="stats"></div>
+  <section id="view-jobs">
 
   <div class="toolbar">
     <h2>Assigned Jobs</h2>
@@ -222,6 +232,25 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
       <tbody id="rows"><tr><td colspan="8" class="loading">Loading your jobs…</td></tr></tbody>
     </table>
   </div>
+  </section>
+
+  <section id="view-inv" hidden>
+    <div class="toolbar"><h2>Invoices</h2></div>
+    <div class="ledger">
+      <table>
+        <thead><tr>
+          <th id="hi-partner" hidden>Contractor</th>
+          <th>Invoice</th>
+          <th>Homeowner<small>Property</small></th>
+          <th>Sent</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Invoice PDF &amp; Payment</th>
+        </tr></thead>
+        <tbody id="invrows"></tbody>
+      </table>
+    </div>
+  </section>
   <div class="errbox" id="loaderr" hidden></div>
   <div class="updated" id="updated"></div>
 </main>
@@ -337,6 +366,16 @@ async function load(){
   }
 }
 
+/* ---------- tabs ---------- */
+let view = "jobs";
+function setView(v){
+  view = v;
+  $("tab-jobs").setAttribute("aria-selected", v==="jobs"); $("tab-inv").setAttribute("aria-selected", v==="inv");
+  $("view-jobs").hidden = v!=="jobs"; $("view-inv").hidden = v!=="inv";
+}
+$("tab-jobs").addEventListener("click",()=>setView("jobs"));
+$("tab-inv").addEventListener("click",()=>setView("inv"));
+
 /* ---------- render ---------- */
 const LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 function acct(key){ return session.accounts.find(a=>a.key===key) || {name:key,prefix:"?"}; }
@@ -366,12 +405,30 @@ function render(){
       <td class="who-cell"><span class="lbl">Homeowner</span><b>${esc(j.owner)}</b><span>${esc(j.address || ("Job #" + j.number))}</span></td>
       <td class="date"><span class="lbl">Date of Assignment</span>${fmtD(j.assigned) || '<span class="muted">—</span>'}</td>
       <td class="date"><span class="lbl">Date of Fulfillment</span>${fmtD(j.fulfilled) || '<span class="muted">Not yet</span>'}${j.fulfilled?`<small>${daysSince(j.fulfilled)} days ago</small>`:""}</td>
-      <td><span class="lbl">Photos</span>${j.photos && j.photos.length ? `<div class="thumbs"><button class="btn sm" type="button" data-photos="${i}">View ${j.photos.length}</button></div>` : `<span class="muted">${j.fulfilled ? "Sent with your completion email" : "After service"}</span>`}</td>
+      <td><span class="lbl">Photos</span>${j.files.photos.length ? `<div class="thumbs"><button class="btn sm" type="button" data-photos="${i}">View ${j.files.photos.length}</button></div>` : `<span class="muted">${j.fulfilled ? "Not posted yet" : "After service"}</span>`}</td>
       <td class="c-inv"><span class="lbl">Invoice</span>${inv ? `<div class="inv"><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>
         <span class="meta">${inv.numbers.length?"#"+esc(inv.numbers.join(", #"))+" · ":""}${inv.total>0?money(inv.total):"Complimentary"}${inv.date?" · sent "+fmtD(inv.date):""}${s.k==="due"&&inv.paid>0?" · "+money(inv.due)+" left":""}${inv.paidDate?" · paid "+fmtD(inv.paidDate):""}</span></div>` : `<span class="pill ${s.c}">${s.t}</span>`}</td>
-      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.invoicePdf?`<a class="btn sm" href="${esc(j.invoicePdf)}" target="_blank" rel="noopener">Invoice PDF</a>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : (j.payUrl ? `<a class="btn sm primary" href="${esc(j.payUrl)}" target="_blank" rel="noopener">Pay invoice</a>` : `<button class="btn sm primary" type="button" data-pay="${i}">How to pay</button>`)}</div>` : '<span class="muted">Available once invoiced</span>'}</td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-pdf="${i}">Invoice PDF</button>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : `<button class="btn sm primary" type="button" data-pay="${i}">Pay invoice</button>`}</div>` : '<span class="muted">Available once invoiced</span>'}</td>
       <td class="c-war"><span class="lbl">Peak 301 Warranty</span>${inv && inv.isPaid ? `<button class="btn sm ok" type="button" data-war="${i}">Download warranty</button>${j.fulfilled?`<div class="inv"><span class="meta">6 yrs · through ${fmtD(addYears(j.fulfilled,6))}</span></div>`:""}` : `<span class="lock">${LOCK}${inv ? "Unlocks when invoice is paid" : "Issued after payment"}</span>`}</td>
     </tr>`;}).join("") : `<tr><td colspan="8" class="empty">${jobs.length ? "No jobs match this filter." : "No jobs yet. Jobs you assign through peakprosga.com will appear here."}</td></tr>`;
+  renderInvoices(js, all);
+}
+
+let invJobs = [];
+function renderInvoices(js, all){
+  $("hi-partner").hidden = !all;
+  invJobs = js.filter(j=>j.invoice).sort((x,y)=>(y.invoice.date||"").localeCompare(x.invoice.date||""));
+  $("invrows").innerHTML = invJobs.length ? invJobs.map((j,i)=>{
+    const s = status(j), inv = j.invoice, ac = acct(j.account);
+    return `<tr>
+      ${all?`<td><span class="lbl">Contractor</span><span class="pill p-info">${esc(ac.prefix)}</span> ${esc(ac.name)}</td>`:""}
+      <td class="who-cell"><span class="lbl">Invoice</span><b>${inv.numbers.length?"#"+esc(inv.numbers.join(", #")):"—"}</b><span>Job #${esc(j.number)}</span></td>
+      <td><span class="lbl">Homeowner</span>${esc(j.owner)}<div class="inv"><span class="meta">${esc(j.address)}</span></div></td>
+      <td class="date"><span class="lbl">Sent</span>${fmtD(inv.date)||"—"}</td>
+      <td class="num"><span class="lbl">Amount</span>${inv.total>0?money(inv.total):"Complimentary"}${!inv.isPaid&&inv.paid>0?`<div class="inv"><span class="meta">${money(inv.due)} left</span></div>`:""}</td>
+      <td><span class="lbl">Status</span><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>${inv.paidDate?`<div class="inv"><span class="meta">Paid ${fmtD(inv.paidDate)}</span></div>`:""}</td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span><div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-ipdf="${i}">Invoice PDF</button>`:'<span class="muted">PDF not posted yet</span>'}${inv.isPaid?"":`<button class="btn sm primary" type="button" data-ipay="${i}">Pay invoice</button>`}</div></td>
+    </tr>`;}).join("") : `<tr><td colspan="7" class="empty">No invoices yet.</td></tr>`;
 }
 
 /* ---------- actions ---------- */
@@ -380,6 +437,38 @@ function closeModal(){ $("scrim").hidden=true; }
 $("mclose").addEventListener("click",closeModal);
 $("scrim").addEventListener("click",e=>{ if(e.target.id==="scrim") closeModal(); });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !$("scrim").hidden) closeModal(); });
+
+async function openFile(j, file, btn){
+  const w = window.open("", "_blank");
+  const label = btn ? btn.textContent : ""; if (btn){ btn.disabled = true; btn.textContent = "Opening…"; }
+  try {
+    const res = await api(`/api/portal/file?job=${encodeURIComponent(j.jnid)}&file=${encodeURIComponent(file.id)}`);
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || "Could not open the file.");
+    if (w) w.location.href = body.url; else window.location.href = body.url;
+  } catch (err) { if (w) w.close(); toast(err.message); }
+  finally { if (btn){ btn.disabled = false; btn.textContent = label; } }
+}
+function payModal(j){
+  openModal("Pay invoice · " + j.owner, `<div class="invdoc">
+    <div class="row"><span>Invoice</span><span>${j.invoice.numbers.length?"#"+esc(j.invoice.numbers.join(", #")):"—"}</span></div>
+    <div class="row"><span>Sent</span><span>${fmtD(j.invoice.date)||"—"}</span></div>
+    <div class="row tot"><span>Amount due</span><span>${money(j.invoice.due)}</span></div></div>
+    ${j.files.invoices.length?`<button class="btn primary" type="button" id="paypdf">Open invoice to pay</button>`:""}
+    <p class="note">Pay with the <b>Pay Now</b> link on the invoice, or call <b>${PAY_PHONE}</b> to pay by phone. Your Peak 301 warranty unlocks here as soon as the payment posts.</p>`);
+  const b = $("paypdf"); if (b) b.addEventListener("click", ()=>openFile(j, j.files.invoices[0], b));
+}
+async function photoModal(j){
+  openModal("Photos · " + j.owner, `<div class="photos" id="ph">${j.files.photos.map((p,k)=>`<a href="#" data-k="${k}" aria-label="Open photo ${k+1}"><img alt="Job photo ${k+1}" id="ph${k}"></a>`).join("")}</div>
+    ${j.files.reports.length?`<button class="btn" type="button" id="phrep">Open photo report (PDF)</button>`:""}
+    <p class="note">${j.files.photos.length} photos from ${esc(j.address)}. Tap a photo to open it full size.</p>`);
+  const r = $("phrep"); if (r) r.addEventListener("click", ()=>openFile(j, j.files.reports[0], r));
+  $("ph").addEventListener("click", e=>{ const a=e.target.closest("a[data-k]"); if(!a) return; e.preventDefault(); openFile(j, j.files.photos[+a.dataset.k]); });
+  // Load thumbnails a few at a time.
+  const list = j.files.photos.map((p,k)=>[p,k]);
+  async function worker(){ while(list.length && !$("scrim").hidden){ const [p,k]=list.shift(); try{ const res=await api(`/api/portal/file?job=${encodeURIComponent(j.jnid)}&file=${encodeURIComponent(p.id)}`); const b=await res.json(); const img=$("ph"+k); if(res.ok && img) img.src=b.url; }catch(e){} } }
+  await Promise.all([worker(),worker(),worker(),worker()]);
+}
 
 async function downloadWarranty(j, btn){
   btn.disabled = true; const label = btn.textContent; btn.textContent = "Preparing…";
@@ -400,14 +489,15 @@ async function downloadWarranty(j, btn){
 $("rows").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   if (b.dataset.war != null) downloadWarranty(viewJobs[+b.dataset.war], b);
-  if (b.dataset.photos != null){ const j = viewJobs[+b.dataset.photos];
-    openModal("Photos · " + j.owner, `<div class="photos">${j.photos.map(p=>`<a href="${esc(p.url)}" target="_blank" rel="noopener"><img src="${esc(p.thumb||p.url)}" alt="${esc(p.name||"Job photo")}" loading="lazy"></a>`).join("")}</div>`); }
-  if (b.dataset.pay != null){ const j = viewJobs[+b.dataset.pay];
-    openModal("Pay invoice · " + j.owner, `<div class="invdoc">
-      <div class="row"><span>Invoice</span><span>${j.invoice.numbers.length?"#"+esc(j.invoice.numbers.join(", #")):"—"}</span></div>
-      <div class="row"><span>Sent</span><span>${fmtD(j.invoice.date)||"—"}</span></div>
-      <div class="row tot"><span>Amount due</span><span>${money(j.invoice.due)}</span></div></div>
-      <p class="note">Use the payment link in the invoice email Go Dawgs Roof Roof sent you, or call <b>${PAY_PHONE}</b> to pay by phone. Your Peak 301 warranty unlocks here as soon as the payment posts.</p>`); }
+  if (b.dataset.photos != null) photoModal(viewJobs[+b.dataset.photos]);
+  if (b.dataset.pdf != null){ const j = viewJobs[+b.dataset.pdf]; openFile(j, j.files.invoices[0], b); }
+  if (b.dataset.pay != null) payModal(viewJobs[+b.dataset.pay]);
+});
+
+$("invrows").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.ipdf != null){ const j = invJobs[+b.dataset.ipdf]; openFile(j, j.files.invoices[0], b); }
+  if (b.dataset.ipay != null) payModal(invJobs[+b.dataset.ipay]);
 });
 
 const saved = restore();

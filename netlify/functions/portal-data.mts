@@ -7,7 +7,7 @@ export default async (req: Request) => {
     const session = readSession(req);
     const requested = new URL(req.url).searchParams.get("account");
     const accts = allowedAccounts(session, requested);
-    const { jobs } = await loadJobs(accts);
+    const { jobs } = await loadJobs(accts, true);
     return json({ updated: new Date().toISOString(), jobs });
   } catch (e) {
     return handleError(e);
