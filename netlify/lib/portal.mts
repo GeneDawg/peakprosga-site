@@ -117,7 +117,7 @@ export async function jnAll(path: string, params: Record<string, string> = {}, m
   const out: any[] = [];
   for (let page = 0; page < maxPages; page++) {
     const body = await jn(path, { ...params, size: String(size), from: String(page * size) });
-    const rows: any[] = Array.isArray(body) ? body : body.results || body.items || [];
+    const rows: any[] = Array.isArray(body) ? body : body.results || body.files || body.items || [];
     out.push(...rows);
     const total = typeof body.count === "number" ? body.count : null;
     if (rows.length < size || (total !== null && out.length >= total)) break;
