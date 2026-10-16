@@ -480,7 +480,7 @@ function billModal(j){
       <div class="row"><span>Eddie's labor at $20/SQ</span><span id="sqlabor">—</span></div>
       <button class="btn primary" type="submit" id="billgo">Create estimate in JobNimbus</button>
     </form>
-    <p class="note">The estimate goes on this job addressed to the contractor, and Shadie gets a task to send it for signature. When they sign, the job moves to Scheduled. When it is marked Job Completed, the Net 5 invoice is created automatically.</p>`);
+    <p class="note">The estimate goes on this job addressed to the contractor, and Shadie gets a task to send it for signature. When they sign, the job moves to Scheduled. When it is marked Job Completed, the invoice (due 7 days after completion) is created automatically.</p>`);
   const sq = $("sq");
   sq.addEventListener("input", ()=>{ const n=+sq.value||0; $("sqprice").textContent = n?money(n*85):"—"; $("sqlabor").textContent = n?money(n*20):"—"; });
   sq.focus();

@@ -11,7 +11,7 @@ const JN_BASE = "https://app.jobnimbus.com/api1";
 const PRODUCT_NAME = Netlify.env.get("PORTAL_PRODUCT_NAME") || "Peak 301 Referral Partner Install";
 const FALLBACK = { material: { cost: 14, price: 65 }, labor: { cost: 20, price: 20 } };
 export const LABOR_PER_SQ = Number(Netlify.env.get("PORTAL_LABOR_PER_SQ") || 20);
-export const NET_DAYS = Number(Netlify.env.get("PORTAL_NET_DAYS") || 5);
+export const NET_DAYS = Number(Netlify.env.get("PORTAL_NET_DAYS") || 7);
 export const USERS = { gene: "m9n0ajnc1wl1dlw1e01d8t6", eddie: "f51ac41fcfb54674950809f89d42766f" }; // Shadie works under Gene's login
 
 export async function jnWrite(method: "POST" | "PUT", path: string, body: unknown): Promise<any> {
