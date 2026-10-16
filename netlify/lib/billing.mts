@@ -68,6 +68,10 @@ export async function buildEstimate(jobId: string, squares: number) {
   const sq = round2(squares);
   const job = await jn(`/jobs/${encodeURIComponent(jobId)}`);
   if (!job?.jnid) throw new HttpError(404, "Job not found in JobNimbus.");
+  const prior = (await jnAll("/v2/estimates").catch(() => [] as any[])).find(
+    (e: any) => !e.is_archived && e.is_active !== false && !/void/i.test(String(e.status_name || "")) && (e.related || []).some((r: any) => r.id === job.jnid),
+  );
+  if (prior) throw new HttpError(409, `This job already has estimate #${prior.number}. Edit that one in JobNimbus, or void it first.`);
   const products = await jnAll("/v2/products", {}, 5).catch(() => [] as any[]);
   const product = products.find((p: any) => p.name === PRODUCT_NAME && p.is_active !== false);
   const unit = product?.uoms?.find((u: any) => u.uom === "SQ") || product?.uoms?.[0] || FALLBACK;
