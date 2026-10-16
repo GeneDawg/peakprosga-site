@@ -137,6 +137,7 @@ export default async (req: Request, context: Context) => {
       const e = all.find((x: any) => String(x.number) === estNo);
       if (!e) throw new HttpError(404, "no such estimate");
       const lines = Object.entries(e).filter(([k]) => !["items", "sections", "related", "owners"].includes(k)).map(([k, v]) => `${k}=${JSON.stringify(v).slice(0, 120)}`);
+      for (const [i, it] of (e.items || []).entries()) lines.push(`item${i}: ${JSON.stringify({ name: it.name, uom: it.uom, qty: it.quantity, price: it.price, cost: it.cost, amount: it.amount, labor: it.labor && { price: it.labor.price, cost: it.labor.cost, amount: it.labor.amount }, type: it.item_type, jnid: it.jnid })}`);
       return new Response(lines.join("\n"), { headers: { "content-type": "text/plain" } });
     }
     // ?contacts=<text> lists matching contacts' emails; add &id=<jnid>&email=<new> to change one contact's email.
