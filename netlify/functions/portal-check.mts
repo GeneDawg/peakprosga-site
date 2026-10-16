@@ -40,6 +40,25 @@ export default async (req: Request, context: Context) => {
       try { const tpl = await jn("/v2/estimates/templates", { size: "20" }); out.templates = strip(tpl); } catch (e: any) { out.templates = String(e.message || e).slice(0, 160); }
       return json(out);
     }
+    // Workflow statuses: ?workflow=1 lists the Peak 301 Referral workflow's statuses as plain text.
+    if (new URL(req.url).searchParams.get("workflow")) {
+      const lines: string[] = [];
+      try {
+        const s = await jn("/account/settings");
+        const wfs = s.workflows || s.job_workflows || [];
+        lines.push("settingsKeys=" + Object.keys(s || {}).join(","));
+        for (const w of wfs) {
+          if (!/peak|referral/i.test(w.name || "")) continue;
+          lines.push(`WORKFLOW ${w.name} (${w.object_type || w.type || ""}) id=${w.id}`);
+          for (const st of w.status || w.statuses || []) lines.push(`  ${st.order ?? ""} ${st.name} | stage=${st.stage ?? st.stage_name ?? ""} | active=${st.is_active ?? ""} | id=${st.id}`);
+        }
+      } catch (e: any) { lines.push("settings error " + String(e.message || e).slice(0, 150)); }
+      const jobs = await jnAll("/jobs", {}, 3);
+      const seen = new Map<string, number>();
+      for (const j of jobs) if (/peak 301 referral/i.test(j.record_type_name || "")) seen.set(j.status_name, (seen.get(j.status_name) || 0) + 1);
+      lines.push("statuses in use: " + [...seen].map(([k, v]) => `${k}(${v})`).join(", "));
+      return new Response(lines.join("\n"), { headers: { "content-type": "text/plain" } });
+    }
     // Test cleanup: close the four TEST tasks and archive the two TEST homeowner contacts.
     if (new URL(req.url).searchParams.get("cleanup")) {
       const key = Netlify.env.get("JOBNIMBUS_WRITE_KEY") || env("JOBNIMBUS_API_KEY");
