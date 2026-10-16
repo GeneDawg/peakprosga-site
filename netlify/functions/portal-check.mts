@@ -119,6 +119,17 @@ export default async (req: Request, context: Context) => {
       const after = await jn(`/jobs/${moveJob}`);
       return json({ job: after.number, status: after.status_name });
     }
+    // Test helper: ?cleanjob=<job jnid> completes a TEST job's tasks and archives its TEST homeowner contact.
+    const cleanJob = new URL(req.url).searchParams.get("cleanjob");
+    if (cleanJob) {
+      const job = await jn(`/jobs/${cleanJob}`);
+      if (!/^TEST - /.test(job.name || "")) throw new HttpError(400, "Only TEST jobs can be cleaned here.");
+      const { jobTasks, jnWrite } = await import("../lib/billing.mts");
+      const out: string[] = [];
+      for (const t of await jobTasks(job.jnid)) { await jnWrite("PUT", `/tasks/${t.jnid}`, { is_completed: true }); out.push(`task done: ${t.title}`); }
+      if (job.primary?.id && /^TEST - /.test(job.primary.name || "")) { await jnWrite("PUT", `/contacts/${job.primary.id}`, { is_active: false }); out.push(`contact archived: ${job.primary.name}`); }
+      return json({ job: job.number, out });
+    }
     // Board automation: ?pipeline=dry shows what would move; ?pipeline=run does it.
     const pipe = new URL(req.url).searchParams.get("pipeline");
     if (pipe) return json(await runPipeline({ dry: pipe !== "run" }));
