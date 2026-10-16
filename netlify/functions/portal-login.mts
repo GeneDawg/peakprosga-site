@@ -15,7 +15,7 @@ export default async (req: Request, context: Context) => {
     const store = getStore("portal-logins");
     const key = `ip-${ip.replace(/[^0-9a-fA-F:.]/g, "_")}`;
     let rec: { fails: number; first: number } | null = null;
-    try { rec = (await store.get(key, { type: "json" })) as any; } catch {}
+    try { rec = (await store.get(key, { type: "json" })) as any; } catch (e) { console.error("login throttle read failed", e); }
     if (rec && Date.now() - rec.first > WINDOW_MS) rec = null;
     if (rec && rec.fails >= MAX_FAILS) {
       throw new HttpError(429, "Too many tries. Please wait 15 minutes, or call 404-323-1869 for help.");
@@ -24,7 +24,7 @@ export default async (req: Request, context: Context) => {
     const { code } = await req.json().catch(() => ({ code: "" }));
     const session = typeof code === "string" && code.trim() ? matchCode(code) : null;
     if (!session) {
-      try { await store.setJSON(key, { fails: (rec?.fails || 0) + 1, first: rec?.first || Date.now() }); } catch {}
+      try { await store.setJSON(key, { fails: (rec?.fails || 0) + 1, first: rec?.first || Date.now() }); } catch (e) { console.error("login throttle write failed", e); }
       await new Promise((r) => setTimeout(r, 800));
       throw new HttpError(401, "That code didn't match an account. Check it and try again, or call 404-323-1869.");
     }
