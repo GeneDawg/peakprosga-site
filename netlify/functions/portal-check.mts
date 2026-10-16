@@ -71,6 +71,11 @@ export default async (req: Request, context: Context) => {
       }
     }
     try { const u = await jn("/account/users"); out.users = (u.users || u || []).map((x: any) => ({ id: x.id || x.jnid, name: x.name || x.display_name || [x.first_name, x.last_name].join(" "), email: x.email })); } catch (e: any) { out.users = String(e.message || e).slice(0, 150); }
+    try {
+      const pays = await jn("/payments", { size: "8", sort_field: "date_created", sort_direction: "desc" });
+      const rows = pays.results || pays.payments || [];
+      out.recentPayments = { count: pays.count, keys: rows[0] ? Object.keys(rows[0]) : [], rows: rows.map((p: any) => ({ ...pick(p, ["jnid", "total", "credit", "refunded_amount", "reference", "method_name", "method", "source", "date_payment", "date_created", "status", "status_name", "invoices", "related", "primary", "is_active", "is_archived"]) })) };
+    } catch (e: any) { out.recentPayments = String(e.message || e).slice(0, 200); }
     out.fileDebug = [];
     for (const j of raw.jobs.slice(0, 2)) {
       try {
