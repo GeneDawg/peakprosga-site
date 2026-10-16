@@ -8,7 +8,7 @@ import { addTask, contractorFor, createInvoiceFromEstimate, jnWrite, jobTasks, m
 
 export const STATUS = {
   assigned: Netlify.env.get("PORTAL_STATUS_ASSIGNED") || "Assigned",
-  sent: Netlify.env.get("PORTAL_STATUS_SENT") || "", // optional "Estimate Sent" column, if one is added to the board
+  sent: Netlify.env.get("PORTAL_STATUS_SENT") || "Estimate Sent", // waiting on the contractor's signature
   scheduled: Netlify.env.get("PORTAL_STATUS_SCHEDULED") || "Scheduled",
   completed: Netlify.env.get("PORTAL_STATUS_COMPLETED") || "Job Completed",
   invoiced: Netlify.env.get("PORTAL_STATUS_INVOICED") || "Invoiced",

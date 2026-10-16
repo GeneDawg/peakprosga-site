@@ -109,6 +109,16 @@ export default async (req: Request, context: Context) => {
         return new Response([`status=${r.status}`, ...after, created.slice(0, 300)].join("\n"), { headers: { "content-type": "text/plain" } });
       }
     }
+    // Test helper: ?move=<job jnid>&to=<status> moves a TEST job only (stands in for Eddie dragging the card).
+    const moveJob = new URL(req.url).searchParams.get("move");
+    if (moveJob) {
+      const job = await jn(`/jobs/${moveJob}`);
+      if (!/^TEST - /.test(job.name || "")) throw new HttpError(400, "Only TEST jobs can be moved here.");
+      const { setStatus } = await import("../lib/billing.mts");
+      await setStatus(job, String(new URL(req.url).searchParams.get("to")));
+      const after = await jn(`/jobs/${moveJob}`);
+      return json({ job: after.number, status: after.status_name });
+    }
     // Board automation: ?pipeline=dry shows what would move; ?pipeline=run does it.
     const pipe = new URL(req.url).searchParams.get("pipeline");
     if (pipe) return json(await runPipeline({ dry: pipe !== "run" }));
