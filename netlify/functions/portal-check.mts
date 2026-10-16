@@ -44,15 +44,33 @@ export default async (req: Request, context: Context) => {
         attachments: firstJob ? await probe(`/jobs/${firstJob.jnid}/files`) : null,
       },
     };
-    if (firstJob) {
-      try {
-        const body = await jn("/files", { size: "50", filter: JSON.stringify({ must: [{ term: { "related.id": firstJob.jnid } }] }) });
-        const rows = body.results || body.files || [];
-        out.sampleFiles = rows.slice(0, 20).map((f: any) => pick(f, ["jnid", "filename", "content_type", "type", "record_type_name", "description", "size", "date_created", "url", "thumbnail_url", "preview_url", "is_private"]));
-      } catch (e: any) {
-        out.sampleFiles = String(e.message || e).slice(0, 200);
+    // Invoice PDF probe: find invoice files on the partner jobs and test how JobNimbus serves them.
+    out.invoiceFiles = [];
+    for (const j of raw.jobs.slice(0, 3)) {
+      for (const field of ["related.id", "primary.id"]) {
+        try {
+          const body = await jn("/files", { size: "50", filter: JSON.stringify({ must: [{ term: { [field]: j.jnid } }] }) });
+          const rows = body.results || body.files || [];
+          out.invoiceFiles.push({ job: j.name, field, count: body.count ?? rows.length, files: rows.slice(0, 8).map((f: any) => ({ keys: Object.keys(f), ...pick(f, ["jnid", "filename", "content_type", "type", "record_type", "record_type_name", "size", "url", "preview_url", "thumbnail_url", "is_private"]) })) });
+        } catch (e: any) { out.invoiceFiles.push({ job: j.name, field, error: String(e.message || e).slice(0, 150) }); }
       }
     }
+    const firstInv = out.invoiceFiles.flatMap((x: any) => x.files || []).find((f: any) => /invoice/i.test(f.filename || ""));
+    if (firstInv) {
+      out.downloadProbe = {};
+      for (const path of [`/files/${firstInv.jnid}`, `/files/${firstInv.jnid}/download`, `/files/${firstInv.jnid}?download=true`]) {
+        try {
+          const url = "https://app.jobnimbus.com/api1" + path;
+          const res = await fetch(url, { headers: { Authorization: `Bearer ${env("JOBNIMBUS_API_KEY")}` }, redirect: "manual" });
+          const ct = res.headers.get("content-type") || "";
+          const loc = res.headers.get("location");
+          let preview: any = null;
+          if (ct.includes("json")) { const b = await res.json(); preview = { keys: Object.keys(b), ...pick(b, ["url", "download_url", "preview_url", "filename", "content_type"]) }; }
+          out.downloadProbe[path] = { status: res.status, contentType: ct, hasLocation: !!loc, locationHost: loc ? new URL(loc).host : null, preview };
+        } catch (e: any) { out.downloadProbe[path] = String(e.message || e).slice(0, 150); }
+      }
+    }
+    try { const u = await jn("/account/users"); out.users = (u.users || u || []).map((x: any) => ({ id: x.id || x.jnid, name: x.name || x.display_name || [x.first_name, x.last_name].join(" "), email: x.email })); } catch (e: any) { out.users = String(e.message || e).slice(0, 150); }
     return json(out);
   } catch (e) {
     return handleError(e);
