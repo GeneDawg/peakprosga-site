@@ -1,6 +1,7 @@
 import type { Config, Context } from "@netlify/functions";
 import { accounts, env, handleError, HttpError, jn, jnAll, jobFiles, json, loadJobs } from "../lib/portal.mts";
 import { createFromAssignment, matchContractor, summarize } from "../lib/intake.mts";
+import { buildEstimateAndInvoice } from "../lib/billing.mts";
 
 // TEMPORARY setup check. Shows which JobNimbus fields come through for the partner jobs so the
 // portal's date and invoice mapping can be confirmed. Protected by PORTAL_CHECK_TOKEN; delete after setup.
@@ -39,6 +40,8 @@ export default async (req: Request, context: Context) => {
       try { const tpl = await jn("/v2/estimates/templates", { size: "20" }); out.templates = strip(tpl); } catch (e: any) { out.templates = String(e.message || e).slice(0, 160); }
       return json(out);
     }
+    const billJob = new URL(req.url).searchParams.get("bill");
+    if (billJob) return json(await buildEstimateAndInvoice(billJob, Number(new URL(req.url).searchParams.get("sq"))));
     // Intake test: ?intake=dry shows the plan; ?intake=run creates one assignment marked "TEST - ".
     const intake = new URL(req.url).searchParams.get("intake");
     if (intake) {

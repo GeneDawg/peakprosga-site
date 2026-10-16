@@ -135,6 +135,18 @@ const toISO = (sec: any): string | null => {
   if (!n || n < 0) return null;
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(n * 1000));
 };
+const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+/** Epoch seconds + N business days -> YYYY-MM-DD (Eastern). */
+function addBusinessDays(sec: number, n: number): string {
+  const d = new Date((sec || Date.now() / 1000) * 1000);
+  let added = 0;
+  while (added < n) {
+    d.setUTCDate(d.getUTCDate() + 1);
+    const wd = d.getUTCDay();
+    if (wd !== 0 && wd !== 6) added++;
+  }
+  return toISO(d.getTime() / 1000)!;
+}
 const norm = (s: any) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim();
 
 export function prefixRegex(prefix: string): RegExp {
@@ -260,6 +272,8 @@ export type PortalJob = {
   fulfilled: string | null;
   files: { invoices: PortalFile[]; reports: PortalFile[]; photos: PortalFile[] };
   invoice: null | {
+    processing: boolean;
+    clearsOn: string | null;
     numbers: string[];
     total: number;
     paid: number;
@@ -288,8 +302,22 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
   // Payments taken on a job but not applied to an invoice (JobNimbus Payments can record them this way)
   // still count toward that job's invoices.
   const unapplied = new Map<string, { amount: number; date: string | null }>();
+  // Card/ACH payments taken through JobNimbus Payments are held until they clear (PORTAL_CLEAR_DAYS business days).
+  const clearing = new Map<string, string>(); // job or invoice jnid -> date the latest processor payment clears
+  const holdDays = Number(Netlify.env.get("PORTAL_CLEAR_DAYS") || 3);
   try {
-    for (const p of await jnAll("/payments")) {
+    const allPayments = await jnAll("/payments");
+    for (const p of allPayments) {
+      if (p.is_archived || p.is_active === false) continue;
+      const processor = !!p.created_by_processor || /^system_jn_payments/i.test(String(p.created_by || ""));
+      if (!processor) continue;
+      const clears = addBusinessDays(Number(p.date_payment || p.date_created), holdDays);
+      if (clears <= today()) continue;
+      for (const id of [...(p.related || []).map((r: any) => r.id), ...(p.invoices || []).map((i: any) => i.invoice_id)]) {
+        if (id && (!clearing.get(id) || clearing.get(id)! < clears)) clearing.set(id, clears);
+      }
+    }
+    for (const p of allPayments) {
       if (p.is_archived || p.is_active === false || (p.invoices || []).length) continue;
       const amount = Number(p.total || 0) - Number(p.refunded_amount || 0);
       if (amount <= 0) continue;
@@ -322,14 +350,18 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
       const paidDates = [...invs.map((i) => toISO(i.date_paid_in_full)), extra?.date].filter(Boolean).sort() as string[];
       // Nothing left to pay. A $0 invoice counts as paid once it is out of Draft.
       const isPaid = due <= PAID_EPSILON && (total > 0 || !!extra || invs.some((i) => toISO(i.date_paid_in_full) || norm(i.status_name) !== "draft"));
+      const clearsOn = [clearing.get(job.jnid), ...invs.map((i) => clearing.get(i.jnid))].filter(Boolean).sort().pop() || null;
+      const processing = isPaid && !!clearsOn;
       invoice = {
+        processing,
+        clearsOn: processing ? clearsOn : null,
         numbers: invs.map((i) => String(i.number ?? "")).filter(Boolean),
         total,
         paid: total - due,
         due: Math.max(0, due),
         date: dates[dates.length - 1] || null,
         paidDate: isPaid ? paidDates[paidDates.length - 1] || null : null,
-        isPaid,
+        isPaid: isPaid && !processing,
       };
     }
     return {

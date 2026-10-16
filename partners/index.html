@@ -302,6 +302,7 @@ async function api(path){
 
 function status(j){
   if (j.invoice && j.invoice.isPaid) return {k:"paid", t:"Paid", c:"p-paid"};
+  if (j.invoice && j.invoice.processing) return {k:"paid", t:"Payment processing", c:"p-wait"};
   if (j.invoice) return {k:"due", t:"Outstanding", c:"p-due"};
   if (j.fulfilled) return {k:"toinv", t:"Not invoiced yet", c:"p-wait"};
   return {k:"open", t:"Awaiting service", c:"p-info"};
@@ -388,7 +389,7 @@ function render(){
   $("acct").textContent = all ? `${session.accounts.length} referral partners` : `Account code ${a.prefix}`;
   $("h-partner").hidden = !all;
   const js = all ? jobs : jobs.filter(j=>j.account===current);
-  const due = js.filter(j=>j.invoice && !j.invoice.isPaid), paid = js.filter(j=>j.invoice && j.invoice.isPaid), toinv = js.filter(j=>!j.invoice);
+  const due = js.filter(j=>j.invoice && !j.invoice.isPaid && !j.invoice.processing), paid = js.filter(j=>j.invoice && (j.invoice.isPaid || j.invoice.processing)), toinv = js.filter(j=>!j.invoice);
   const dueAmt = due.reduce((s,j)=>s+j.invoice.due,0), paidAmt = paid.reduce((s,j)=>s+j.invoice.total,0);
   const oldest = due.length ? Math.max(...due.map(j=>daysSince(j.invoice.date||j.fulfilled||j.assigned))) : 0;
   $("stats").innerHTML = `
@@ -408,8 +409,8 @@ function render(){
       <td><span class="lbl">Photos</span>${j.files.photos.length ? `<div class="thumbs"><button class="btn sm" type="button" data-photos="${i}">View ${j.files.photos.length}</button></div>` : `<span class="muted">${j.fulfilled ? "Not posted yet" : "After service"}</span>`}</td>
       <td class="c-inv"><span class="lbl">Invoice</span>${inv ? `<div class="inv"><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>
         <span class="meta">${inv.numbers.length?"#"+esc(inv.numbers.join(", #"))+" · ":""}${inv.total>0?money(inv.total):"Complimentary"}${inv.date?" · sent "+fmtD(inv.date):""}${s.k==="due"&&inv.paid>0?" · "+money(inv.due)+" left":""}${inv.paidDate?" · paid "+fmtD(inv.paidDate):""}</span></div>` : `<span class="pill ${s.c}">${s.t}</span>`}</td>
-      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-pdf="${i}">Invoice PDF</button>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : `<button class="btn sm primary" type="button" data-pay="${i}">Pay invoice</button>`}</div>` : '<span class="muted">Available once invoiced</span>'}</td>
-      <td class="c-war"><span class="lbl">Peak 301 Warranty</span>${inv && inv.isPaid ? `<button class="btn sm ok" type="button" data-war="${i}">Download warranty</button>${j.fulfilled?`<div class="inv"><span class="meta">6 yrs · through ${fmtD(addYears(j.fulfilled,6))}</span></div>`:""}` : `<span class="lock">${LOCK}${inv ? "Unlocks when invoice is paid" : "Issued after payment"}</span>`}</td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-pdf="${i}">Invoice PDF</button>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : inv.processing ? `<span class="pill p-wait">Payment received</span>` : `<button class="btn sm primary" type="button" data-pay="${i}">Pay invoice</button>`}</div>` : (session.role==="admin" ? `<button class="btn sm" type="button" data-bill="${i}">Create estimate &amp; invoice</button>` : '<span class="muted">Available once invoiced</span>')}</td>
+      <td class="c-war"><span class="lbl">Peak 301 Warranty</span>${inv && inv.processing ? `<span class="lock">${LOCK}Unlocks when payment clears${inv.clearsOn?" (about "+fmtD(inv.clearsOn)+")":""}</span>` : inv && inv.isPaid ? `<button class="btn sm ok" type="button" data-war="${i}">Download warranty</button>${j.fulfilled?`<div class="inv"><span class="meta">6 yrs · through ${fmtD(addYears(j.fulfilled,6))}</span></div>`:""}` : `<span class="lock">${LOCK}${inv ? "Unlocks when invoice is paid" : "Issued after payment"}</span>`}</td>
     </tr>`;}).join("") : `<tr><td colspan="8" class="empty">${jobs.length ? "No jobs match this filter." : "No jobs yet. Jobs you assign through peakprosga.com will appear here."}</td></tr>`;
   renderInvoices(js, all);
 }
@@ -427,7 +428,7 @@ function renderInvoices(js, all){
       <td class="date"><span class="lbl">Sent</span>${fmtD(inv.date)||"—"}</td>
       <td class="num"><span class="lbl">Amount</span>${inv.total>0?money(inv.total):"Complimentary"}${!inv.isPaid&&inv.paid>0?`<div class="inv"><span class="meta">${money(inv.due)} left</span></div>`:""}</td>
       <td><span class="lbl">Status</span><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>${inv.paidDate?`<div class="inv"><span class="meta">Paid ${fmtD(inv.paidDate)}</span></div>`:""}</td>
-      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span><div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-ipdf="${i}">Invoice PDF</button>`:'<span class="muted">PDF not posted yet</span>'}${inv.isPaid?"":`<button class="btn sm primary" type="button" data-ipay="${i}">Pay invoice</button>`}</div></td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span><div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-ipdf="${i}">Invoice PDF</button>`:'<span class="muted">PDF not posted yet</span>'}${inv.isPaid||inv.processing?"":`<button class="btn sm primary" type="button" data-ipay="${i}">Pay invoice</button>`}</div></td>
     </tr>`;}).join("") : `<tr><td colspan="7" class="empty">No invoices yet.</td></tr>`;
 }
 
@@ -470,6 +471,31 @@ async function photoModal(j){
   await Promise.all([worker(),worker(),worker(),worker()]);
 }
 
+function billModal(j){
+  openModal("Estimate & invoice · " + j.owner, `<form id="billform" class="invdoc">
+      <div class="row"><span>Job</span><span>#${esc(j.number)} · ${esc(j.address)}</span></div>
+      <label for="sq" class="note">EagleView squares (from the QuickSquares report)</label>
+      <input id="sq" type="number" step="0.01" min="0.1" inputmode="decimal" required style="font:600 18px var(--body);padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
+      <div class="row"><span>Peak 301 at $85/SQ</span><span id="sqprice">—</span></div>
+      <div class="row"><span>Eddie's labor at $20/SQ</span><span id="sqlabor">—</span></div>
+      <button class="btn primary" type="submit" id="billgo">Create estimate &amp; invoice in JobNimbus</button>
+    </form>
+    <p class="note">Both are created as Draft on this job. Review them in JobNimbus, then send the invoice as usual.</p>`);
+  const sq = $("sq");
+  sq.addEventListener("input", ()=>{ const n=+sq.value||0; $("sqprice").textContent = n?money(n*85):"—"; $("sqlabor").textContent = n?money(n*20):"—"; });
+  sq.focus();
+  $("billform").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const go=$("billgo"); go.disabled=true; go.textContent="Creating…";
+    try{
+      const res = await fetch("/api/portal/billing",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+session.token},body:JSON.stringify({job:j.jnid,squares:+sq.value})});
+      const b = await res.json();
+      if(!res.ok) throw new Error(b.error||"Could not create them.");
+      closeModal(); toast(`Created estimate #${b.estimate.number??""} and invoice #${b.invoice.number??""} for ${money(b.price)}.`); load();
+    }catch(err){ toast(err.message); go.disabled=false; go.textContent="Create estimate & invoice in JobNimbus"; }
+  });
+}
+
 async function downloadWarranty(j, btn){
   btn.disabled = true; const label = btn.textContent; btn.textContent = "Preparing…";
   try {
@@ -492,6 +518,7 @@ $("rows").addEventListener("click", e => {
   if (b.dataset.photos != null) photoModal(viewJobs[+b.dataset.photos]);
   if (b.dataset.pdf != null){ const j = viewJobs[+b.dataset.pdf]; openFile(j, j.files.invoices[0], b); }
   if (b.dataset.pay != null) payModal(viewJobs[+b.dataset.pay]);
+  if (b.dataset.bill != null) billModal(viewJobs[+b.dataset.bill]);
 });
 
 $("invrows").addEventListener("click", e => {
