@@ -1,5 +1,6 @@
 import type { Config, Context } from "@netlify/functions";
 import { accounts, env, handleError, HttpError, jn, jnAll, jobFiles, json, loadJobs } from "../lib/portal.mts";
+import { createFromAssignment, matchContractor, summarize } from "../lib/intake.mts";
 
 // TEMPORARY setup check. Shows which JobNimbus fields come through for the partner jobs so the
 // portal's date and invoice mapping can be confirmed. Protected by PORTAL_CHECK_TOKEN; delete after setup.
@@ -19,6 +20,20 @@ export default async (req: Request, context: Context) => {
   try {
     const t = context.params.token;
     if (!t || t !== env("PORTAL_CHECK_TOKEN")) throw new HttpError(404, "Not found");
+    // Intake test: ?intake=dry shows the plan; ?intake=run creates one assignment marked "TEST - ".
+    const intake = new URL(req.url).searchParams.get("intake");
+    if (intake) {
+      const sample = {
+        company: "Peach Peak Roofing", contact_name: "Neil Embry", contact_phone: "470-585-5184", contact_email: "neal@peachpeakroofing.com",
+        property_address: "100 Test Lane, Marietta, GA 30066", homeowner_name: "Test Homeowner", homeowner_phone: "404-323-1869",
+        roof_size: "30", roof_age: "10–15 years", roof_type: "Asphalt Shingle (Architectural)", quoted_price: "$2,550",
+        two_story: "No — single story", pitch: "No — standard pitch", damage: "No — roof in good condition",
+        service_date: "", scope_notes: "TEST assignment from Claude. Archive this job and its two tasks.",
+      };
+      const acct = matchContractor(sample);
+      if (intake === "dry") return json({ writeKeySet: !!Netlify.env.get("JOBNIMBUS_WRITE_KEY"), contractor: acct?.name || null, ...summarize(sample, acct) });
+      if (intake === "run") return json({ created: await createFromAssignment(sample, { test: true }) });
+    }
     const { jobs, raw } = await loadJobs(accounts());
     const recent = await jn("/jobs", { size: "40", sort_field: "date_created", sort_direction: "desc" });
     const recentRows = recent.results || [];
