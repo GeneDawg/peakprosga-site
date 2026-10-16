@@ -20,6 +20,25 @@ export default async (req: Request, context: Context) => {
   try {
     const t = context.params.token;
     if (!t || t !== env("PORTAL_CHECK_TOKEN")) throw new HttpError(404, "Not found");
+    if (new URL(req.url).searchParams.get("inspect")) {
+      const out: any = {};
+      const strip = (o: any, depth = 0): any => {
+        if (Array.isArray(o)) return o.slice(0, 4).map((x) => strip(x, depth + 1));
+        if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).filter(([k]) => !/phone|email|card|account|routing|token|secret/i.test(k)).map(([k, v]) => [k, depth > 3 ? "…" : strip(v, depth + 1)]));
+        return o;
+      };
+      const pays = await jn("/payments", { size: "3", sort_field: "date_created", sort_direction: "desc" });
+      out.payment = strip((pays.results || [])[0]);
+      const ests = await jn("/v2/estimates", { size: "3", sort_field: "date_created", sort_direction: "desc" });
+      out.estimate = strip((ests.results || [])[0]);
+      const invs = await jn("/v2/invoices", { size: "2", sort_field: "date_created", sort_direction: "desc" });
+      out.invoice = strip((invs.results || [])[0]);
+      const prods = await jnAll("/v2/products", {}, 5);
+      out.products = prods.filter((p: any) => /peak|301|rejuv/i.test(JSON.stringify([p.name, p.description]))).map((p: any) => strip(p));
+      out.productKeys = prods[0] ? Object.keys(prods[0]) : [];
+      try { const tpl = await jn("/v2/estimates/templates", { size: "20" }); out.templates = strip(tpl); } catch (e: any) { out.templates = String(e.message || e).slice(0, 160); }
+      return json(out);
+    }
     // Intake test: ?intake=dry shows the plan; ?intake=run creates one assignment marked "TEST - ".
     const intake = new URL(req.url).searchParams.get("intake");
     if (intake) {
