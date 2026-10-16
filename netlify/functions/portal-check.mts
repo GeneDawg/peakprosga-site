@@ -1,5 +1,5 @@
 import type { Config, Context } from "@netlify/functions";
-import { accounts, env, handleError, HttpError, jn, jnAll, json, loadJobs } from "../lib/portal.mts";
+import { accounts, env, handleError, HttpError, jn, jnAll, jobFiles, json, loadJobs } from "../lib/portal.mts";
 
 // TEMPORARY setup check. Shows which JobNimbus fields come through for the partner jobs so the
 // portal's date and invoice mapping can be confirmed. Protected by PORTAL_CHECK_TOKEN; delete after setup.
@@ -71,6 +71,15 @@ export default async (req: Request, context: Context) => {
       }
     }
     try { const u = await jn("/account/users"); out.users = (u.users || u || []).map((x: any) => ({ id: x.id || x.jnid, name: x.name || x.display_name || [x.first_name, x.last_name].join(" "), email: x.email })); } catch (e: any) { out.users = String(e.message || e).slice(0, 150); }
+    out.fileDebug = [];
+    for (const j of raw.jobs.slice(0, 2)) {
+      try {
+        const rows = await jnAll("/files", { filter: JSON.stringify({ must: [{ term: { "related.id": j.jnid } }] }) }, 3);
+        const tally: any = {};
+        for (const f of rows) { const k = `${f.record_type_name}|private=${f.is_private}|active=${f.is_active}|archived=${f.is_archived}|${f.content_type}`; tally[k] = (tally[k] || 0) + 1; }
+        out.fileDebug.push({ job: j.name, total: rows.length, tally, mapped: await jobFiles(j.jnid).then((x) => ({ invoices: x.invoices.length, reports: x.reports.length, photos: x.photos.length })) });
+      } catch (e: any) { out.fileDebug.push({ job: j.name, error: String(e.message || e).slice(0, 200) }); }
+    }
     return json(out);
   } catch (e) {
     return handleError(e);
