@@ -40,6 +40,20 @@ export default async (req: Request, context: Context) => {
       try { const tpl = await jn("/v2/estimates/templates", { size: "20" }); out.templates = strip(tpl); } catch (e: any) { out.templates = String(e.message || e).slice(0, 160); }
       return json(out);
     }
+    // Test cleanup: close the four TEST tasks and archive the two TEST homeowner contacts.
+    if (new URL(req.url).searchParams.get("cleanup")) {
+      const key = Netlify.env.get("JOBNIMBUS_WRITE_KEY") || env("JOBNIMBUS_API_KEY");
+      const put = async (path: string, body: unknown) => {
+        const r = await fetch("https://app.jobnimbus.com/api1" + path, { method: "PUT", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        return { path, status: r.status, body: (await r.text()).slice(0, 160) };
+      };
+      const out: any[] = [];
+      for (const t of ["mvab3z2p26tw9tsvq9erp1c", "mvab3z60n70axv0k5fofaju", "mvacboo3cy8qi00x43zdeg3", "mvacborjwyvehxd4chjj3ac"]) out.push(await put(`/tasks/${t}`, { is_completed: true }));
+      for (const c of ["mvab3yxjuj1hprw2icvoqoo", "mvacbo944kt7pt5ioiva493"]) out.push(await put(`/contacts/${c}`, { is_active: false }));
+      for (const j of ["mvab3z0ne1j3zm6tiemalju", "mvacboeny3dtpwinm8crjgh"]) { try { const x = await jn(`/jobs/${j}`); out.push({ job: x.number, is_active: x.is_active, is_archived: x.is_archived }); } catch (e: any) { out.push({ job: j, gone: String(e.message || e).slice(0, 80) }); } }
+      const { jobs } = await loadJobs(accounts());
+      return json({ out, portalJobs: jobs.map((j: any) => j.title || j.name || j.homeowner || j.id) });
+    }
     const billJob = new URL(req.url).searchParams.get("bill");
     if (billJob) return json(await buildEstimateAndInvoice(billJob, Number(new URL(req.url).searchParams.get("sq"))));
     // Intake test: ?intake=dry shows the plan; ?intake=run creates one assignment marked "TEST - ".

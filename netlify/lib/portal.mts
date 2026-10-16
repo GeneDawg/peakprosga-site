@@ -9,7 +9,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 const JN_BASE = "https://app.jobnimbus.com/api1";
 const SESSION_HOURS = 12;
 
-export type Account = { key: string; name: string; prefix: string; contact?: string; code: string; sources?: string[]; contactNames?: string[]; emailDomains?: string[]; contactId?: string };
+export type Account = { key: string; name: string; prefix: string; contact?: string; code: string; sources?: string[]; contactNames?: string[]; emailDomains?: string[]; contactId?: string; estimateTemplateId?: string; invoiceTemplateId?: string; service?: "peak" | "full" };
 export type Session = { role: "admin" | "partner"; key?: string; exp: number };
 
 export function env(name: string): string {
