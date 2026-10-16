@@ -130,6 +130,15 @@ export default async (req: Request, context: Context) => {
       if (job.primary?.id && /^TEST - /.test(job.primary.name || "")) { await jnWrite("PUT", `/contacts/${job.primary.id}`, { is_active: false }); out.push(`contact archived: ${job.primary.name}`); }
       return json({ job: job.number, out });
     }
+    // ?estimate=<number> prints that estimate's fields (no items) as plain text, to find how layouts are referenced.
+    const estNo = new URL(req.url).searchParams.get("estimate");
+    if (estNo) {
+      const all = await jnAll("/v2/estimates", {}, 5);
+      const e = all.find((x: any) => String(x.number) === estNo);
+      if (!e) throw new HttpError(404, "no such estimate");
+      const lines = Object.entries(e).filter(([k]) => !["items", "sections", "related", "owners"].includes(k)).map(([k, v]) => `${k}=${JSON.stringify(v).slice(0, 120)}`);
+      return new Response(lines.join("\n"), { headers: { "content-type": "text/plain" } });
+    }
     // Board automation: ?pipeline=dry shows what would move; ?pipeline=run does it.
     const pipe = new URL(req.url).searchParams.get("pipeline");
     if (pipe) return json(await runPipeline({ dry: pipe !== "run" }));
