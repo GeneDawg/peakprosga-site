@@ -409,7 +409,7 @@ function render(){
       <td><span class="lbl">Photos</span>${j.files.photos.length ? `<div class="thumbs"><button class="btn sm" type="button" data-photos="${i}">View ${j.files.photos.length}</button></div>` : `<span class="muted">${j.fulfilled ? "Not posted yet" : "After service"}</span>`}</td>
       <td class="c-inv"><span class="lbl">Invoice</span>${inv ? `<div class="inv"><span class="pill ${s.c}">${s.t}${s.k==="due"&&inv.date?" · "+daysSince(inv.date)+" days":""}</span>
         <span class="meta">${inv.numbers.length?"#"+esc(inv.numbers.join(", #"))+" · ":""}${inv.total>0?money(inv.total):"Complimentary"}${inv.date?" · sent "+fmtD(inv.date):""}${s.k==="due"&&inv.paid>0?" · "+money(inv.due)+" left":""}${inv.paidDate?" · paid "+fmtD(inv.paidDate):""}</span></div>` : `<span class="pill ${s.c}">${s.t}</span>`}</td>
-      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-pdf="${i}">Invoice PDF</button>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : inv.processing ? `<span class="pill p-wait">Payment received</span>` : `<button class="btn sm primary" type="button" data-pay="${i}">Pay invoice</button>`}</div>` : (session.role==="admin" ? `<button class="btn sm" type="button" data-bill="${i}">Create estimate &amp; invoice</button>` : '<span class="muted">Available once invoiced</span>')}</td>
+      <td class="c-act"><span class="lbl">Invoice PDF &amp; Payment</span>${inv ? `<div class="acts">${j.files.invoices.length?`<button class="btn sm" type="button" data-pdf="${i}">Invoice PDF</button>`:""}${inv.isPaid ? `<span class="pill p-paid">${inv.total>0?"Paid in full":"No charge"}</span>` : inv.processing ? `<span class="pill p-wait">Payment received</span>` : `<button class="btn sm primary" type="button" data-pay="${i}">Pay invoice</button>`}</div>` : (session.role==="admin" ? `<button class="btn sm" type="button" data-bill="${i}">Create estimate</button>` : '<span class="muted">Available once invoiced</span>')}</td>
       <td class="c-war"><span class="lbl">Peak 301 Warranty</span>${inv && inv.processing ? `<span class="lock">${LOCK}Unlocks when payment clears${inv.clearsOn?" (about "+fmtD(inv.clearsOn)+")":""}</span>` : inv && inv.isPaid ? `<button class="btn sm ok" type="button" data-war="${i}">Download warranty</button>${j.fulfilled?`<div class="inv"><span class="meta">6 yrs · through ${fmtD(addYears(j.fulfilled,6))}</span></div>`:""}` : `<span class="lock">${LOCK}${inv ? "Unlocks when invoice is paid" : "Issued after payment"}</span>`}</td>
     </tr>`;}).join("") : `<tr><td colspan="8" class="empty">${jobs.length ? "No jobs match this filter." : "No jobs yet. Jobs you assign through peakprosga.com will appear here."}</td></tr>`;
   renderInvoices(js, all);
@@ -472,15 +472,15 @@ async function photoModal(j){
 }
 
 function billModal(j){
-  openModal("Estimate & invoice · " + j.owner, `<form id="billform" class="invdoc">
+  openModal("Estimate · " + j.owner, `<form id="billform" class="invdoc">
       <div class="row"><span>Job</span><span>#${esc(j.number)} · ${esc(j.address)}</span></div>
       <label for="sq" class="note">EagleView squares (from the QuickSquares report)</label>
       <input id="sq" type="number" step="0.01" min="0.1" inputmode="decimal" required style="font:600 18px var(--body);padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
       <div class="row"><span>Peak 301 Referral Partner Install at $85/SQ</span><span id="sqprice">—</span></div>
       <div class="row"><span>Eddie's labor at $20/SQ</span><span id="sqlabor">—</span></div>
-      <button class="btn primary" type="submit" id="billgo">Create estimate &amp; invoice in JobNimbus</button>
+      <button class="btn primary" type="submit" id="billgo">Create estimate in JobNimbus</button>
     </form>
-    <p class="note">Both are created as Draft on this job. Review them in JobNimbus, then send the invoice as usual.</p>`);
+    <p class="note">The estimate goes on this job addressed to the contractor, and Shadie gets a task to send it for signature. When they sign, the job moves to Scheduled. When it is marked Job Completed, the Net 5 invoice is created automatically.</p>`);
   const sq = $("sq");
   sq.addEventListener("input", ()=>{ const n=+sq.value||0; $("sqprice").textContent = n?money(n*85):"—"; $("sqlabor").textContent = n?money(n*20):"—"; });
   sq.focus();
@@ -491,8 +491,8 @@ function billModal(j){
       const res = await fetch("/api/portal/billing",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+session.token},body:JSON.stringify({job:j.jnid,squares:+sq.value})});
       const b = await res.json();
       if(!res.ok) throw new Error(b.error||"Could not create them.");
-      closeModal(); toast(`Created estimate #${b.estimate.number??""} and invoice #${b.invoice.number??""} for ${money(b.price)}.`); load();
-    }catch(err){ toast(err.message); go.disabled=false; go.textContent="Create estimate & invoice in JobNimbus"; }
+      closeModal(); toast(`Created estimate #${b.estimate.number??""} for ${money(b.price)}. Shadie has the send-for-signature task.`); load();
+    }catch(err){ toast(err.message); go.disabled=false; go.textContent="Create estimate in JobNimbus"; }
   });
 }
 

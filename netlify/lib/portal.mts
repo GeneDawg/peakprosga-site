@@ -147,7 +147,7 @@ function addBusinessDays(sec: number, n: number): string {
   }
   return toISO(d.getTime() / 1000)!;
 }
-const norm = (s: any) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim();
+export const norm = (s: any) => String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim();
 
 export function prefixRegex(prefix: string): RegExp {
   const esc = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -332,7 +332,7 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
     console.error("payments lookup failed", e);
   }
   const invoicesRaw = (await jnAll("/v2/invoices")).filter(
-    (inv) => !inv.is_archived && inv.is_active !== false && (inv.related || []).some((r: any) => ids.has(r.id)),
+    (inv) => !inv.is_archived && inv.is_active !== false && norm(inv.status_name) !== "void" && (inv.related || []).some((r: any) => ids.has(r.id)),
   );
 
   const filesByJob = new Map<string, PortalJob["files"]>();
