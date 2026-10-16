@@ -54,6 +54,30 @@ export default async (req: Request, context: Context) => {
       const { jobs } = await loadJobs(accounts());
       return json({ out, portalJobs: jobs.map((j: any) => j.title || j.name || j.homeowner || j.id) });
     }
+    // Price list: ?product=show prints the Referral Install product's units; ?product=create adds the $84/SQ partner install.
+    const productMode = new URL(req.url).searchParams.get("product");
+    if (productMode) {
+      const prods = await jnAll("/v2/products", {}, 5);
+      const flat = (o: any, p = ""): string[] => o && typeof o === "object" ? Object.entries(o).flatMap(([k, v]) => flat(v, p ? `${p}.${k}` : k)) : [`${p}=${JSON.stringify(o)}`];
+      const src = prods.find((p: any) => p.name === "Peak 301 Referral Install");
+      const existing = prods.find((p: any) => p.name === "Peak 301 Referral Partner Install");
+      if (productMode === "show") return new Response([...flat(src?.uoms), "item_type=" + src?.item_type, "existing=" + (existing?.jnid || "none")].join("\n"), { headers: { "content-type": "text/plain" } });
+      if (productMode === "create") {
+        if (existing) return json({ already: existing.jnid });
+        const body = JSON.parse(JSON.stringify(src));
+        for (const k of ["jnid", "id", "date_created", "date_updated", "created_by", "created_by_name", "customer", "type", "recid", "number"]) delete body[k];
+        body.name = "Peak 301 Referral Partner Install";
+        body.description = "Peak 301 roof rejuvenation installed by Go Dawgs Roof Roof as subcontractor for a Peak 301 referral partner. Priced per square from the EagleView measurement.";
+        body.item_type = src.item_type;
+        body.uoms = [{ ...src.uoms[0], uom: "SQ", material: { ...(src.uoms[0].material || {}), cost: 14, price: 64, markup: 0 }, labor: { ...(src.uoms[0].labor || {}), cost: 20, price: 20, markup: 0 } }];
+        const key = Netlify.env.get("JOBNIMBUS_WRITE_KEY") || env("JOBNIMBUS_API_KEY");
+        const r = await fetch("https://app.jobnimbus.com/api1/v2/products", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const created = await r.text();
+        let after: string[] = [];
+        try { after = flat(JSON.parse(created).uoms); } catch {}
+        return new Response([`status=${r.status}`, ...after, created.slice(0, 300)].join("\n"), { headers: { "content-type": "text/plain" } });
+      }
+    }
     const billJob = new URL(req.url).searchParams.get("bill");
     if (billJob) return json(await buildEstimateAndInvoice(billJob, Number(new URL(req.url).searchParams.get("sq"))));
     // Intake test: ?intake=dry shows the plan; ?intake=run creates one assignment marked "TEST - ".
