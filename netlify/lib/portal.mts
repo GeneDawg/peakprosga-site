@@ -285,6 +285,24 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
   if (!mine.length) return { jobs: [], raw: { jobs: [], invoices: [] } };
 
   const ids = new Set(mine.map((m) => m.job.jnid));
+  // Payments taken on a job but not applied to an invoice (JobNimbus Payments can record them this way)
+  // still count toward that job's invoices.
+  const unapplied = new Map<string, { amount: number; date: string | null }>();
+  try {
+    for (const p of await jnAll("/payments")) {
+      if (p.is_archived || p.is_active === false || (p.invoices || []).length) continue;
+      const amount = Number(p.total || 0) - Number(p.refunded_amount || 0);
+      if (amount <= 0) continue;
+      for (const r of p.related || []) {
+        if (!ids.has(r.id)) continue;
+        const prev = unapplied.get(r.id) || { amount: 0, date: null };
+        const d = toISO(p.date_payment) || toISO(p.date_created);
+        unapplied.set(r.id, { amount: prev.amount + amount, date: [prev.date, d].filter(Boolean).sort().pop() || null });
+      }
+    }
+  } catch (e) {
+    console.error("payments lookup failed", e);
+  }
   const invoicesRaw = (await jnAll("/v2/invoices")).filter(
     (inv) => !inv.is_archived && inv.is_active !== false && (inv.related || []).some((r: any) => ids.has(r.id)),
   );
@@ -298,11 +316,12 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
     let invoice: PortalJob["invoice"] = null;
     if (invs.length) {
       const total = invs.reduce((a, i) => a + Number(i.total || 0), 0);
-      const due = invs.reduce((a, i) => a + Number(i.due ?? Math.max(0, Number(i.total || 0) - Number(i.total_paid || 0))), 0);
+      const extra = unapplied.get(job.jnid);
+      const due = invs.reduce((a, i) => a + Number(i.due ?? Math.max(0, Number(i.total || 0) - Number(i.total_paid || 0))), 0) - (extra?.amount || 0);
       const dates = invs.map((i) => toISO(i.date_invoice) || toISO(i.date_created)).filter(Boolean).sort() as string[];
-      const paidDates = invs.map((i) => toISO(i.date_paid_in_full)).filter(Boolean).sort() as string[];
+      const paidDates = [...invs.map((i) => toISO(i.date_paid_in_full)), extra?.date].filter(Boolean).sort() as string[];
       // Nothing left to pay. A $0 invoice counts as paid once it is out of Draft.
-      const isPaid = due <= PAID_EPSILON && (total > 0 || invs.some((i) => toISO(i.date_paid_in_full) || norm(i.status_name) !== "draft"));
+      const isPaid = due <= PAID_EPSILON && (total > 0 || !!extra || invs.some((i) => toISO(i.date_paid_in_full) || norm(i.status_name) !== "draft"));
       invoice = {
         numbers: invs.map((i) => String(i.number ?? "")).filter(Boolean),
         total,
