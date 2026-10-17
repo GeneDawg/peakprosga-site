@@ -196,7 +196,9 @@ tbody tr:hover td{background:#fafcfa}
 .cert .cs{color:var(--green)}
 .foot{background:var(--band)}
 .foot .copy{color:#fff}
-@media (max-width:720px){header.top .brand .tag{display:none} header.top img{height:34px} #newjob{display:none}}
+@media (max-width:720px){header.top .brand .tag{display:none} header.top img{height:34px} .band .actions{width:100%} .band .actions .btn{width:100%}}
+.gate-card .showcode{justify-content:flex-start;text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)}
+.gate-card .showcode input{width:auto;padding:0;border-radius:4px;accent-color:var(--green)}
 </style>
 </head>
 <body>
@@ -227,7 +229,6 @@ tbody tr:hover td{background:#fafcfa}
     <div class="hdr-right">
       <span id="adminbadge" class="adminbadge" hidden>Admin</span>
       <span>Signed in as <span class="who" id="who">Partner</span></span>
-      <a class="btn primary" href="/login.html" id="newjob">+ Submit a job</a>
       <button class="btn" id="signout" type="button">Sign out</button>
     </div>
   </div>
