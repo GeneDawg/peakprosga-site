@@ -514,20 +514,41 @@ function billModal(j){
   });
 }
 
+// iPhone/iPad Safari ignores normal downloads, so there the warranty is prepared first, then the next tap
+// opens the share sheet (Save to Files, Mail, Messages) or, if sharing isn't available, opens the PDF to view.
+const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const readyWarranty = new Map(); // job id -> File, prepared on iPhone and waiting for the second tap
+
 async function downloadWarranty(j, btn){
-  btn.disabled = true; const label = btn.textContent; btn.textContent = "Preparing…";
+  const name = "Peak301_Warranty_" + j.owner.replace(/[^A-Za-z0-9]+/g,"_") + ".pdf";
+  const ready = readyWarranty.get(j.jnid);
+  if (ready){
+    readyWarranty.delete(j.jnid); btn.textContent = btn.dataset.label || "Download warranty";
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [ready] })) { await navigator.share({ files: [ready], title: name }); }
+      else { window.location.href = URL.createObjectURL(ready); }
+    } catch (err) { if (err && err.name !== "AbortError") window.location.href = URL.createObjectURL(ready); }
+    return;
+  }
+  btn.disabled = true; const label = btn.textContent; btn.dataset.label = label; btn.textContent = "Preparing…";
   try {
     const res = await api("/api/portal/warranty?job=" + encodeURIComponent(j.jnid));
     if (!res.ok){ const b = await res.json().catch(()=>({})); throw new Error(b.error || "Could not create the warranty."); }
     const blob = await res.blob();
+    if (IS_IOS){
+      readyWarranty.set(j.jnid, new File([blob], name, { type: "application/pdf" }));
+      btn.disabled = false; btn.textContent = "Tap to save / share";
+      toast("Warranty is ready. Tap the button again to save it to Files or send it.");
+      return;
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "Peak301_Warranty_" + j.owner.replace(/[^A-Za-z0-9]+/g,"_") + ".pdf";
+    a.href = url; a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(url), 60000);
-    toast("Warranty downloaded.");
-  } catch (err) { toast(err.message); }
-  finally { btn.disabled = false; btn.textContent = label; }
+    toast("Warranty downloaded. Check your Downloads folder.");
+    btn.disabled = false; btn.textContent = label;
+  } catch (err) { toast(err.message); btn.disabled = false; btn.textContent = label; }
 }
 
 $("rows").addEventListener("click", e => {
