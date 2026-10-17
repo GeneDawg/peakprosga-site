@@ -134,9 +134,24 @@
   .impact-band p { font-size: .9rem; font-weight: 300; }
   .impact-band .label { color: var(--leaf); }
 
+  .cred-pair { display: flex; align-items: center; gap: .6rem; flex: none; }
+  .cred .cred-pair img.sika { height: 28px; }
+  .maker { display: grid; grid-template-columns: .9fr 1.1fr; gap: 0; background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .maker-logos { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.6rem; padding: 2.5rem; background: var(--paper); border-right: 1px solid var(--line); }
+  .maker-logos .row { display: flex; align-items: center; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+  .maker-logos img.cb { height: 112px; width: auto; }
+  .maker-logos img.sk { height: 64px; width: auto; }
+  .maker-logos img.p3 { height: 88px; width: auto; }
+  .maker-copy { padding: 2.5rem; }
+  .maker-copy h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); margin-top: .6rem; letter-spacing: -.03em; }
+  .maker-copy p { color: var(--muted); margin-top: .8rem; }
+  .chain { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 1.5rem; }
+  .chain div { border-top: 2px solid var(--green-2); padding-top: .7rem; font-size: .85rem; color: var(--muted); }
+  .chain b { display: block; color: var(--ink); font-size: .95rem; }
+
   /* credentials band */
   .creds { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--paper); }
-  .creds-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .creds-grid { display: grid; grid-template-columns: 1fr 1.45fr 1fr 1fr; }
   .cred { display: flex; align-items: center; gap: 1rem; padding: 1.4rem 1.25rem; border-left: 1px solid var(--line); }
   .cred:first-child { border-left: 0; padding-left: 0; }
   .cred img { height: 54px; width: auto; flex: none; }
@@ -318,7 +333,9 @@
     .cred:nth-child(n+3) { border-top: 1px solid var(--line); }
   }
   @media (max-width: 960px) {
-    .hero-grid, .apply-grid, .numbers, .proof { grid-template-columns: 1fr; }
+    .hero-grid, .apply-grid, .numbers, .proof, .maker { grid-template-columns: 1fr; }
+    .maker-logos { border-right: 0; border-bottom: 1px solid var(--line); padding: 1.75rem; }
+    .maker-copy { padding: 1.75rem; }
     .sci-grid, .impact, .steps { grid-template-columns: 1fr; }
     .tiles { grid-template-columns: 1fr; }
     .who { grid-template-columns: 1fr 1fr; }
@@ -357,6 +374,7 @@
     .mission { grid-template-columns: 1fr; padding: 1.5rem; }
     .apply-form { padding: 1.4rem; }
     .who { grid-template-columns: 1fr; }
+    .chain { grid-template-columns: 1fr; }
     .foot-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -389,6 +407,7 @@
       </a>
       <ul class="nav-links">
         <li><a href="#science">The Science</a></li>
+        <li><a href="#maker">Manufacturer</a></li>
         <li><a href="#impact">Impact</a></li>
         <li><a href="#how">Referral Program</a></li>
         <li><a href="#faq">FAQ</a></li>
@@ -405,6 +424,7 @@
 
 <div class="mobile-menu" id="mobileMenu">
   <a href="#science" class="mobile-link">The Science</a>
+  <a href="#maker" class="mobile-link">Manufacturer</a>
   <a href="#impact" class="mobile-link">Impact</a>
   <a href="#how" class="mobile-link">How the Referral Program Works</a>
   <a href="#earn" class="mobile-link">The Numbers</a>
@@ -457,7 +477,7 @@
 <div class="creds" aria-label="Product credentials">
   <div class="wrap creds-grid">
     <div class="cred"><img src="assets/brand/peak301-logo.png" alt="Peak 301"><div class="txt"><b>Powered by Peak 301®</b>Bio-based asphalt shingle rejuvenator</div></div>
-    <div class="cred"><img src="assets/brand/colorbiotics-logo.png" alt="Colorbiotics, a Sika company"><div class="txt"><b>Manufactured by Colorbiotics</b>Part of the Sika family of companies</div></div>
+    <div class="cred"><div class="cred-pair"><img src="assets/brand/colorbiotics-logo.png" alt="Colorbiotics, a Sika company"><img src="assets/brand/sika-logo.png" alt="Sika" class="sika"></div><div class="txt"><b>Made by Colorbiotics</b>Part of the Sika family of companies</div></div>
     <div class="cred"><img src="assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product, 96%"><div class="txt"><b>USDA Certified Biobased</b>96% biobased content</div></div>
     <div class="cred"><div class="lab-ico" style="color:var(--green)"><svg width="24" height="24"><use href="#i-flask"/></svg></div><div class="txt"><b>Independently lab tested</b>By PRI Group against untreated shingles and a competing rejuvenator</div></div>
   </div>
@@ -557,6 +577,31 @@
         <div class="slider-label before">Before</div>
         <div class="slider-label after">After Peak 301</div>
         <div class="slider-handle" id="sliderHandle"><span>⟷</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MANUFACTURER -->
+<section class="block" id="maker" style="padding-top:0">
+  <div class="wrap">
+    <div class="maker reveal">
+      <div class="maker-logos">
+        <img class="p3" src="assets/brand/peak301-logo.png" alt="Peak 301">
+        <div class="row">
+          <img class="cb" src="assets/brand/colorbiotics-logo.png" alt="Colorbiotics, a Sika company">
+          <img class="sk" src="assets/brand/sika-logo.png" alt="Sika">
+        </div>
+      </div>
+      <div class="maker-copy">
+        <div class="label">Who makes it</div>
+        <h2>Made by Colorbiotics, part of the Sika family.</h2>
+        <p>Peak 301® is developed and manufactured in Ames, Iowa by Colorbiotics, a Sika company. Sika has been building trust in construction chemistry since 1910, and that heritage stands behind every roof we treat.</p>
+        <div class="chain">
+          <div><b>Sika</b>Global construction chemistry since 1910</div>
+          <div><b>Colorbiotics</b>Develops and manufactures Peak 301</div>
+          <div><b>Peak 301 Pros GA</b>Certified application for Georgia contractors</div>
+        </div>
       </div>
     </div>
   </div>
