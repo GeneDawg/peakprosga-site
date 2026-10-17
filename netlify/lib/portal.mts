@@ -12,7 +12,8 @@ const SESSION_HOURS = 12;
 export type Account = { key: string; name: string; prefix: string; contact?: string; code: string; sources?: string[]; contactNames?: string[]; emailDomains?: string[]; contactId?: string; estimateTemplateId?: string; invoiceTemplateId?: string; service?: "peak" | "full" };
 // v = fingerprint of the code used to sign in. Changing a partner's code in PORTAL_ACCOUNTS (or the admin code)
 // ends every session made with the old code on the next request.
-export type Session = { role: "admin" | "partner"; key?: string; exp: number; v?: string };
+// j = set only on short-lived file links (one job, a few minutes), so those links can never act as a full sign-in.
+export type Session = { role: "admin" | "partner"; key?: string; exp: number; v?: string; j?: string };
 
 export function env(name: string): string {
   const v = Netlify.env.get(name);
@@ -88,9 +89,29 @@ export function readSession(req: Request): Session {
     throw new HttpError(401, "Please sign in with your access code.");
   const s: Session = JSON.parse(Buffer.from(body, "base64url").toString());
   if (s.exp < Date.now()) throw new HttpError(401, "Your session ended. Please sign in again.");
+  if (s.j) throw new HttpError(401, "Please sign in with your access code.");
   // The code behind this session must still be current, and the partner must still exist.
   const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : accounts().find((a) => a.key === s.key)?.code;
   if (!current || s.v !== codePrint(current)) throw new HttpError(401, "Your access code has changed. Please sign in again.");
+  return s;
+}
+
+/** A link for one job's file, good for 3 minutes. Used on iPhone, where Safari needs a real web address to open a PDF. */
+export function makeFileTicket(s: Session, jnid: string): string {
+  return makeToken({ ...s, j: jnid, exp: Math.min(s.exp, Date.now() + 3 * 60_000) });
+}
+
+/** Checks a file link from makeFileTicket and returns its session, or null if it's expired or for another job. */
+export function readFileTicket(ticket: string, jnid: string): Session | null {
+  const [body, sig] = String(ticket || "").split(".");
+  if (!body || !sig) return null;
+  const good = sign(body);
+  if (good.length !== sig.length || !timingSafeEqual(Buffer.from(good), Buffer.from(sig))) return null;
+  let s: Session;
+  try { s = JSON.parse(Buffer.from(body, "base64url").toString()); } catch { return null; }
+  if (!s.j || s.j !== jnid || s.exp < Date.now()) return null;
+  const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : accounts().find((a) => a.key === s.key)?.code;
+  if (!current || s.v !== codePrint(current)) return null;
   return s;
 }
 
