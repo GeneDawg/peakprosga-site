@@ -1,18 +1,25 @@
 import type { Config } from "@netlify/functions";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { allowedAccounts, handleError, HttpError, loadJobs, readSession } from "../lib/portal.mts";
+import { allowedAccounts, handleError, HttpError, json, loadJobs, makeFileTicket, readFileTicket, readSession } from "../lib/portal.mts";
 import { WARRANTY_TEMPLATE_B64 } from "../lib/warranty-template.mts";
 
 // GET ?job=<jnid> -> the completed Peak 301 warranty PDF. Released only when the job's invoice is paid in full.
+// GET ?job=<jnid>&link=1 -> { url } a 3-minute link to the same PDF (iPhone/iPad, which can't save a file from a script).
+// GET ?job=<jnid>&t=<link ticket> -> the PDF shown in the browser, with Safari's Share button to save or send it.
 export default async (req: Request) => {
   try {
-    const session = readSession(req);
-    const jnid = new URL(req.url).searchParams.get("job");
+    const url = new URL(req.url);
+    const jnid = url.searchParams.get("job");
     if (!jnid) throw new HttpError(400, "Missing job.");
+    const ticket = url.searchParams.get("t");
+    const session = ticket ? readFileTicket(ticket, jnid) : readSession(req);
+    if (!session) throw new HttpError(401, "This warranty link has expired. Go back to your dashboard and tap Download warranty again.");
     const { jobs } = await loadJobs(allowedAccounts(session, "all"));
     const job = jobs.find((j) => j.jnid === jnid);
     if (!job) throw new HttpError(404, "That job isn't on your account.");
     if (!job.invoice?.isPaid) throw new HttpError(403, "The warranty is released once the invoice is paid in full.");
+    if (!ticket && url.searchParams.get("link") === "1")
+      return json({ url: `/api/portal/warranty?job=${encodeURIComponent(jnid)}&t=${encodeURIComponent(makeFileTicket(session, jnid))}` });
 
     const pdf = await PDFDocument.load(Buffer.from(WARRANTY_TEMPLATE_B64, "base64"));
     const page = pdf.getPage(0);
@@ -40,7 +47,7 @@ export default async (req: Request) => {
     return new Response(bytes, {
       headers: {
         "content-type": "application/pdf",
-        "content-disposition": `attachment; filename="${file}"`,
+        "content-disposition": `${ticket ? "inline" : "attachment"}; filename="${file}"`,
         "cache-control": "no-store",
       },
     });
