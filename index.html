@@ -3,550 +3,773 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peak Pros Georgia - White-Label Roof Rejuvenation for GA Contractors</title>
-<meta name="description" content="Peak Pros Georgia is the white-label roof rejuvenation platform for Georgia contractors. Sell under your brand, we fulfill. No equipment, no inventory. Keep everything above $85/sq.">
+<title>Peak 301 Pros GA · Bio-Based Roof Rejuvenation for Georgia Contractors</title>
+<meta name="description" content="Peak 301 Pros GA gives Georgia contractors a white-label, bio-based roof rejuvenation service. Powered by Peak 301®, manufactured by Colorbiotics, part of the Sika family. 96% USDA Certified Biobased.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="assets/brand/peak301-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!--
-  MARKET SETTINGS — to copy this site for another market (Florida, Houston...), change these:
-    • "Georgia" / "GA" in the logo, titles and copy
+  MARKET SETTINGS — to copy this site for another market (Florida, Houston...), change:
+    • "GA" / "Georgia" in the title, logo badge and copy
     • Service area lines (search: SERVICE-AREA)
     • Phone 404-323-1869 and partners@peakprosga.com
     • Partner rate $85/sq and the earnings example (search: RATE)
     • The Netlify form name PeakProsGA-PartnerForm
   The partner login, dashboard (/partners/) and assignment form (login.html) are shared code.
+  Product claims on this page come from Colorbiotics' published materials and the approved Peak 301 Pros
+  briefing. Don't add new performance or environmental claims without a source.
 -->
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --red: #CC2229; --red-dark: #a31a1f; --red-soft: rgba(204,34,41,.12);
-    --black: #0e0e0e; --ink: #151515; --panel: #1b1b1b; --line: #2c2c2c;
-    --muted: #9a9a9a; --soft: #cfcfcf; --white: #ffffff;
-    --head: 'Barlow Condensed', 'Segoe UI', sans-serif;
+    --white: #ffffff; --paper: #f6f8f6; --mist: #eef3ef;
+    --ink: #0f1a14; --text: #36443c; --muted: #67756d; --line: #e1e7e2; --line-2: #cfd8d1;
+    --red: #d7262e; --red-dark: #b51e25;
+    --green: #1d7a4b; --green-2: #2f9a62; --green-tint: #e8f4ed; --leaf: #8cc63f;
+    --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --head: 'Inter Tight', 'Inter', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.06);
   }
-  html { scroll-behavior: smooth; scroll-padding-top: 160px; }
-  body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background: var(--black); color: var(--white); line-height: 1.6; font-size: 16px; }
+  html { scroll-behavior: smooth; scroll-padding-top: 150px; }
+  body { font-family: var(--sans); font-weight: 400; background: var(--white); color: var(--text); line-height: 1.65; font-size: 16px; -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
   img { max-width: 100%; display: block; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 1.25rem; }
-  h1, h2, h3 { font-family: var(--head); letter-spacing: -.005em; line-height: 1.05; }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.25rem; }
+  h1, h2, h3, h4 { font-family: var(--head); color: var(--ink); letter-spacing: -.02em; line-height: 1.1; font-weight: 600; }
+  .mono { font-family: var(--mono); }
+  .label { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
+  .label.red { color: var(--red); }
 
-  /* ---------- buttons ---------- */
-  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-weight: 700; font-size: 1rem; padding: .85rem 1.5rem; border-radius: 6px; border: 2px solid transparent; cursor: pointer; transition: background .15s, color .15s, border-color .15s; white-space: nowrap; font-family: inherit; }
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-family: var(--sans); font-weight: 600; font-size: .95rem; padding: .8rem 1.35rem; border-radius: 999px; border: 1.5px solid transparent; cursor: pointer; transition: all .15s ease; white-space: nowrap; }
+  .btn-ink { background: var(--ink); color: #fff; }
+  .btn-ink:hover { background: #24342b; }
   .btn-red { background: var(--red); color: #fff; }
   .btn-red:hover { background: var(--red-dark); }
-  .btn-white { background: #fff; color: #111; }
-  .btn-white:hover { background: #e8e8e8; }
-  .btn-ghost { border-color: #4a4a4a; color: #fff; }
-  .btn-ghost:hover { border-color: #fff; }
+  .btn-line { border-color: var(--line-2); color: var(--ink); background: #fff; }
+  .btn-line:hover { border-color: var(--ink); }
   .btn-block { width: 100%; }
 
-  /* ---------- top strip + nav ---------- */
+  /* top strip + nav */
   .top { position: fixed; inset: 0 0 auto 0; z-index: 1000; }
-  .partner-strip { display: flex; align-items: center; justify-content: center; gap: .5rem; height: 40px; background: var(--red); color: #fff; font-size: .95rem; padding: 0 1rem; text-align: center; }
-  .partner-strip b { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
-  .partner-strip:hover { background: var(--red-dark); }
-  .nav { background: rgba(14,14,14,.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
-  .nav-inner { height: 64px; display: flex; align-items: center; gap: 1.5rem; }
-  .logo { white-space: nowrap; font-family: var(--head); font-size: 1.6rem; font-weight: 800; letter-spacing: .01em; }
-  .logo span { color: var(--red); }
-  .nav-links { display: flex; gap: 1.5rem; margin-left: auto; list-style: none; }
-  .nav-links a { color: #b5b5b5; font-size: .92rem; font-weight: 600; }
-  .nav-links a:hover { color: #fff; }
-  .nav-actions { display: flex; gap: .6rem; align-items: center; }
-  .nav-actions .btn { padding: .5rem 1rem; font-size: .9rem; }
-  .lang { font-size: .85rem; font-weight: 700; color: #b5b5b5; border: 1px solid #3a3a3a; border-radius: 5px; padding: .45rem .7rem; }
-  .lang:hover { color: #fff; border-color: #777; }
-  .hamburger { display: none; background: none; border: 0; padding: 6px; cursor: pointer; flex-direction: column; gap: 5px; }
-  .hamburger span { width: 24px; height: 2px; background: #fff; border-radius: 2px; transition: .25s; }
+  .partner-strip { display: flex; align-items: center; justify-content: center; gap: .5rem; height: 36px; background: var(--ink); color: #fff; font-size: .86rem; padding: 0 1rem; text-align: center; }
+  .partner-strip b { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--leaf); }
+  .partner-strip:hover { background: #1d2b23; }
+  .nav { background: rgba(255,255,255,.92); backdrop-filter: saturate(160%) blur(12px); -webkit-backdrop-filter: saturate(160%) blur(12px); border-bottom: 1px solid var(--line); }
+  .nav-inner { height: 72px; display: flex; align-items: center; gap: 1.75rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; }
+  .brand img { height: 46px; width: auto; }
+  .brand .region { font-family: var(--mono); font-size: .72rem; font-weight: 500; letter-spacing: .12em; color: var(--ink); border: 1px solid var(--line-2); border-radius: 6px; padding: .2rem .45rem; }
+  .nav-links { display: flex; gap: 1.6rem; margin-left: auto; list-style: none; }
+  .nav-links a { font-size: .92rem; color: var(--muted); font-weight: 500; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-actions { display: flex; gap: .5rem; align-items: center; }
+  .nav-actions .btn { padding: .55rem 1rem; font-size: .88rem; }
+  .lang { font-family: var(--mono); font-size: .78rem; color: var(--muted); padding: .45rem .55rem; border-radius: 6px; }
+  .lang:hover { color: var(--ink); background: var(--mist); }
+  .hamburger { display: none; background: none; border: 0; padding: 8px; cursor: pointer; flex-direction: column; gap: 5px; }
+  .hamburger span { width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: .25s; }
   .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .hamburger.open span:nth-child(2) { opacity: 0; }
   .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-  .mobile-menu { display: none; position: fixed; top: 104px; left: 0; right: 0; z-index: 999; background: var(--ink); border-bottom: 1px solid var(--line); padding: .5rem 1.25rem 1.25rem; flex-direction: column; }
+  .mobile-menu { display: none; position: fixed; top: 108px; left: 0; right: 0; z-index: 999; background: #fff; border-bottom: 1px solid var(--line); padding: .25rem 1.25rem 1.25rem; flex-direction: column; box-shadow: var(--shadow); max-height: calc(100vh - 108px); overflow-y: auto; }
   .mobile-menu.open { display: flex; }
-  .mobile-menu .mm-label { font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-top: 1rem; }
-  .mobile-menu a.mobile-link { padding: .7rem 0; border-bottom: 1px solid var(--line); color: #ddd; font-weight: 600; }
+  .mobile-menu .label { margin-top: 1.1rem; margin-bottom: .2rem; }
+  .mobile-menu a.mobile-link { padding: .75rem 0; border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 500; }
 
-  /* ---------- hero ---------- */
-  .hero { padding: 152px 0 72px; background: radial-gradient(900px 500px at 85% 10%, rgba(204,34,41,.18), transparent 70%), var(--black); }
-  .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: center; }
-  .eyebrow { display: inline-block; font-size: .75rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #ff7a80; background: var(--red-soft); border: 1px solid rgba(204,34,41,.35); border-radius: 999px; padding: .35rem .9rem; margin-bottom: 1.25rem; }
-  .hero h1 { font-size: clamp(3.2rem, 7.5vw, 6rem); font-weight: 800; text-transform: uppercase; }
-  .hero h1 em { font-style: normal; color: var(--red); display: block; }
-  .hero-sub { margin-top: 1.25rem; font-size: 1.15rem; color: var(--soft); max-width: 34rem; }
-  .hero-sub strong { color: #fff; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.25rem; max-width: 34rem; }
-  .stat { border-left: 3px solid var(--red); padding-left: .85rem; }
-  .stat b { display: block; font-family: var(--head); font-size: 2rem; line-height: 1; }
-  .stat small { color: var(--muted); font-size: .8rem; }
+  /* hero */
+  .hero { position: relative; padding: 160px 0 64px; overflow: hidden; background:
+      radial-gradient(700px 420px at 88% 0%, rgba(140,198,63,.16), transparent 70%),
+      radial-gradient(600px 400px at 0% 100%, rgba(29,122,75,.08), transparent 70%), #fff; }
+  .hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 75%); -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 75%); pointer-events: none; }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 3.5rem; align-items: center; }
+  .chip { display: inline-flex; align-items: center; gap: .5rem; font-size: .8rem; font-weight: 500; color: var(--green); background: var(--green-tint); border: 1px solid #cfe7d9; border-radius: 999px; padding: .35rem .8rem .35rem .45rem; margin-bottom: 1.4rem; }
+  .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--green-2); box-shadow: 0 0 0 4px rgba(47,154,98,.18); margin-left: .25rem; }
+  .hero h1 { font-size: clamp(2.6rem, 5.6vw, 4.4rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.02; }
+  .hero h1 .soft { color: var(--green); }
+  .hero-sub { margin-top: 1.3rem; font-size: 1.12rem; font-weight: 300; color: var(--text); max-width: 36rem; }
+  .hero-sub b { font-weight: 600; color: var(--ink); }
+  .hero-facts { display: flex; flex-wrap: wrap; gap: 1.75rem; margin-top: 2rem; }
+  .fact b { display: block; font-family: var(--head); font-size: 1.9rem; font-weight: 600; color: var(--ink); letter-spacing: -.02em; line-height: 1; }
+  .fact small { font-size: .8rem; color: var(--muted); }
 
-  /* path chooser */
-  .paths { display: grid; gap: 1rem; }
-  .paths-title { font-size: .8rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-  .path { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.5rem; }
-  .path.new { border-top: 4px solid var(--red); }
-  .path.member { border-top: 4px solid #fff; }
-  .path-kicker { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
-  .path.member .path-kicker { color: #fff; }
-  .path h2 { font-size: 1.7rem; margin: .3rem 0 .4rem; }
-  .path p { color: var(--muted); font-size: .95rem; margin-bottom: 1rem; }
-  .path-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .paths { display: grid; gap: .9rem; }
+  .paths > .label { color: var(--muted); }
+  .path { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem 1.5rem; box-shadow: var(--shadow); }
+  .path h2 { font-size: 1.35rem; margin: .35rem 0 .3rem; }
+  .path p { color: var(--muted); font-size: .93rem; margin-bottom: 1rem; }
+  .path-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
   .path-actions .btn { flex: 1; }
-  .code-form label { display: block; font-size: .8rem; font-weight: 700; color: var(--soft); margin-bottom: .35rem; }
+  .path.member { border-top: 3px solid var(--ink); }
+  .path.new { border-top: 3px solid var(--green-2); }
+  .code-form label { display: block; font-size: .8rem; font-weight: 600; color: var(--ink); margin-bottom: .35rem; }
   .code-row { display: flex; gap: .5rem; }
-  .code-row input { flex: 1; min-width: 0; padding: .8rem 1rem; border-radius: 6px; border: 1px solid #3a3a3a; background: #101010; color: #fff; font-size: 1rem; letter-spacing: .06em; text-transform: uppercase; }
-  .code-row input:focus { outline: 2px solid var(--red); outline-offset: 1px; }
+  .code-row input { flex: 1; min-width: 0; padding: .78rem 1rem; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: .95rem; letter-spacing: .06em; text-transform: uppercase; }
+  .code-row input:focus { outline: none; border-color: var(--green-2); background: #fff; box-shadow: 0 0 0 4px rgba(47,154,98,.15); }
   .code-row button:disabled { opacity: .6; cursor: wait; }
-  .code-err { color: #ff6b6b; font-size: .85rem; margin-top: .5rem; }
-  .code-alt { font-size: .85rem; color: var(--muted); margin-top: .75rem; }
-  .code-alt a { color: #fff; text-decoration: underline; }
+  .code-err { color: var(--red); font-size: .85rem; margin-top: .5rem; }
+  .code-alt { font-size: .83rem; color: var(--muted); margin-top: .7rem; }
+  .code-alt a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 
-  /* ---------- journey (new partners) ---------- */
-  .journey { position: sticky; top: 104px; z-index: 50; background: rgba(21,21,21,.97); border-bottom: 1px solid var(--line); }
-  .journey-inner { display: flex; align-items: center; gap: .25rem; overflow-x: auto; scrollbar-width: none; height: 52px; }
-  .journey-inner::-webkit-scrollbar { display: none; }
-  .journey-label { font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: .75rem; white-space: nowrap; }
-  .jstep { display: flex; align-items: center; gap: .45rem; padding: .4rem .8rem; border-radius: 999px; color: #aaa; font-size: .9rem; font-weight: 600; white-space: nowrap; }
-  .jstep i { font-style: normal; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #2a2a2a; font-size: .75rem; font-weight: 800; }
-  .jstep.active { color: #fff; background: #242424; }
-  .jstep.active i { background: var(--red); }
-  .jsep { color: #444; }
+  /* credentials band */
+  .creds { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--paper); }
+  .creds-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .cred { display: flex; align-items: center; gap: 1rem; padding: 1.4rem 1.25rem; border-left: 1px solid var(--line); }
+  .cred:first-child { border-left: 0; padding-left: 0; }
+  .cred img { height: 54px; width: auto; flex: none; }
+  .cred .txt { font-size: .82rem; line-height: 1.4; color: var(--muted); }
+  .cred .txt b { display: block; color: var(--ink); font-weight: 600; font-size: .88rem; }
+  .cred .lab-ico { width: 46px; height: 46px; border-radius: 10px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; flex: none; }
 
-  section.block { padding: 88px 0; border-bottom: 1px solid var(--line); }
-  section.block.alt { background: var(--ink); }
-  .sec-head { max-width: 46rem; margin-bottom: 2.75rem; }
-  .step-tag { font-size: .75rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--red); margin-bottom: .6rem; }
-  .sec-head h2 { font-size: clamp(2.3rem, 4.5vw, 3.4rem); font-weight: 800; text-transform: uppercase; }
-  .sec-head p { color: var(--muted); font-size: 1.08rem; margin-top: .75rem; }
-  .next { margin-top: 2.75rem; }
-  .next a { color: #fff; font-weight: 700; border-bottom: 2px solid var(--red); padding-bottom: 2px; }
+  /* sections */
+  section.block { padding: 104px 0; }
+  section.tint { background: var(--paper); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .sec-head { max-width: 46rem; margin-bottom: 3rem; }
+  .sec-head h2 { font-size: clamp(2rem, 3.8vw, 3rem); margin-top: .7rem; letter-spacing: -.03em; }
+  .sec-head p { color: var(--muted); font-size: 1.08rem; font-weight: 300; margin-top: .9rem; }
 
-  /* how it works */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.75rem; }
-  .step-num { font-family: var(--head); font-size: 3rem; font-weight: 800; color: var(--red); line-height: 1; }
-  .step h3 { font-size: 1.55rem; margin: .5rem 0; }
-  .step p { color: var(--muted); font-size: .97rem; }
-  .dash-note { margin-top: 1.25rem; display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; align-items: center; background: var(--red-soft); border: 1px solid rgba(204,34,41,.3); border-radius: 12px; padding: 1.25rem 1.5rem; }
-  .dash-note .ico { font-size: 1.8rem; }
-  .dash-note b { color: #fff; }
-  .dash-note p { color: var(--soft); font-size: .95rem; }
+  /* science */
+  .sci-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .stage { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .stage svg { display: block; width: 100%; height: auto; background: linear-gradient(180deg, #fbfcfb, #f2f6f3); border-bottom: 1px solid var(--line); }
+  .stage-body { padding: 1.3rem 1.4rem 1.5rem; }
+  .stage-body h3 { font-size: 1.2rem; margin: .4rem 0 .4rem; }
+  .stage-body p { font-size: .94rem; color: var(--muted); }
 
-  /* numbers */
-  .slider-container { position: relative; width: 100%; height: 420px; border-radius: 12px; overflow: hidden; cursor: col-resize; user-select: none; margin-bottom: 2rem; border: 1px solid var(--line); }
+  .proof { display: grid; grid-template-columns: 1.25fr .75fr; gap: 1.25rem; margin-top: 1.25rem; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; }
+  .card h3 { font-size: 1.25rem; }
+  .lab { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: .9rem; }
+  .lab th { font-family: var(--mono); font-size: .68rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: right; padding: .55rem .5rem; border-bottom: 1px solid var(--line-2); }
+  .lab th:first-child, .lab td:first-child { text-align: left; }
+  .lab td { padding: .75rem .5rem; border-bottom: 1px solid var(--line); text-align: right; font-family: var(--mono); color: var(--muted); }
+  .lab td:first-child { font-family: var(--sans); color: var(--ink); font-weight: 500; }
+  .lab td.win, .lab th.win { color: var(--green); font-weight: 500; }
+  .lab th.win { background: var(--green-tint); border-radius: 6px 6px 0 0; }
+  .lab td.win { background: rgba(232,244,237,.6); }
+  .lab tr:last-child td { border-bottom: 0; }
+  .lab td small { display: block; font-family: var(--sans); font-weight: 400; font-size: .76rem; color: var(--muted); }
+  .src { font-size: .76rem; color: var(--muted); margin-top: .9rem; }
+  .spec { list-style: none; display: grid; gap: .1rem; margin-top: .8rem; }
+  .spec li { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem 0; border-bottom: 1px dashed var(--line-2); font-size: .92rem; }
+  .spec li:last-child { border-bottom: 0; }
+  .spec span { color: var(--muted); }
+  .spec b { color: var(--ink); font-weight: 600; text-align: right; }
+  .usda-row { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .usda-row img { height: 58px; width: auto; }
+  .usda-row p { font-size: .82rem; color: var(--muted); }
+
+  .slider-wrap { margin-top: 1.25rem; }
+  .slider-container { position: relative; width: 100%; height: 440px; border-radius: var(--radius); overflow: hidden; cursor: col-resize; user-select: none; border: 1px solid var(--line); background: #ddd; }
   .slider-container img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 60%; }
   .slider-after { position: absolute; inset: 0; clip-path: inset(0 0 0 50%); }
-  .slider-handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: #fff; transform: translateX(-50%); pointer-events: none; }
-  .slider-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #111; display: grid; place-items: center; font-weight: 800; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
-  .slider-label { position: absolute; top: 1rem; background: rgba(0,0,0,.7); padding: .3rem .75rem; border-radius: 4px; font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-  .slider-label.before { left: 1rem; } .slider-label.after { right: 1rem; background: var(--red); }
-  .numbers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  .ledger { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .ledger-head { background: #000; padding: .9rem 1.25rem; font-weight: 800; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--soft); }
-  .ledger-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-top: 1px solid var(--line); }
-  .ledger-row span { color: var(--soft); }
-  .ledger-row b { font-family: var(--head); font-size: 1.35rem; }
-  .ledger-row.profit b { color: #4ade80; font-size: 1.8rem; }
-  .ledger-foot { padding: 1rem 1.25rem; background: var(--red-soft); color: #fff; font-size: .92rem; border-top: 1px solid rgba(204,34,41,.3); }
-  .checks { list-style: none; display: grid; gap: .75rem; }
-  .checks li { display: flex; gap: .7rem; color: var(--soft); }
-  .checks li::before { content: "✓"; color: var(--red); font-weight: 900; }
-  .card-pad { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.75rem; }
-  .card-pad h3 { font-size: 1.6rem; margin-bottom: 1rem; }
-  .fine { color: #777; font-size: .82rem; margin-top: 1rem; }
+  .slider-handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: #fff; transform: translateX(-50%); pointer-events: none; }
+  .slider-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 42px; height: 42px; border-radius: 50%; background: #fff; color: var(--ink); display: grid; place-items: center; font-weight: 700; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+  .slider-label { position: absolute; top: 1rem; font-family: var(--mono); background: rgba(255,255,255,.92); color: var(--ink); padding: .3rem .7rem; border-radius: 999px; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+  .slider-label.before { left: 1rem; } .slider-label.after { right: 1rem; background: var(--green); color: #fff; }
 
-  /* why */
-  .who { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2.5rem; }
-  .who div { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; }
-  .who b { display: block; font-family: var(--head); font-size: 1.3rem; margin: .35rem 0 .2rem; }
-  .who small { color: var(--muted); font-size: .88rem; }
-  .compare { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .compare th, .compare td { padding: .95rem 1.1rem; text-align: left; border-bottom: 1px solid var(--line); font-size: .95rem; }
-  .compare th { background: #000; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
-  .compare th:last-child { color: #fff; background: var(--red); }
+  /* impact */
+  .impact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .impact .big { font-family: var(--head); font-size: 2.6rem; font-weight: 600; color: var(--ink); letter-spacing: -.03em; line-height: 1; margin: .9rem 0 .5rem; }
+  .impact .big small { font-size: 1rem; color: var(--muted); font-weight: 500; letter-spacing: 0; }
+  .impact p { font-size: .94rem; color: var(--muted); }
+  .ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--green-tint); color: var(--green); }
+  .ico svg { width: 22px; height: 22px; }
+  .mission { margin-top: 1.25rem; display: grid; grid-template-columns: auto 1fr; gap: 1.5rem; align-items: center; background: var(--ink); color: #dfe8e2; border-radius: var(--radius); padding: 1.8rem 2rem; }
+  .mission h3 { color: #fff; font-size: 1.45rem; }
+  .mission p { font-weight: 300; margin-top: .35rem; }
+  .mission .seal { width: 64px; height: 64px; border-radius: 50%; border: 1.5px solid rgba(140,198,63,.6); display: grid; place-items: center; color: var(--leaf); }
+
+  /* program journey */
+  .journey { position: sticky; top: 108px; z-index: 50; background: rgba(255,255,255,.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .journey-inner { display: flex; align-items: center; gap: .25rem; overflow-x: auto; scrollbar-width: none; height: 54px; }
+  .journey-inner::-webkit-scrollbar { display: none; }
+  .journey .label { color: var(--muted); margin-right: .9rem; white-space: nowrap; }
+  .jstep { display: flex; align-items: center; gap: .45rem; padding: .38rem .8rem; border-radius: 999px; color: var(--muted); font-size: .88rem; font-weight: 500; white-space: nowrap; }
+  .jstep i { font-style: normal; font-family: var(--mono); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line-2); font-size: .72rem; }
+  .jstep.active { color: var(--ink); background: var(--mist); }
+  .jstep.active i { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .jsep { color: var(--line-2); }
+  .program section.block { padding: 88px 0; border-bottom: 1px solid var(--line); }
+  .program section.block:last-child { border-bottom: 0; }
+  .next { margin-top: 2.5rem; }
+  .next a { font-weight: 600; color: var(--ink); border-bottom: 1.5px solid var(--green-2); padding-bottom: 2px; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .step { position: relative; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; }
+  .step .n { font-family: var(--mono); font-size: .8rem; color: var(--green); }
+  .step h3 { font-size: 1.25rem; margin: .6rem 0 .45rem; }
+  .step p { font-size: .94rem; color: var(--muted); }
+  .note { margin-top: 1.25rem; display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: center; background: var(--green-tint); border: 1px solid #cfe7d9; border-radius: var(--radius); padding: 1.1rem 1.4rem; }
+  .note p { font-size: .94rem; color: var(--text); }
+  .note b { color: var(--ink); }
+
+  .numbers { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .ledger { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  .ledger-head { padding: 1rem 1.4rem; border-bottom: 1px solid var(--line); }
+  .ledger-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 1rem 1.4rem; border-bottom: 1px solid var(--line); font-size: .95rem; }
+  .ledger-row b { font-family: var(--head); font-size: 1.4rem; font-weight: 600; color: var(--ink); }
+  .ledger-row.profit { background: var(--green-tint); }
+  .ledger-row.profit b { color: var(--green); font-size: 2rem; }
+  .ledger-foot { padding: 1rem 1.4rem; font-size: .9rem; color: var(--muted); }
+  .checks { list-style: none; display: grid; gap: .7rem; margin-top: .9rem; }
+  .checks li { display: flex; gap: .7rem; font-size: .95rem; }
+  .checks li::before { content: ""; flex: none; width: 18px; height: 18px; margin-top: 3px; border-radius: 50%; background: var(--green-tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='%231d7a4b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat; }
+  .fine { font-size: .78rem; color: var(--muted); margin-top: 1rem; }
+
+  .who { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+  .who .card { padding: 1.25rem; }
+  .who h4 { font-size: 1.05rem; margin: .8rem 0 .25rem; }
+  .who p { font-size: .88rem; color: var(--muted); }
+  .compare { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; font-size: .93rem; }
+  .compare th, .compare td { padding: .9rem 1.2rem; text-align: left; border-bottom: 1px solid var(--line); }
+  .compare th { font-family: var(--mono); font-size: .68rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); background: var(--paper); }
+  .compare th:last-child { color: var(--green); background: var(--green-tint); }
+  .compare td:first-child { color: var(--ink); font-weight: 500; }
   .compare td:nth-child(2) { color: var(--muted); }
-  .compare td:last-child { color: #fff; font-weight: 600; }
+  .compare td:last-child { color: var(--ink); font-weight: 600; }
   .compare tr:last-child td { border-bottom: 0; }
-  .stack { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2.5rem; }
-  .stack div { border-top: 3px solid var(--red); padding-top: 1rem; }
-  .stack b { font-family: var(--head); font-size: 1.3rem; display: block; margin-bottom: .3rem; }
-  .stack small { color: var(--muted); font-size: .9rem; }
 
-  /* apply */
-  .apply-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 3rem; align-items: start; }
-  .contact-box { margin-top: 2rem; padding: 1.25rem 1.5rem; background: var(--red-soft); border: 1px solid rgba(204,34,41,.3); border-radius: 12px; color: var(--soft); font-size: .95rem; display: grid; gap: .35rem; }
-  .contact-box b { color: var(--red); font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; }
-  .apply-form { background: #fff; color: #111; border-radius: 14px; padding: 2rem; }
-  .apply-form h3 { font-size: 1.8rem; margin-bottom: 1.25rem; color: #111; }
+  .apply-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 3rem; align-items: start; }
+  .contact-box { margin-top: 2rem; border-top: 1px solid var(--line); padding-top: 1.25rem; display: grid; gap: .35rem; font-size: .95rem; }
+  .contact-box a { color: var(--ink); font-weight: 500; }
+  .apply-form { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 2rem; box-shadow: var(--shadow); }
+  .apply-form h3 { font-size: 1.45rem; margin-bottom: 1.25rem; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .form-group { display: grid; gap: .35rem; }
   .form-group.full { grid-column: 1 / -1; }
-  .form-group label { font-size: .82rem; font-weight: 700; color: #333; }
-  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: .75rem .85rem; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; font-family: inherit; color: #111; background: #fafafa; }
+  .form-group label { font-size: .8rem; font-weight: 600; color: var(--ink); }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: .72rem .85rem; border: 1.5px solid var(--line-2); border-radius: 10px; font-size: .97rem; font-family: inherit; color: var(--ink); background: var(--paper); }
   .form-group textarea { min-height: 96px; resize: vertical; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: 2px solid var(--red); border-color: var(--red); background: #fff; }
-  .form-note { font-size: .82rem; color: #666; margin-top: .75rem; text-align: center; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--green-2); background: #fff; box-shadow: 0 0 0 4px rgba(47,154,98,.12); }
+  .form-note { font-size: .8rem; color: var(--muted); margin-top: .75rem; text-align: center; }
 
   /* partner center */
-  .center { background: linear-gradient(180deg, #000, var(--ink)); }
   .tiles { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1.25rem; }
-  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column; }
-  .tile.main { border-top: 4px solid var(--red); }
-  .tile .ico { font-size: 1.6rem; }
-  .tile h3 { font-size: 1.6rem; margin: .5rem 0 .4rem; }
-  .tile p { color: var(--muted); font-size: .95rem; margin-bottom: 1.25rem; flex: 1; }
+  .tile { display: flex; flex-direction: column; }
+  .tile h3 { font-size: 1.3rem; margin: .9rem 0 .35rem; }
+  .tile p { color: var(--muted); font-size: .94rem; margin-bottom: 1.25rem; flex: 1; }
   .tile .btn { align-self: flex-start; }
+  .tile.main { background: var(--ink); border-color: var(--ink); }
+  .tile.main h3 { color: #fff; }
+  .tile.main p { color: #b9c6bd; }
+  .tile.main .ico { background: rgba(140,198,63,.15); color: var(--leaf); }
 
   /* faq */
-  .faq { display: grid; gap: .75rem; max-width: 52rem; }
-  .faq details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.25rem; }
-  .faq summary { cursor: pointer; font-weight: 700; font-size: 1.02rem; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+  .faq { display: grid; gap: .6rem; max-width: 52rem; }
+  .faq details { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 1.05rem 1.3rem; }
+  .faq summary { cursor: pointer; font-weight: 600; color: var(--ink); list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
   .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: "+"; color: var(--red); font-weight: 900; font-size: 1.3rem; line-height: 1; }
+  .faq summary::after { content: "+"; font-family: var(--mono); color: var(--green); font-size: 1.2rem; line-height: 1; }
   .faq details[open] summary::after { content: "–"; }
-  .faq p { color: var(--muted); margin-top: .65rem; font-size: .97rem; }
+  .faq p { color: var(--muted); margin-top: .6rem; font-size: .95rem; }
 
   /* footer */
-  footer { background: #000; padding: 56px 0 32px; }
-  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 2rem; }
-  .foot-grid h4 { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--red); margin-bottom: .75rem; }
-  .foot-grid a, .foot-grid p { display: block; color: #aaa; font-size: .92rem; margin-bottom: .45rem; }
+  footer { background: var(--ink); color: #b9c6bd; padding: 64px 0 28px; }
+  .foot-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 2rem; }
+  .foot-brand { background: #fff; display: inline-flex; align-items: center; gap: .5rem; border-radius: 10px; padding: .55rem .8rem; }
+  .foot-brand img { height: 34px; }
+  .foot-brand .region { font-family: var(--mono); font-size: .7rem; color: var(--ink); letter-spacing: .12em; }
+  .foot-grid h4 { font-family: var(--mono); font-size: .7rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--leaf); margin-bottom: .8rem; }
+  .foot-grid a, .foot-grid p { display: block; font-size: .9rem; margin-bottom: .45rem; }
   .foot-grid a:hover { color: #fff; }
-  .foot-copy { border-top: 1px solid #222; margin-top: 2.5rem; padding-top: 1.5rem; color: #666; font-size: .82rem; }
+  .foot-made { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: 2.5rem; padding: 1.25rem 1.5rem; background: #fff; border-radius: 12px; }
+  .foot-made img { height: 50px; width: auto; }
+  .foot-made p { color: var(--muted); font-size: .82rem; flex: 1; min-width: 220px; margin: 0; }
+  .foot-copy { border-top: 1px solid #26352c; margin-top: 2rem; padding-top: 1.4rem; font-size: .78rem; color: #7f8f85; }
+
+  /* motion */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
 
   /* responsive */
-  @media (max-width: 1000px) {
+  @media (max-width: 1080px) {
     .nav-links { display: none; }
     .nav-actions { margin-left: auto; }
-    .hero-grid, .apply-grid, .numbers-grid { grid-template-columns: 1fr; }
-    .tiles { grid-template-columns: 1fr; }
-    .who, .stack { grid-template-columns: 1fr 1fr; }
-    .foot-grid { grid-template-columns: 1fr 1fr; }
+    .creds-grid { grid-template-columns: 1fr 1fr; }
+    .cred:nth-child(3) { border-left: 0; padding-left: 0; }
+    .cred:nth-child(n+3) { border-top: 1px solid var(--line); }
   }
-  @media (max-width: 760px) {
+  @media (max-width: 960px) {
+    .hero-grid, .apply-grid, .numbers, .proof { grid-template-columns: 1fr; }
+    .sci-grid, .impact, .steps { grid-template-columns: 1fr; }
+    .tiles { grid-template-columns: 1fr; }
+    .who { grid-template-columns: 1fr 1fr; }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+    .stage { display: grid; grid-template-columns: 220px 1fr; }
+    .stage svg { height: 100%; border-bottom: 0; border-right: 1px solid var(--line); }
+  }
+  @media (max-width: 720px) {
     .nav-actions .btn-red, .nav-actions .lang { display: none; }
-    .nav-actions .btn-ghost { background: var(--red); border-color: var(--red); }
+    .nav-actions .btn-line { background: var(--ink); color: #fff; border-color: var(--ink); }
     .hamburger { display: flex; }
-    .partner-strip { font-size: .85rem; }
-    .hero { padding: 136px 0 56px; }
-    .steps { grid-template-columns: 1fr; }
+    .brand img { height: 32px; }
+    .hero { padding: 132px 0 48px; }
+    .hero h1 { font-size: 2.45rem; }
+    .hero-sub { font-size: 1.02rem; }
+    .hero-facts { display: none; }
+    .chip { font-size: .72rem; }
+    .hero-grid { gap: 2rem; }
+    .creds-grid { grid-template-columns: 1fr; }
+    .cred { border-left: 0 !important; padding-left: 0 !important; border-top: 1px solid var(--line); }
+    .cred:first-child { border-top: 0; }
+    section.block, .program section.block { padding: 68px 0; }
+    .stage { grid-template-columns: 1fr; }
+    .stage svg { border-right: 0; border-bottom: 1px solid var(--line); }
     .slider-container { height: 280px; }
     .form-grid { grid-template-columns: 1fr; }
-    .compare th, .compare td { padding: .75rem .7rem; font-size: .85rem; }
     .code-row { flex-direction: column; }
-    section.block { padding: 64px 0; }
-    .stat b { font-size: 1.7rem; }
-    .dash-note { grid-template-columns: 1fr; }
-    .journey-label { display: none; }
-    .logo { font-size: 1.4rem; }
-    .hero .eyebrow { font-size: .65rem; letter-spacing: .1em; }
-    .hero .stats { display: none; }
-    .hero h1 { font-size: 3rem; }
-    .hero-sub { font-size: 1.05rem; }
-    .hero-grid { gap: 1.75rem; }
+    .compare th, .compare td { padding: .7rem .65rem; font-size: .84rem; }
+    .lab { font-size: .8rem; }
+    .lab th, .lab td { padding: .6rem .3rem; }
+    .journey .label { display: none; }
+    .mission { grid-template-columns: 1fr; padding: 1.5rem; }
+    .apply-form { padding: 1.4rem; }
+    .who { grid-template-columns: 1fr; }
+    .foot-grid { grid-template-columns: 1fr; }
   }
-  @media (max-width: 480px) { .who, .stack, .foot-grid { grid-template-columns: 1fr; } .apply-form { padding: 1.5rem; } }
 </style>
 </head>
 <body>
 
+<!-- SVG icon set -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15M5 19l7-7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-recycle" viewBox="0 0 24 24"><path d="M7 19H4.5a1.5 1.5 0 0 1-1.3-2.2L5 13.5M17 19h2.5a1.5 1.5 0 0 0 1.3-2.2L17.5 11M9.5 5.2l1.2-2a1.5 1.5 0 0 1 2.6 0L15.5 7M3 16l2-2.5L7.5 15M18 9l-.5 2-2.3-.6M12 19H8l1.5-2M12 19l-1.5 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5.5 9.2A1.8 1.8 0 0 0 6 21h12a1.8 1.8 0 0 0 1.5-2.8L14 9V3M7.5 15h9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-roof" viewBox="0 0 24 24"><path d="M2 13l10-8 10 8M5 11v9h14v-9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-gutter" viewBox="0 0 24 24"><path d="M3 7h18v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7zM18 12v8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5a4 4 0 0 1-2-2zM5 21l-2-2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-2-7-8-1z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M11 12l9-9M17 6l2 2M15 8l2 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M12 21v-9M12 12c0-4 3-7 8-7 0 5-3 7-8 7zM12 14c0-3-2.5-5.5-7-5.5 0 4 2.5 5.5 7 5.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+</svg>
+
 <!-- TOP: partner strip + navigation -->
 <div class="top">
-  <a href="/partners/" class="partner-strip">&#128274; Contractor Partners: <b>Log in to your dashboard</b> &rarr;</a>
-  <nav class="nav">
+  <a href="/partners/" class="partner-strip">Contractor partners: <b>Log in to your dashboard</b> &rarr;</a>
+  <nav class="nav" aria-label="Main">
     <div class="wrap nav-inner">
-      <a href="#home" class="logo">Peak Pros <span>GA</span></a>
+      <a href="#home" class="brand" aria-label="Peak 301 Pros GA home">
+        <img src="assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros">
+        <span class="region">GA</span>
+      </a>
       <ul class="nav-links">
-        <li><a href="#how">How It Works</a></li>
-        <li><a href="#earn">The Numbers</a></li>
-        <li><a href="#why">Why Partner</a></li>
+        <li><a href="#science">The Science</a></li>
+        <li><a href="#impact">Impact</a></li>
+        <li><a href="#how">Partner Program</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="/partners/" class="btn btn-ghost">Partner Login</a>
+        <a href="/partners/" class="btn btn-line">Partner Login</a>
         <a href="#apply" class="btn btn-red">Become a Partner</a>
         <a href="/es/" class="lang" lang="es">ES</a>
-        <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
       </div>
     </div>
   </nav>
 </div>
 
 <div class="mobile-menu" id="mobileMenu">
-  <div class="mm-label">New contractors</div>
-  <a href="#how" class="mobile-link">How It Works</a>
-  <a href="#earn" class="mobile-link">The Numbers</a>
-  <a href="#why" class="mobile-link">Why Partner</a>
-  <a href="#apply" class="mobile-link">Apply to Become a Partner</a>
-  <div class="mm-label">Current partners</div>
+  <div class="label">Current partners</div>
   <a href="/partners/" class="mobile-link">Partner Login &amp; Dashboard</a>
   <a href="login.html" class="mobile-link">Submit a New Assignment</a>
+  <div class="label">New contractors</div>
+  <a href="#science" class="mobile-link">The Science</a>
+  <a href="#impact" class="mobile-link">Impact</a>
+  <a href="#how" class="mobile-link">How the Program Works</a>
+  <a href="#earn" class="mobile-link">The Numbers</a>
+  <a href="#apply" class="mobile-link">Apply to Become a Partner</a>
   <a href="#faq" class="mobile-link">FAQ</a>
-  <a href="/es/" class="mobile-link" lang="es">🌐 Ver en Español</a>
+  <a href="/es/" class="mobile-link" lang="es">Ver en Español</a>
 </div>
 
-<!-- HERO: who are you? -->
+<!-- HERO -->
 <header class="hero" id="home">
   <div class="wrap hero-grid">
     <div>
-      <div class="eyebrow">Georgia Contractor Platform · Powered by Peak 301®</div>
-      <h1>You Sell.<em>We Fulfill.</em></h1>
-      <p class="hero-sub">Add roof rejuvenation to your business <strong>under your own brand</strong>. No equipment, no inventory, no crews. You pay <strong>$85 per square</strong> and keep everything above it.</p>
-      <div class="stats">
-        <div class="stat"><b>$85</b><small>Your cost per square</small></div>
-        <div class="stat"><b>$1,000</b><small>Typical profit on a 25-sq roof</small></div>
-        <div class="stat"><b>6 yr</b><small>Transferable Peak 301® warranty</small></div>
+      <div class="chip"><i></i>Bio-based roof rejuvenation · Powered by Peak 301®</div>
+      <h1>Add years to aging roofs.<br><span class="soft">Not tons to landfills.</span></h1>
+      <p class="hero-sub">Peak 301 Pros GA gives Georgia contractors a <b>white-label roof rejuvenation service</b>, made from American-grown soybeans and applied by certified crews. You sell it under your brand. We do the work. You keep everything above <b>$85 per square</b>.</p>
+      <div class="hero-facts">
+        <div class="fact"><b>96%</b><small>USDA Certified Biobased</small></div>
+        <div class="fact"><b>6 yr</b><small>Transferable warranty</small></div>
+        <div class="fact"><b>$0</b><small>Equipment or inventory</small></div>
       </div>
     </div>
 
     <div class="paths">
-      <div class="paths-title">Where would you like to start?</div>
-
-      <div class="path new">
-        <div class="path-kicker">New to Peak Pros</div>
-        <h2>I want to offer Peak 301</h2>
-        <p>See how the partnership works, what you make per job, and apply. It's free to join.</p>
-        <div class="path-actions">
-          <a href="#how" class="btn btn-ghost">How it works</a>
-          <a href="#apply" class="btn btn-red">Apply now</a>
-        </div>
-      </div>
+      <div class="label">Where would you like to start?</div>
 
       <div class="path member" id="partner-signin">
-        <div class="path-kicker">Current partners</div>
+        <div class="label" style="color:var(--ink)">Current partners</div>
         <h2>Sign in to your dashboard</h2>
-        <p>Submit new jobs, track work, see photos, pay invoices and download warranties.</p>
+        <p>Submit jobs, track work, see photos, pay invoices and download warranties.</p>
         <form class="code-form" id="paform" autocomplete="off">
           <label for="pacode">Your company's access code</label>
           <div class="code-row">
             <input id="pacode" name="code" type="text" placeholder="Enter your code" autocapitalize="characters" spellcheck="false" required>
-            <button type="submit" id="pabtn" class="btn btn-white">Sign in &rarr;</button>
+            <button type="submit" id="pabtn" class="btn btn-ink">Sign in &rarr;</button>
           </div>
           <p class="code-err" id="paerr" hidden></p>
-          <p class="code-alt">Just sending a job? <a href="login.html">Submit an assignment</a> · No code? Call 404-323-1869</p>
+          <p class="code-alt">Just sending a job? <a href="login.html">Submit an assignment</a> · Need a code? 404-323-1869</p>
         </form>
+      </div>
+
+      <div class="path new">
+        <div class="label">New to Peak 301 Pros</div>
+        <h2>Offer Peak 301 to your customers</h2>
+        <p>See the science, the numbers and how the program works. Free to join.</p>
+        <div class="path-actions">
+          <a href="#science" class="btn btn-line">Explore</a>
+          <a href="#apply" class="btn btn-red">Apply now</a>
+        </div>
       </div>
     </div>
   </div>
 </header>
 
-<!-- NEW-PARTNER JOURNEY: the step bar stays pinned only while reading steps 1-4 -->
-<div class="journey-zone">
-<div class="journey" id="journey">
-  <div class="wrap journey-inner">
-    <span class="journey-label">Becoming a partner</span>
-    <a class="jstep" href="#how" data-step="how"><i>1</i>How it works</a><span class="jsep">›</span>
-    <a class="jstep" href="#earn" data-step="earn"><i>2</i>The numbers</a><span class="jsep">›</span>
-    <a class="jstep" href="#why" data-step="why"><i>3</i>Why partner</a><span class="jsep">›</span>
-    <a class="jstep" href="#apply" data-step="apply"><i>4</i>Apply</a>
+<!-- CREDENTIALS -->
+<div class="creds" aria-label="Product credentials">
+  <div class="wrap creds-grid">
+    <div class="cred"><img src="assets/brand/peak301-logo.png" alt="Peak 301"><div class="txt"><b>Powered by Peak 301®</b>Bio-based asphalt shingle rejuvenator</div></div>
+    <div class="cred"><img src="assets/brand/colorbiotics-logo.png" alt="Colorbiotics, a Sika company"><div class="txt"><b>Manufactured by Colorbiotics</b>Part of the Sika family of companies</div></div>
+    <div class="cred"><img src="assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product, 96%"><div class="txt"><b>USDA Certified Biobased</b>96% biobased content</div></div>
+    <div class="cred"><div class="lab-ico" style="color:var(--green)"><svg width="24" height="24"><use href="#i-flask"/></svg></div><div class="txt"><b>Independently lab tested</b>By PRI Group against untreated shingles and a competing rejuvenator</div></div>
   </div>
 </div>
 
-<!-- STEP 1: HOW IT WORKS -->
-<section class="block" id="how">
+<!-- THE SCIENCE -->
+<section class="block" id="science">
   <div class="wrap">
-    <div class="sec-head">
-      <div class="step-tag">Step 1 of 4 · How it works</div>
-      <h2>Three steps. You run the sale. We handle the roof.</h2>
-      <p>Peak Pros Georgia is your fulfillment team behind the scenes. The homeowner only ever deals with you.</p>
+    <div class="sec-head reveal">
+      <div class="label">The science</div>
+      <h2>Roofs don't wear out all at once. They dry out.</h2>
+      <p>Asphalt shingles age as sun and heat break down the asphalt that holds them together. Peak 301 is a soybean-based treatment that works inside the shingle, restoring the flexibility the roof has lost.</p>
     </div>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <h3>You close the job</h3>
-        <p>Sell Peak 301® roof rejuvenation to your customer under your own brand, at your own price. You control the margin.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <h3>Submit the assignment</h3>
-        <p>Send the address and homeowner details from your partner dashboard. We measure the roof with EagleView and send you an estimate to e-sign. That signature is your work authorization.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <h3>We fulfill. You get paid.</h3>
-        <p>A certified Peak 301® crew applies the treatment. You get the photos, the invoice at $85/sq and the homeowner's warranty. You keep everything above $85.</p>
-      </div>
-    </div>
-    <div class="dash-note">
-      <div class="ico">📊</div>
-      <p><b>Every partner gets a private dashboard.</b> Submit jobs, see assignment and completion dates, job photos, invoices with pay links, payment status and completed warranties, all in one place and visible only to your company.</p>
-    </div>
-    <div class="next"><a href="#earn">Next: what you make per job ↓</a></div>
-  </div>
-</section>
 
-<!-- STEP 2: THE NUMBERS -->
-<section class="block alt" id="earn">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="step-tag">Step 2 of 4 · The numbers</div>
-      <h2>What you make per job</h2>
-      <p>Based on a typical 25-square roof at an average sell price. Drag the photo to see a Peak 301® result.</p>
-    </div>
-    <div class="slider-container" id="slider">
-      <img src="assets/roof-before.jpg" alt="Roof before Peak 301 treatment, faded aging shingles">
-      <div class="slider-after" id="sliderAfter"><img src="assets/roof-after.jpg" alt="Roof after Peak 301 treatment, rejuvenated shingles"></div>
-      <div class="slider-label before">Before</div>
-      <div class="slider-label after">After Peak 301®</div>
-      <div class="slider-handle" id="sliderHandle"><span>⟺</span></div>
-    </div>
-    <div class="numbers-grid">
-      <!-- RATE: partner rate and example -->
-      <div class="ledger">
-        <div class="ledger-head">25-square roof example</div>
-        <div class="ledger-row"><span>You charge the homeowner ($125/sq)</span><b>$3,125</b></div>
-        <div class="ledger-row"><span>You pay Peak Pros Georgia ($85/sq)</span><b>$2,125</b></div>
-        <div class="ledger-row profit"><span>Your gross profit</span><b>$1,000</b></div>
-        <div class="ledger-foot">4–8 jobs a month per active partner = $4,000–$8,000 in added gross profit.</div>
-      </div>
-      <div class="card-pad">
-        <h3>Zero upfront risk. Pay only when you sell.</h3>
-        <ul class="checks">
-          <li>No equipment to buy or maintain</li>
-          <li>No product to stock or store</li>
-          <li>No chemical training required</li>
-          <li>Your brand, your pricing, your customer</li>
-          <li>6-year transferable Peak 301® warranty for the homeowner</li>
-          <li>Same-week fulfillment across Atlanta, Peachtree Corners &amp; North Georgia</li>
-        </ul>
-        <p class="fine">Example only. You set your own price. Partner rate is $85 per square, measured by EagleView.</p>
-      </div>
-    </div>
-    <div class="next"><a href="#why">Next: why contractors partner with us ↓</a></div>
-  </div>
-</section>
+    <div class="sci-grid">
+      <article class="stage reveal">
+        <svg viewBox="0 0 360 200" role="img" aria-label="Aged shingle: cracked, brittle, losing granules">
+          <rect x="30" y="98" width="300" height="34" rx="3" fill="#6b5f55"/>
+          <rect x="30" y="132" width="300" height="12" rx="2" fill="#c9bfb4"/>
+          <g fill="#8b8178"><circle cx="48" cy="94" r="5"/><circle cx="74" cy="95" r="4"/><circle cx="118" cy="94" r="5"/><circle cx="170" cy="95" r="4"/><circle cx="246" cy="94" r="5"/><circle cx="300" cy="95" r="4"/></g>
+          <g fill="#8b8178" opacity=".8"><circle cx="96" cy="160" r="4"/><circle cx="140" cy="168" r="3.5"/><circle cx="210" cy="164" r="4"/><circle cx="262" cy="171" r="3"/></g>
+          <path d="M92 98l8 14-6 10M200 98l-5 12 7 9M276 98l6 11-5 13" fill="none" stroke="#f6f8f6" stroke-width="2.2" stroke-linecap="round"/>
+          <g stroke="#d7262e" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M120 30v40M110 60l10 10 10-10"/><path d="M230 30v40M220 60l10 10 10-10"/></g>
+          <text x="180" y="36" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#67756d">UV + HEAT</text>
+        </svg>
+        <div class="stage-body"><div class="label red">01 · Aging</div><h3>Oils oxidize, shingles turn brittle</h3><p>Over years of Georgia sun, the asphalt loses the oils that keep it pliable. Shingles crack, curl and shed the granules that protect them.</p></div>
+      </article>
 
-<!-- STEP 3: WHY PARTNER -->
-<section class="block" id="why">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="step-tag">Step 3 of 4 · Why partner</div>
-      <h2>A new service line without the overhead</h2>
-      <p>Built for exterior-service companies that already have the customer relationship.</p>
-    </div>
-    <div class="who">
-      <div>🏠<b>Roofing contractors</b><small>Offer an option between repair and replacement.</small></div>
-      <div>💧<b>Pressure &amp; soft wash</b><small>A natural upsell after a roof cleaning.</small></div>
-      <div>🌧️<b>Gutter companies</b><small>You're already on the roof line.</small></div>
-      <div>🔨<b>General contractors</b><small>Add value to every exterior job.</small></div>
-    </div>
-    <table class="compare">
-      <thead><tr><th></th><th>Going it alone</th><th>Peak Pros partner</th></tr></thead>
-      <tbody>
-        <tr><td>Equipment</td><td>Buy and maintain a spray rig</td><td>✓ None needed</td></tr>
-        <tr><td>Product</td><td>Stock and store it yourself</td><td>✓ None needed</td></tr>
-        <tr><td>Application training</td><td>Learn it yourself</td><td>✓ Certified crew handles it</td></tr>
-        <tr><td>Your brand</td><td>Start from scratch</td><td>✓ Your brand, your price</td></tr>
-        <tr><td>The work</td><td>Your crews</td><td>✓ We fulfill, you profit</td></tr>
-        <tr><td>Upfront risk</td><td>High</td><td>✓ $85/sq only when you sell</td></tr>
-      </tbody>
-    </table>
-    <div class="stack" id="structure">
-      <div><b>Colorbiotics / Peak 301®</b><small>Manufacturer of the Peak 301® rejuvenation treatment, Ames, Iowa.</small></div>
-      <div><b>Peak Pros USA</b><small>National platform: contractor network, billing and infrastructure.</small></div>
-      <div><b>Peak Pros Georgia</b><small>Onboarding, assignment intake and fulfillment for Georgia.</small></div>
-      <div><b>You, the contractor</b><small>You sell, close and collect. Your brand stays in front.</small></div>
-    </div>
-    <div class="next"><a href="#apply">Next: apply in two minutes ↓</a></div>
-  </div>
-</section>
+      <article class="stage reveal">
+        <svg viewBox="0 0 360 200" role="img" aria-label="Peak 301 applied and absorbing into the shingle">
+          <defs><linearGradient id="soak" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f9a62" stop-opacity=".55"/><stop offset="1" stop-color="#2f9a62" stop-opacity="0"/></linearGradient></defs>
+          <rect x="30" y="98" width="300" height="34" rx="3" fill="#5a5048"/>
+          <rect x="30" y="98" width="300" height="34" rx="3" fill="url(#soak)"/>
+          <rect x="30" y="132" width="300" height="12" rx="2" fill="#c9bfb4"/>
+          <g fill="#7f766e"><circle cx="48" cy="94" r="5"/><circle cx="74" cy="95" r="4"/><circle cx="104" cy="94" r="5"/><circle cx="140" cy="95" r="4"/><circle cx="170" cy="94" r="5"/><circle cx="206" cy="95" r="4"/><circle cx="246" cy="94" r="5"/><circle cx="276" cy="95" r="4"/><circle cx="306" cy="94" r="5"/></g>
+          <g fill="#2f9a62"><circle cx="90" cy="52" r="3"/><circle cx="130" cy="66" r="3"/><circle cx="170" cy="46" r="3"/><circle cx="210" cy="62" r="3"/><circle cx="250" cy="50" r="3"/><circle cx="290" cy="64" r="3"/><circle cx="110" cy="80" r="2.4"/><circle cx="190" cy="78" r="2.4"/><circle cx="270" cy="80" r="2.4"/></g>
+          <g fill="#1d7a4b" opacity=".75"><circle cx="80" cy="112" r="2"/><circle cx="150" cy="118" r="2"/><circle cx="220" cy="110" r="2"/><circle cx="292" cy="120" r="2"/></g>
+          <text x="180" y="28" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1d7a4b">BIO-BASED TREATMENT</text>
+        </svg>
+        <div class="stage-body"><div class="label">02 · Treatment</div><h3>One spray-applied application</h3><p>Certified crews apply Peak 301 across every shingle in a single visit. The soybean-based formula absorbs into the asphalt instead of sitting on top like a coating.</p></div>
+      </article>
 
-<!-- STEP 4: APPLY -->
-<section class="block alt" id="apply">
-  <div class="wrap apply-grid">
-    <div>
-      <div class="sec-head" style="margin-bottom:1.5rem">
-        <div class="step-tag">Step 4 of 4 · Apply</div>
-        <h2>Become a Peak Pros Georgia partner</h2>
-        <p>Roofing contractors, wash companies, gutter companies and other exterior-service pros are all welcome.</p>
-      </div>
-      <ul class="checks">
-        <li>Free to join, no upfront fees</li>
-        <li>We respond within 1 business day</li>
-        <li>Onboarding and sales training included</li>
-        <li>You get your own access code and partner dashboard</li>
-        <!-- SERVICE-AREA -->
-        <li>Service area: Atlanta, Peachtree Corners and North Georgia</li>
-      </ul>
-      <div class="contact-box">
-        <b>Questions first?</b>
-        <a href="tel:4043231869">📞 404-323-1869</a>
-        <a href="mailto:partners@peakprosga.com">✉ partners@peakprosga.com</a>
-      </div>
+      <article class="stage reveal">
+        <svg viewBox="0 0 360 200" role="img" aria-label="Restored shingle: flexible with granules held in place">
+          <path d="M30 108 Q180 84 330 108 L330 140 Q180 116 30 140Z" fill="#3f4a42"/>
+          <path d="M30 140 Q180 116 330 140 L330 150 Q180 126 30 150Z" fill="#c9bfb4"/>
+          <g fill="#5d675f"><circle cx="46" cy="103" r="5"/><circle cx="72" cy="99" r="5"/><circle cx="98" cy="96" r="5"/><circle cx="124" cy="93" r="5"/><circle cx="150" cy="92" r="5"/><circle cx="176" cy="91" r="5"/><circle cx="202" cy="91" r="5"/><circle cx="228" cy="92" r="5"/><circle cx="254" cy="94" r="5"/><circle cx="280" cy="97" r="5"/><circle cx="306" cy="100" r="5"/></g>
+          <path d="M60 60 q120 -30 240 0" fill="none" stroke="#2f9a62" stroke-width="1.6" stroke-dasharray="4 5"/>
+          <path d="M292 54l8 6-9 4" fill="none" stroke="#2f9a62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="180" y="36" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1d7a4b">FLEX RESTORED</text>
+        </svg>
+        <div class="stage-body"><div class="label">03 · Restored</div><h3>Flexible, protected, warrantied</h3><p>Shingles regain flexibility and hold their granules, so they can bounce back from weather. One application is backed by a 6-year transferable warranty.</p></div>
+      </article>
     </div>
-    <div class="apply-form">
-      <h3>Partner application</h3>
-      <form name="PeakProsGA-PartnerForm" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/#apply">
-        <input type="hidden" name="form-name" value="PeakProsGA-PartnerForm">
-        <p style="display:none"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
-        <div class="form-grid">
-          <div class="form-group"><label for="company">Company name *</label><input type="text" id="company" name="company" required placeholder="Your company name"></div>
-          <div class="form-group"><label for="contact">Primary contact *</label><input type="text" id="contact" name="contact" required placeholder="Your full name"></div>
-          <div class="form-group"><label for="email">Email *</label><input type="email" id="email" name="email" required placeholder="you@company.com"></div>
-          <div class="form-group"><label for="phone">Phone *</label><input type="tel" id="phone" name="phone" required placeholder="(404) 000-0000"></div>
-          <div class="form-group"><label for="website">Website</label><input type="text" id="website" name="website" placeholder="yourcompany.com"></div>
-          <div class="form-group"><label for="service_area">Service area</label><input type="text" id="service_area" name="service_area" placeholder="Atlanta, North Georgia..."></div>
-          <div class="form-group"><label for="business_type">Type of business</label>
-            <select id="business_type" name="business_type">
-              <option value="">Select type</option>
-              <option value="roofing">Roofing Contractor</option>
-              <option value="powerwash">Power Wash / Exterior Cleaning</option>
-              <option value="gutter">Gutter Company</option>
-              <option value="general">General Contractor</option>
-              <option value="other">Other Home Services</option>
-            </select></div>
-          <div class="form-group"><label for="volume">Expected jobs per month</label>
-            <select id="volume" name="volume">
-              <option value="">Select range</option>
-              <option value="1-5">1–5 jobs/month</option>
-              <option value="5-15">5–15 jobs/month</option>
-              <option value="15+">15+ jobs/month</option>
-            </select></div>
-          <div class="form-group full"><label for="interest">When would you like to start?</label>
-            <select id="interest" name="interest">
-              <option value="">Select...</option>
-              <option value="ready">Ready to start immediately</option>
-              <option value="soon">Within 30 days</option>
-              <option value="exploring">Just exploring</option>
-            </select></div>
-          <div class="form-group full"><label for="notes">Tell us about your company</label><textarea id="notes" name="notes" placeholder="What you do today and what you're looking for"></textarea></div>
+
+    <div class="proof">
+      <div class="card reveal">
+        <div class="label">Independent lab results</div>
+        <h3 style="margin-top:.5rem">Peak 301 vs. an untreated control and a competing rejuvenator</h3>
+        <div style="overflow-x:auto">
+        <table class="lab">
+          <thead><tr><th>Property tested</th><th>Control</th><th>Product A</th><th class="win">Peak 301</th></tr></thead>
+          <tbody>
+            <tr><td>Shingle color change<small>Closer to 0 is better</small></td><td>—</td><td>−25%</td><td class="win">−1%</td></tr>
+            <tr><td>Granule adhesion<small>Higher resists hail better</small></td><td>—</td><td>−18%</td><td class="win">+8%</td></tr>
+            <tr><td>Tear strength reduction<small>Lower is better</small></td><td>—</td><td>30%</td><td class="win">16%</td></tr>
+            <tr><td>Fire burn pattern<small>Shorter spread is better</small></td><td>44″</td><td>29″</td><td class="win">14″</td></tr>
+            <tr><td>Hail impact, double lap &amp; layer</td><td>Pass</td><td>Fail</td><td class="win">Pass</td></tr>
+          </tbody>
+        </table>
         </div>
-        <button type="submit" class="btn btn-red btn-block" style="margin-top:1.25rem">Submit application &rarr;</button>
-        <p class="form-note">We'll be in touch within 1 business day.</p>
-      </form>
+        <p class="src">Source: independent testing by PRI Group, as published by Colorbiotics in the Peak 301 Product Comparison.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="label">Product profile</div>
+        <h3 style="margin-top:.5rem">Peak 301® at a glance</h3>
+        <ul class="spec">
+          <li><span>Base</span><b>American-grown soybeans</b></li>
+          <li><span>Biobased content</span><b>96%, USDA certified</b></li>
+          <li><span>Safety data sheet</span><b>Not a hazardous substance</b></li>
+          <li><span>Application</span><b>Single spray-applied visit</b></li>
+          <li><span>Warranty</span><b>6 years, transferable</b></li>
+          <li><span>For</span><b>Asphalt shingle roofs</b></li>
+        </ul>
+        <div class="usda-row">
+          <img src="assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product, product 96%">
+          <p>Certified under the USDA BioPreferred® Program, which verifies biobased content by independent testing.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-wrap reveal">
+      <div class="slider-container" id="slider" aria-label="Before and after comparison. Drag to compare.">
+        <img src="assets/roof-before.jpg" alt="Roof before Peak 301 treatment, faded aging shingles">
+        <div class="slider-after" id="sliderAfter"><img src="assets/roof-after.jpg" alt="Roof after Peak 301 treatment, rejuvenated shingles"></div>
+        <div class="slider-label before">Before</div>
+        <div class="slider-label after">After Peak 301</div>
+        <div class="slider-handle" id="sliderHandle"><span>⟷</span></div>
+      </div>
     </div>
   </div>
 </section>
 
+<!-- IMPACT -->
+<section class="block tint" id="impact">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="label">Impact</div>
+      <h2>Better for the homeowner, the farmer and the landfill.</h2>
+      <p>Rejuvenation sits between a repair and a replacement. When a roof is still sound, extending its life is the smartest thing a homeowner can do, and it does good well beyond the house.</p>
+    </div>
+    <div class="impact">
+      <div class="card reveal">
+        <div class="ico"><svg><use href="#i-home"/></svg></div>
+        <div class="big">6+ <small>years</small></div>
+        <p><b style="color:var(--ink)">For the homeowner.</b> One application adds at least six years of roof life, backed by a transferable warranty, for a fraction of the cost of a new roof.</p>
+      </div>
+      <div class="card reveal">
+        <div class="ico"><svg><use href="#i-recycle"/></svg></div>
+        <div class="big">15M <small>tons a year</small></div>
+        <p><b style="color:var(--ink)">For the landfill.</b> The EPA estimates about 15 million tons of asphalt shingle waste are generated in the U.S. each year. Every roof that lasts longer delays its share.</p>
+      </div>
+      <div class="card reveal">
+        <div class="ico"><svg><use href="#i-sprout"/></svg></div>
+        <div class="big">96% <small>biobased</small></div>
+        <p><b style="color:var(--ink)">For American agriculture.</b> Peak 301 is made from American-grown soybeans, putting U.S. farm products to work on U.S. roofs instead of petroleum.</p>
+      </div>
+    </div>
+    <div class="mission reveal">
+      <div class="seal"><svg width="30" height="30"><use href="#i-leaf"/></svg></div>
+      <div>
+        <h3>Our mission: keep good roofs on American homes longer.</h3>
+        <p>We're building a network of Georgia contractors who give homeowners a smarter option than early replacement, backed by real science, a real warranty and a manufacturer with more than a century of building-materials heritage behind it.</p>
+      </div>
+    </div>
+    <p class="fine">Landfill figure: U.S. EPA estimate as reported by the Asphalt Shingle Recycling Forum (shinglerecycling.org).</p>
+  </div>
+</section>
+
+<!-- PARTNER PROGRAM -->
+<div class="program">
+  <div class="journey" id="journey">
+    <div class="wrap journey-inner">
+      <span class="label">Partner program</span>
+      <a class="jstep" href="#how" data-step="how"><i>1</i>How it works</a><span class="jsep">—</span>
+      <a class="jstep" href="#earn" data-step="earn"><i>2</i>The numbers</a><span class="jsep">—</span>
+      <a class="jstep" href="#why" data-step="why"><i>3</i>Who it's for</a><span class="jsep">—</span>
+      <a class="jstep" href="#apply" data-step="apply"><i>4</i>Apply</a>
+    </div>
+  </div>
+
+  <section class="block" id="how">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="label">Step 1 of 4 · How it works</div>
+        <h2>You sell it. We apply it. You get paid.</h2>
+        <p>We work as your subcontractor behind the scenes. The homeowner only ever deals with you.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal"><div class="n">01</div><h3>Close the job under your brand</h3><p>Offer Peak 301 rejuvenation to your customer at your own price. You own the relationship and the margin.</p></div>
+        <div class="step reveal"><div class="n">02</div><h3>Submit the assignment</h3><p>Send the homeowner and address from your dashboard. We measure the roof with EagleView and send you an estimate to e-sign. Your signature is the work authorization.</p></div>
+        <div class="step reveal"><div class="n">03</div><h3>We apply. You collect.</h3><p>A certified crew treats the roof. You get completion photos, an invoice at $85 per square, and the homeowner's warranty once it's paid.</p></div>
+      </div>
+      <div class="note reveal">
+        <div class="ico"><svg><use href="#i-chart"/></svg></div>
+        <p><b>Every partner gets a private dashboard.</b> Submit jobs and see assignment and completion dates, photos, invoices with pay links, payment status and completed warranties, visible only to your company.</p>
+      </div>
+      <div class="next"><a href="#earn">Next: what you make per job ↓</a></div>
+    </div>
+  </section>
+
+  <section class="block" id="earn" style="background:var(--paper)">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="label">Step 2 of 4 · The numbers</div>
+        <h2>A high-margin service line with zero upfront cost.</h2>
+        <p>A typical 25-square roof at an average sell price.</p>
+      </div>
+      <div class="numbers">
+        <!-- RATE: partner rate and example -->
+        <div class="ledger reveal">
+          <div class="ledger-head"><div class="label">25-square roof example</div></div>
+          <div class="ledger-row"><span>You charge the homeowner <span class="mono" style="color:var(--muted)">$125/sq</span></span><b>$3,125</b></div>
+          <div class="ledger-row"><span>You pay Peak 301 Pros GA <span class="mono" style="color:var(--muted)">$85/sq</span></span><b>$2,125</b></div>
+          <div class="ledger-row profit"><span><b style="font-family:var(--sans);font-size:1rem;color:var(--ink)">Your gross profit</b></span><b>$1,000</b></div>
+          <div class="ledger-foot">At 4–8 jobs a month, that's $4,000–$8,000 in added gross profit, with no new crew or equipment.</div>
+        </div>
+        <div class="card reveal">
+          <h3>Pay only when you sell.</h3>
+          <ul class="checks">
+            <li>No spray rig to buy or maintain</li>
+            <li>No product to stock or store</li>
+            <li>No chemical training required</li>
+            <li>Your brand, your pricing, your customer</li>
+            <li>6-year transferable Peak 301® warranty for the homeowner</li>
+            <!-- SERVICE-AREA -->
+            <li>Same-week fulfillment across Atlanta, Peachtree Corners and North Georgia</li>
+          </ul>
+          <p class="fine">Example only. You set your own price. Partner rate is $85 per square, measured by EagleView.</p>
+        </div>
+      </div>
+      <div class="next"><a href="#why">Next: who it's for ↓</a></div>
+    </div>
+  </section>
+
+  <section class="block" id="why">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="label">Step 3 of 4 · Who it's for</div>
+        <h2>Built for companies already on the roofline.</h2>
+        <p>If your customers trust you with the outside of their home, rejuvenation is a natural next service.</p>
+      </div>
+      <div class="who">
+        <div class="card reveal"><div class="ico"><svg><use href="#i-roof"/></svg></div><h4>Roofing contractors</h4><p>An honest option between repair and replacement.</p></div>
+        <div class="card reveal"><div class="ico"><svg><use href="#i-drop"/></svg></div><h4>Pressure &amp; soft wash</h4><p>The natural next step after a roof cleaning.</p></div>
+        <div class="card reveal"><div class="ico"><svg><use href="#i-gutter"/></svg></div><h4>Gutter companies</h4><p>You're already at the roof edge on every job.</p></div>
+        <div class="card reveal"><div class="ico"><svg><use href="#i-tool"/></svg></div><h4>General contractors</h4><p>Add value to every exterior project.</p></div>
+      </div>
+      <div style="overflow-x:auto" class="reveal">
+        <table class="compare">
+          <thead><tr><th></th><th>Doing it yourself</th><th>As a Peak 301 Pros GA partner</th></tr></thead>
+          <tbody>
+            <tr><td>Equipment</td><td>Buy and maintain a spray rig</td><td>None needed</td></tr>
+            <tr><td>Product</td><td>Buy, stock and store it</td><td>None needed</td></tr>
+            <tr><td>Training</td><td>Certify your own crew</td><td>Certified crew handles it</td></tr>
+            <tr><td>Your brand</td><td>Yours</td><td>Still yours, at your price</td></tr>
+            <tr><td>Upfront cost</td><td>Thousands before the first job</td><td>$85/sq, only when you sell</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="next"><a href="#apply">Next: apply in two minutes ↓</a></div>
+    </div>
+  </section>
+
+  <section class="block" id="apply" style="background:var(--paper)">
+    <div class="wrap apply-grid">
+      <div class="reveal">
+        <div class="sec-head" style="margin-bottom:1.25rem">
+          <div class="label">Step 4 of 4 · Apply</div>
+          <h2>Become a Peak 301 Pros GA partner.</h2>
+          <p>Roofing, wash, gutter and other exterior-service companies are all welcome.</p>
+        </div>
+        <ul class="checks">
+          <li>Free to join. No fees, no minimums.</li>
+          <li>We respond within 1 business day.</li>
+          <li>Onboarding and sales training included.</li>
+          <li>Your own access code and partner dashboard.</li>
+          <!-- SERVICE-AREA -->
+          <li>Serving Atlanta, Peachtree Corners and North Georgia.</li>
+        </ul>
+        <div class="contact-box">
+          <div class="label" style="color:var(--muted)">Questions first?</div>
+          <a href="tel:4043231869">404-323-1869</a>
+          <a href="mailto:partners@peakprosga.com">partners@peakprosga.com</a>
+        </div>
+      </div>
+      <div class="apply-form reveal">
+        <h3>Partner application</h3>
+        <form name="PeakProsGA-PartnerForm" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/#apply">
+          <input type="hidden" name="form-name" value="PeakProsGA-PartnerForm">
+          <p style="display:none"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
+          <div class="form-grid">
+            <div class="form-group"><label for="company">Company name *</label><input type="text" id="company" name="company" required autocomplete="organization"></div>
+            <div class="form-group"><label for="contact">Your name *</label><input type="text" id="contact" name="contact" required autocomplete="name"></div>
+            <div class="form-group"><label for="email">Email *</label><input type="email" id="email" name="email" required autocomplete="email"></div>
+            <div class="form-group"><label for="phone">Phone *</label><input type="tel" id="phone" name="phone" required autocomplete="tel"></div>
+            <div class="form-group"><label for="website">Website</label><input type="text" id="website" name="website" placeholder="yourcompany.com"></div>
+            <div class="form-group"><label for="service_area">Service area</label><input type="text" id="service_area" name="service_area" placeholder="e.g. North Atlanta"></div>
+            <div class="form-group"><label for="business_type">Type of business</label>
+              <select id="business_type" name="business_type">
+                <option value="">Select type</option>
+                <option value="roofing">Roofing Contractor</option>
+                <option value="powerwash">Power Wash / Exterior Cleaning</option>
+                <option value="gutter">Gutter Company</option>
+                <option value="general">General Contractor</option>
+                <option value="other">Other Home Services</option>
+              </select></div>
+            <div class="form-group"><label for="volume">Expected jobs per month</label>
+              <select id="volume" name="volume">
+                <option value="">Select range</option>
+                <option value="1-5">1–5 jobs/month</option>
+                <option value="5-15">5–15 jobs/month</option>
+                <option value="15+">15+ jobs/month</option>
+              </select></div>
+            <div class="form-group full"><label for="interest">When would you like to start?</label>
+              <select id="interest" name="interest">
+                <option value="">Select...</option>
+                <option value="ready">Ready to start immediately</option>
+                <option value="soon">Within 30 days</option>
+                <option value="exploring">Just exploring</option>
+              </select></div>
+            <div class="form-group full"><label for="notes">Tell us about your company</label><textarea id="notes" name="notes" placeholder="What you do today and what you're looking for"></textarea></div>
+          </div>
+          <button type="submit" class="btn btn-red btn-block" style="margin-top:1.25rem">Submit application &rarr;</button>
+          <p class="form-note">We'll be in touch within 1 business day.</p>
+        </form>
+      </div>
+    </div>
+  </section>
 </div>
 
-<!-- PARTNER CENTER: for current partners -->
-<section class="block center" id="partner-access">
+<!-- PARTNER CENTER -->
+<section class="block tint" id="partner-access">
   <div class="wrap">
-    <div class="sec-head">
-      <div class="step-tag">Partner Center · Approved partners only</div>
+    <div class="sec-head reveal">
+      <div class="label">Partner center · Approved partners only</div>
       <h2>Already a partner? Everything is here.</h2>
       <p>Your company has one private access code. It opens your dashboard and the assignment form, and it only ever shows your company's jobs.</p>
     </div>
     <div class="tiles">
-      <div class="tile main">
-        <div class="ico">📊</div>
+      <div class="card tile main reveal">
+        <div class="ico"><svg><use href="#i-chart"/></svg></div>
         <h3>Partner dashboard</h3>
-        <p>Track every job, see photos, open invoices and pay online, and download completed Peak 301® warranties once paid.</p>
+        <p>Track every job, see photos, open and pay invoices, and download completed Peak 301® warranties once paid.</p>
         <a href="/partners/" class="btn btn-red">Log in to your dashboard &rarr;</a>
       </div>
-      <div class="tile">
-        <div class="ico">📋</div>
+      <div class="card tile reveal">
+        <div class="ico"><svg><use href="#i-send"/></svg></div>
         <h3>Submit an assignment</h3>
-        <p>Send a new job: homeowner, address and roof details. You can also do this from inside your dashboard.</p>
-        <a href="login.html" class="btn btn-ghost">Submit a job &rarr;</a>
+        <p>Send a new job with the homeowner, address and roof details. You can also do this from your dashboard.</p>
+        <a href="login.html" class="btn btn-line">Submit a job &rarr;</a>
       </div>
-      <div class="tile">
-        <div class="ico">☎️</div>
+      <div class="card tile reveal">
+        <div class="ico"><svg><use href="#i-key"/></svg></div>
         <h3>Need your code?</h3>
-        <p>Lost your code, or someone left your team? We'll issue a new one right away and the old one stops working.</p>
-        <a href="tel:4043231869" class="btn btn-ghost">Call 404-323-1869</a>
+        <p>Lost it, or someone left your team? We'll issue a new one right away and the old one stops working.</p>
+        <a href="tel:4043231869" class="btn btn-line">Call 404-323-1869</a>
       </div>
     </div>
   </div>
@@ -555,16 +778,18 @@
 <!-- FAQ -->
 <section class="block" id="faq">
   <div class="wrap">
-    <div class="sec-head">
-      <div class="step-tag">Questions</div>
-      <h2>Frequently asked</h2>
+    <div class="sec-head reveal">
+      <div class="label">Questions</div>
+      <h2>Frequently asked.</h2>
     </div>
     <div class="faq">
-      <details><summary>Who actually does the work?</summary><p>A certified Peak 301® application crew from our Georgia territory operator. We work as your subcontractor, so the homeowner relationship stays yours.</p></details>
+      <details><summary>What is Peak 301?</summary><p>Peak 301® is a soybean-based rejuvenation treatment for asphalt shingle roofs, manufactured by Colorbiotics, part of the Sika family of companies. It's a 96% USDA Certified Biobased Product, applied in a single visit, and backed by a 6-year transferable warranty.</p></details>
+      <details><summary>Which roofs are a good fit?</summary><p>Asphalt shingle roofs that are aging but still structurally sound. It isn't for other roofing materials, and it isn't a substitute for repairs. Damaged areas should be repaired first.</p></details>
+      <details><summary>Who actually does the work?</summary><p>A certified Peak 301 application crew. We work as your subcontractor, so the homeowner relationship stays yours.</p></details>
       <details><summary>How is the job priced and billed?</summary><p>You pay $85 per roofing square, measured by EagleView. Every job starts with an estimate you e-sign, and we invoice your company (not the homeowner) when the work is complete. Payment is due within 7 days, and you can pay online from the invoice or your dashboard.</p></details>
-      <details><summary>What does the homeowner get?</summary><p>A Peak 301® roof rejuvenation treatment and a 6-year transferable Peak 301® warranty. The completed warranty appears in your dashboard as soon as your invoice is paid, ready to hand to your customer.</p></details>
-      <details><summary>What does it cost to join?</summary><p>Nothing. There are no sign-up fees, monthly fees or minimums. You only pay for jobs you sell.</p></details>
-      <details><summary>How do I get my access code?</summary><p>Once your application is approved, we send your company its own private code. Use it at the Partner Login to reach your dashboard and submit jobs.</p></details>
+      <details><summary>When does the homeowner get the warranty?</summary><p>The completed Peak 301 warranty appears in your dashboard as soon as your invoice is paid, ready to hand to your customer.</p></details>
+      <details><summary>What does it cost to join?</summary><p>Nothing. No sign-up fees, monthly fees or minimums. You only pay for jobs you sell.</p></details>
+      <details><summary>How do I get my access code?</summary><p>Once your application is approved, we send your company its own private code. Use it at Partner Login to reach your dashboard and submit jobs.</p></details>
       <!-- SERVICE-AREA -->
       <details><summary>What areas do you cover?</summary><p>Atlanta, Peachtree Corners, North Georgia and surrounding areas. Call us about jobs outside that area.</p></details>
     </div>
@@ -575,14 +800,14 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <div class="logo" style="margin-bottom:.6rem">Peak Pros <span>GA</span></div>
-        <p>White-label Peak 301® roof rejuvenation for Georgia contractors. You sell. We fulfill.</p>
+        <div class="foot-brand"><img src="assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros"><span class="region">GA</span></div>
+        <p style="margin-top:1rem;max-width:22rem">Bio-based roof rejuvenation for Georgia contractors. You sell it. We apply it.</p>
       </div>
       <div>
         <h4>New contractors</h4>
+        <a href="#science">The science</a>
+        <a href="#impact">Impact</a>
         <a href="#how">How it works</a>
-        <a href="#earn">The numbers</a>
-        <a href="#why">Why partner</a>
         <a href="#apply">Apply</a>
       </div>
       <div>
@@ -595,10 +820,17 @@
         <h4>Contact</h4>
         <a href="tel:4043231869">404-323-1869</a>
         <a href="mailto:partners@peakprosga.com">partners@peakprosga.com</a>
-        <a href="/es/" lang="es">🌐 Español</a>
+        <a href="/es/" lang="es">Español</a>
       </div>
     </div>
-    <div class="foot-copy">© 2026 Peak Pros Georgia · Powered by Peak 301® (Colorbiotics) · Georgia's Peak 301 territory partner</div>
+    <div class="foot-made">
+      <img src="assets/brand/peak301-logo.png" alt="Peak 301">
+      <img src="assets/brand/colorbiotics-logo.png" alt="Colorbiotics, a Sika company">
+      <img src="assets/brand/sika-logo.png" alt="Sika" style="height:30px">
+      <img src="assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product 96%">
+      <p>Powered by Peak 301®. Manufactured by Colorbiotics, part of the Sika family of companies.</p>
+    </div>
+    <div class="foot-copy">© 2026 Peak 301 Pros GA. Peak 301 Pros® is a registered trademark. Peak 301, Colorbiotics and Sika are trademarks of their respective owners. USDA Certified Biobased Product label used under the USDA BioPreferred® Program.</div>
   </div>
 </footer>
 
@@ -606,8 +838,8 @@
 // Menu
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
-hamburger.addEventListener('click', () => { hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open'); });
-document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }));
+hamburger.addEventListener('click', () => { const o = mobileMenu.classList.toggle('open'); hamburger.classList.toggle('open', o); hamburger.setAttribute('aria-expanded', o); });
+document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); hamburger.setAttribute('aria-expanded', false); }));
 
 // Partner sign-in (same as before: checks the code, then opens the dashboard)
 (function(){
@@ -643,14 +875,14 @@ document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click
   window.addEventListener('touchend', () => drag = false);
 })();
 
-// Journey bar: highlight the step being read
+// Reveal on scroll + journey highlight
 (function(){
+  if (!('IntersectionObserver' in window)) { document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')); return; }
+  const rv = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); rv.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  document.querySelectorAll('.reveal').forEach(el => rv.observe(el));
   const steps = document.querySelectorAll('.jstep');
-  if (!('IntersectionObserver' in window)) return;
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(en => { if (en.isIntersecting) steps.forEach(s => s.classList.toggle('active', s.dataset.step === en.target.id)); });
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  ['how','earn','why','apply'].forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+  const jo = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) steps.forEach(s => s.classList.toggle('active', s.dataset.step === e.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
+  ['how','earn','why','apply'].forEach(id => { const el = document.getElementById(id); if (el) jo.observe(el); });
 })();
 </script>
 </body>
