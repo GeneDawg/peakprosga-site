@@ -149,6 +149,24 @@
   .chain div { border-top: 2px solid var(--green-2); padding-top: .7rem; font-size: .85rem; color: var(--muted); }
   .chain b { display: block; color: var(--ink); font-size: .95rem; }
 
+  .org { margin-top: 1.25rem; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 1.75rem 1.75rem 2rem; }
+  .org-head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.4rem; }
+  .org-head p { color: var(--muted); font-size: .95rem; }
+  .org-flow { list-style: none; display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 1fr 34px 1fr 34px 1fr; align-items: stretch; }
+  .org-flow .node { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 1rem .85rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .org-flow .node.hl { background: var(--green-tint); border-color: #b9dcc7; }
+  .org-flow .node.you { background: #fff; border: 1.5px dashed var(--green-2); }
+  .org-flow .logo { height: 54px; display: flex; align-items: center; justify-content: center; gap: .3rem; margin-bottom: .7rem; }
+  .org-flow .logo img { max-height: 46px; max-width: 100%; width: auto; }
+  .org-flow .logo em { font-style: normal; font-family: var(--mono); font-size: .65rem; border: 1px solid var(--line-2); border-radius: 4px; padding: .1rem .3rem; color: var(--ink); background: #fff; }
+  .org-flow .logo.icon svg { width: 34px; height: 34px; color: var(--green); }
+  .org-flow b { font-family: var(--head); font-weight: 600; color: var(--ink); font-size: .98rem; line-height: 1.2; }
+  .org-flow span { font-size: .8rem; color: var(--muted); margin-top: .35rem; line-height: 1.4; }
+  .org-flow .link { display: flex; align-items: center; justify-content: center; position: relative; }
+  .org-flow .link::before { content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 1.5px; background: var(--green-2); }
+  .org-flow .link::after { content: ""; position: absolute; right: 2px; top: calc(50% - 4px); border: 4.5px solid transparent; border-left: 6px solid var(--green-2); border-right: 0; }
+  .org-flow .link i { position: relative; font-style: normal; font-family: var(--mono); font-size: .58rem; letter-spacing: .04em; color: var(--green); background: #fff; padding: 0 2px; writing-mode: vertical-rl; transform: rotate(180deg); }
+
   /* credentials band */
   .creds { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--paper); }
   .creds-grid { display: grid; grid-template-columns: 1fr 1.45fr 1fr 1fr; }
@@ -323,6 +341,7 @@
 
   /* responsive */
   @media (max-width: 1080px) {
+    .org-flow .link i { font-size: .52rem; }
     .nav-links { display: none; }
     .nav-actions { margin-left: auto; }
     .creds-grid { grid-template-columns: 1fr 1fr; }
@@ -374,7 +393,15 @@
     .mission { grid-template-columns: 1fr; padding: 1.5rem; }
     .apply-form { padding: 1.4rem; }
     .who { grid-template-columns: 1fr; }
-    .chain { grid-template-columns: 1fr; }
+    .org { padding: 1.25rem; }
+    .org-flow { grid-template-columns: 1fr; }
+    .org-flow .node { flex-direction: row; text-align: left; gap: .9rem; padding: .85rem 1rem; display: grid; grid-template-columns: 104px 1fr; align-items: center; }
+    .org-flow .node .logo { grid-row: span 2; margin: 0; height: auto; }
+    .org-flow .node span { margin-top: 0; }
+    .org-flow .link { height: 34px; }
+    .org-flow .link::before { left: 50%; right: auto; top: 4px; bottom: 4px; width: 1.5px; height: auto; }
+    .org-flow .link::after { right: auto; left: calc(50% - 4px); top: auto; bottom: 2px; border: 4.5px solid transparent; border-top: 6px solid var(--green-2); border-bottom: 0; }
+    .org-flow .link i { writing-mode: horizontal-tb; transform: none; margin-left: 5.5rem; background: transparent; }
     .foot-grid { grid-template-columns: 1fr; }
   }
 </style>
@@ -597,12 +624,25 @@
         <div class="label">Who makes it</div>
         <h2>Made by Colorbiotics, part of the Sika family.</h2>
         <p>Peak 301® is developed and manufactured in Ames, Iowa by Colorbiotics, a Sika company. Sika has been building trust in construction chemistry since 1910, and that heritage stands behind every roof we treat.</p>
-        <div class="chain">
-          <div><b>Sika</b>Global construction chemistry since 1910</div>
-          <div><b>Colorbiotics</b>Develops and manufactures Peak 301</div>
-          <div><b>Peak 301 Pros GA</b>Certified application for Georgia contractors</div>
-        </div>
+</div>
       </div>
+    </div>
+
+    <div class="org reveal" aria-label="Company structure, from manufacturer to homeowner">
+      <div class="org-head"><div class="label">How it's organized</div><p>From the manufacturer to your customer's roof.</p></div>
+      <ol class="org-flow">
+        <li class="node"><div class="logo"><img src="assets/brand/sika-logo.png" alt="Sika"></div><b>Sika</b><span>Parent company · global construction chemistry since 1910</span></li>
+        <li class="link"><i>owns</i></li>
+        <li class="node"><div class="logo"><img src="assets/brand/colorbiotics-logo.png" alt="Colorbiotics"></div><b>Colorbiotics</b><span>Develops and manufactures Peak 301® in Ames, Iowa</span></li>
+        <li class="link"><i>supplies</i></li>
+        <li class="node"><div class="logo"><img src="assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros"></div><b>Peak 301 Pros</b><span>National distribution of Peak 301</span></li>
+        <li class="link"><i>supplies</i></li>
+        <li class="node hl"><div class="logo"><img src="assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros GA"><em>GA</em></div><b>Peak 301 Pros GA</b><span>Certified Peak 301 application across Georgia</span></li>
+        <li class="link"><i>applies for</i></li>
+        <li class="node you"><div class="logo icon"><svg><use href="#i-tool"/></svg></div><b>You, the contractor</b><span>Sell under your own brand, at your own price</span></li>
+        <li class="link"><i>serves</i></li>
+        <li class="node"><div class="logo icon"><svg><use href="#i-home"/></svg></div><b>Your customer</b><span>A rejuvenated roof with a 6-year transferable warranty</span></li>
+      </ol>
     </div>
   </div>
 </section>
