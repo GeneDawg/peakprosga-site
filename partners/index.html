@@ -4,28 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Peak 301 Partner Portal</title>
-<link rel="icon" href="/partners/assets/peak301-pros.png">
+<title>Partner Portal · Peak 301 Pros GA</title>
+<link rel="icon" href="/assets/brand/peak301-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,800;1,800&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: access-code gate, then white logo header + black account band, summary strip, and a column ledger (table on desktop, cards on phone) */
 :root{
-  --bg:#f4f4f5; --surface:#ffffff; --ink:#111214; --muted:#5d6068; --line:#dcdde0; --soft:#ececee;
-  --red:#d6232f; --band:#111214; --band-ink:#ffffff;
-  --ok:#1f7a3f; --ok-bg:#e3f3e8; --warn:#9a5b00; --warn-bg:#fdf0d8; --due:#b31a25; --due-bg:#fbe3e5; --info:#2f4b7a; --info-bg:#e5ebf5;
-  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#f6f8f6; --surface:#ffffff; --ink:#0f1a14; --muted:#67756d; --line:#e1e7e2; --soft:#eef3ef;
+  --red:#d7262e; --band:#0f1a14; --band-ink:#ffffff; --green:#1d7a4b; --green-2:#2f9a62; --leaf:#8cc63f;
+  --ok:#1d7a4b; --ok-bg:#e8f4ed; --warn:#9a5b00; --warn-bg:#fdf0d8; --due:#b31a25; --due-bg:#fbe3e5; --info:#2f4b7a; --info-bg:#e5ebf5;
+  --display:"Inter Tight","Inter",system-ui,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0d0e10; --surface:#17181b; --ink:#f1f1f3; --muted:#a2a5ad; --line:#2c2e33; --soft:#222428;
-  --red:#ef3b46; --band:#000000; --band-ink:#ffffff;
-  --ok:#5fd18a; --ok-bg:#163522; --warn:#f2b552; --warn-bg:#3a2a0e; --due:#ff7a82; --due-bg:#3d1518; --info:#9db8e8; --info-bg:#1a2438; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0d0e10; --surface:#17181b; --ink:#f1f1f3; --muted:#a2a5ad; --line:#2c2e33; --soft:#222428;
-  --red:#ef3b46; --band:#000000; --band-ink:#ffffff;
-  --ok:#5fd18a; --ok-bg:#163522; --warn:#f2b552; --warn-bg:#3a2a0e; --due:#ff7a82; --due-bg:#3d1518; --info:#9db8e8; --info-bg:#1a2438; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
 [hidden]{display:none!important}
@@ -158,6 +151,54 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
 .updated{font-size:12px;color:var(--muted);margin-top:10px}
 .photos a{display:block;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:var(--soft)}
 .photos a img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---- Peak 301 Pros GA portal look (overrides) ---- */
+body{-webkit-font-smoothing:antialiased}
+.btn{border-radius:999px;font-weight:600;padding:8px 16px}
+.btn.sm{padding:5px 12px}
+.btn.primary{background:var(--red);border-color:var(--red)}
+.btn.big{font-size:15px;padding:11px 20px}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--green-2)}
+.gate{background:var(--bg);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;min-height:100vh}
+.gate-card{border-top:3px solid var(--ink);border-radius:16px;box-shadow:0 1px 2px rgba(15,26,20,.05),0 16px 40px rgba(15,26,20,.10);border-left:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.gate-card img{height:52px}
+.gate-card h1{font:600 26px/1.1 var(--display);font-style:normal;text-transform:none;letter-spacing:-.02em;color:var(--ink)}
+.gate-card .kicker{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);text-align:center}
+.gate-card label{font:600 12px var(--body);letter-spacing:0;text-transform:none;color:var(--ink)}
+.gate-card input{border:1.5px solid #cfd8d1;border-radius:999px;background:var(--bg);font-size:16px;padding:12px 16px}
+.gate-card input:focus{outline:none;border-color:var(--green-2);background:#fff;box-shadow:0 0 0 4px rgba(47,154,98,.15)}
+.gate-card .btn.primary{padding:12px;font-size:15px}
+.gatehelp a{color:var(--ink);text-decoration:underline}
+header.top{border-bottom:1px solid var(--line)}
+header.top img{height:44px}
+header.top .brand{display:flex;align-items:center;gap:10px}
+header.top .brand .tag{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-left:1px solid var(--line);padding-left:10px}
+header.top .btn{border-color:#cfd8d1}
+.band{background:var(--band)}
+.eyebrow{font:500 11px var(--mono);letter-spacing:.14em;color:var(--leaf)}
+.band h1{font:600 clamp(28px,4.5vw,40px)/1.05 var(--display);font-style:normal;text-transform:none;letter-spacing:-.03em}
+.band .actions{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.band select{border-radius:10px;background:#1b2a21;border-color:#2c3d33}
+.adminbadge{background:var(--green);border-radius:999px}
+.stats{border-radius:14px}
+.stat .k{font:500 11px var(--mono);letter-spacing:.12em}
+.stat .v{font:600 28px/1.1 var(--display);letter-spacing:-.02em}
+.toolbar h2{font:600 20px var(--display);text-transform:none;letter-spacing:-.02em}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.ledger{border-radius:14px}
+thead th{font:500 11px var(--mono);letter-spacing:.1em;border-bottom:1px solid #cfd8d1;color:var(--muted)}
+tbody tr:hover td{background:#fafcfa}
+.tab{font:600 16px var(--body);text-transform:none;letter-spacing:0}
+.tab[aria-selected="true"]{border-bottom-color:var(--ink)}
+.modal{border-top:3px solid var(--ink);border-radius:16px}
+.modal h3{font:600 20px var(--display);text-transform:none;letter-spacing:-.02em}
+.cert .ct{font:600 22px/1.1 var(--display);font-style:normal;text-transform:none}
+.cert .cs{color:var(--green)}
+.foot{background:var(--band)}
+.foot .copy{color:#fff}
+@media (max-width:720px){header.top .brand .tag{display:none} header.top img{height:34px} .band .actions{width:100%} .band .actions .btn{width:100%}}
+.gate-card .showcode{justify-content:flex-start;text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)}
+.gate-card .showcode input{width:auto;padding:0;border-radius:4px;accent-color:var(--green)}
 </style>
 </head>
 <body>
@@ -165,17 +206,18 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
 <section class="gate" id="gate">
   <form class="gate-card" id="gateform" autocomplete="off">
     <div class="in">
-      <img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros">
-      <h1>Partner Portal</h1>
+      <img src="/assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros GA">
+      <div class="kicker">Peak 301 Pros GA · Partner Portal</div>
+      <h1>Sign in to your dashboard</h1>
       <p>Enter your company's private access code to see your jobs, photos, invoices and warranties. You'll only ever see your own company's jobs.</p>
       <div>
         <label for="code">Access code</label>
-        <input id="code" name="code" type="password" placeholder="XXXX-XXXX-XXXX" spellcheck="false" autocapitalize="characters" autocomplete="off">
+        <input id="code" name="code" type="password" placeholder="Your access code" spellcheck="false" autocapitalize="characters" autocomplete="off">
         <label class="showcode"><input type="checkbox" id="showcode"> Show code</label>
       </div>
       <div class="err" id="err" hidden></div>
-      <button class="btn primary" type="submit" id="gatebtn">View my account</button>
-      <p class="gatehelp">Keep your code within your company. Need your code or a new one? Call 404-323-1869.<br><a href="/">&larr; Back to peakprosga.com</a></p>
+      <button class="btn primary" type="submit" id="gatebtn">Sign in &rarr;</button>
+      <p class="gatehelp">Keep your code within your company. Need your code or a new one? Call 404-323-1869.<br>Not a partner yet? <a href="https://peakprosga.com/#apply">Learn about the program</a></p>
     </div>
   </form>
 </section>
@@ -183,11 +225,10 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
 <div id="app" hidden>
 <header class="top">
   <div class="wrap">
-    <img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros">
+    <div class="brand"><img src="/assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros GA"><span class="tag">Partner Portal</span></div>
     <div class="hdr-right">
       <span id="adminbadge" class="adminbadge" hidden>Admin</span>
       <span>Signed in as <span class="who" id="who">Partner</span></span>
-      <a class="btn primary" href="/login.html" id="newjob">Submit new assignment</a>
       <button class="btn" id="signout" type="button">Sign out</button>
     </div>
   </div>
@@ -200,9 +241,12 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
       <h1 id="pname">Partner</h1>
       <div class="acct" id="acct"></div>
     </div>
-    <div id="switchwrap" hidden>
-      <label for="partner">View contractor</label>
-      <select id="partner"></select>
+    <div class="actions">
+      <div id="switchwrap" hidden>
+        <label for="partner">View contractor</label>
+        <select id="partner"></select>
+      </div>
+      <a class="btn primary big" href="/login.html">+ Submit a new job</a>
     </div>
   </div>
 </section>
@@ -264,9 +308,9 @@ tbody tr:hover td{background:color-mix(in srgb,var(--red) 4%,var(--surface))}
 <footer class="foot">
   <div class="wrap">
     <div class="logos">
-      <span class="chipimg"><img src="/partners/assets/peak301-pros.png" alt="Peak 301 Pros"></span>
-      <span class="chipimg"><img src="/partners/assets/colorbiotics.png" alt="Colorbiotics, a Sika company"></span>
-      <span class="chipimg"><img src="/partners/assets/sika.png" alt="Sika"></span>
+      <span class="chipimg"><img src="/assets/brand/peak301-logo.png" alt="Peak 301"></span>
+      <span class="chipimg"><img src="/assets/brand/colorbiotics-logo.png" alt="Colorbiotics, a Sika company"></span>
+      <span class="chipimg"><img src="/assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product 96%"></span>
     </div>
     <p>Questions about a job or invoice? Call <a class="copy" href="tel:4043231869">404-323-1869</a> or email <a class="copy" href="mailto:assignment@peakprosusa.com">assignment@peakprosusa.com</a></p>
   </div>
