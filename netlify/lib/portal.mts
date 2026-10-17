@@ -50,13 +50,18 @@ export function accounts(): Account[] {
   }
 }
 
+// Codes are compared on letters and digits only, so pasted codes still match when they carry spaces,
+// long/curly dashes, no dashes, or invisible characters picked up from an email or chat.
+const canon = (c: string) => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+
 function safeEqual(a: string, b: string): boolean {
-  const x = Buffer.from(a.trim().toUpperCase());
-  const y = Buffer.from(b.trim().toUpperCase());
+  const x = Buffer.from(canon(a));
+  const y = Buffer.from(canon(b));
+  if (!x.length || !y.length) return false;
   return x.length === y.length && timingSafeEqual(x, y);
 }
 
-const codePrint = (code: string) => createHmac("sha256", env("PORTAL_SESSION_SECRET")).update("code:" + code.trim().toUpperCase()).digest("base64url").slice(0, 12);
+const codePrint = (code: string) => createHmac("sha256", env("PORTAL_SESSION_SECRET")).update("code:" + canon(code)).digest("base64url").slice(0, 12);
 
 export function matchCode(code: string): Session | null {
   const exp = Date.now() + SESSION_HOURS * 3600_000;
