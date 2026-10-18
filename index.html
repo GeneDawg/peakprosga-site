@@ -236,6 +236,10 @@
   .f-a { grid-column: span 2; grid-row: span 2; }
   .f-b { grid-row: span 2; }
   .f-e, .f-f { grid-column: span 2; }
+  .slider-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
+  .slider-head p { color: var(--muted); font-size: .92rem; }
+  .slider-container { touch-action: pan-y; }
+  .slider-container img { pointer-events: none; -webkit-user-drag: none; user-select: none; }
   /* phone action bar */
   .mbar { display: none; }
   * { -webkit-tap-highlight-color: transparent; }
@@ -664,6 +668,17 @@
       </article>
     </div>
 
+    <div class="slider-wrap reveal">
+      <div class="slider-head"><div class="label">The result</div><p>Drag the handle to compare the same roof before and after Peak 301.</p></div>
+      <div class="slider-container" id="slider" aria-label="Before and after comparison. Drag to compare.">
+        <img src="assets/roof-before.jpg" alt="Roof before Peak 301 treatment, faded aging shingles">
+        <div class="slider-after" id="sliderAfter"><img src="assets/roof-after.jpg" alt="Roof after Peak 301 treatment, rejuvenated shingles"></div>
+        <div class="slider-label before">Before</div>
+        <div class="slider-label after">After Peak 301</div>
+        <div class="slider-handle" id="sliderHandle"><span>⟷</span></div>
+      </div>
+    </div>
+
     <div class="proof">
       <div class="card reveal">
         <div class="label">Independent lab results</div>
@@ -1029,6 +1044,21 @@ document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click
     requestAnimationFrame(step);
   }), { threshold: .6 });
   els.forEach(el => io.observe(el));
+})();
+
+// Before/after slider (mouse, touch, keyboard)
+(function(){
+  const slider = document.getElementById('slider'), after = document.getElementById('sliderAfter'), handle = document.getElementById('sliderHandle');
+  if (!slider) return;
+  let drag = false, pos = 50;
+  const set = p => { pos = Math.max(5, Math.min(95, p)); after.style.clipPath = `inset(0 0 0 ${pos}%)`; handle.style.left = pos + '%'; };
+  const move = x => { const r = slider.getBoundingClientRect(); set((x - r.left) / r.width * 100); };
+  slider.addEventListener('dragstart', e => e.preventDefault());
+  slider.addEventListener('pointerdown', e => { e.preventDefault(); drag = true; slider.setPointerCapture(e.pointerId); move(e.clientX); });
+  slider.addEventListener('pointermove', e => { if (drag) move(e.clientX); });
+  ['pointerup','pointercancel'].forEach(t => slider.addEventListener(t, () => drag = false));
+  slider.tabIndex = 0;
+  slider.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') set(pos - 5); if (e.key === 'ArrowRight') set(pos + 5); });
 })();
 
 // Phone action bar: appears once the visitor scrolls past the opening
