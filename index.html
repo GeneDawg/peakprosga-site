@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peak 301 Pros GA · Bio-Based Roof Rejuvenation for Georgia Contractors</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Peak 301 Pros GA">
+<title>Peak 301 Pros GA · New Division. New Revenue. Zero Investment.</title>
 <meta name="description" content="Peak 301 Pros GA gives Georgia contractors a white-label, bio-based roof rejuvenation service. Powered by Peak 301®, manufactured by Colorbiotics, part of the Sika family. 96% USDA Certified Biobased.">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="assets/brand/peak301-logo.png">
@@ -166,6 +168,33 @@
   .org-flow .link::before { content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 1.5px; background: var(--green-2); }
   .org-flow .link::after { content: ""; position: absolute; right: 2px; top: calc(50% - 4px); border: 4.5px solid transparent; border-left: 6px solid var(--green-2); border-right: 0; }
   .org-flow .link i { position: relative; font-style: normal; font-family: var(--mono); font-size: .58rem; letter-spacing: .04em; color: var(--green); background: #fff; padding: 0 2px; writing-mode: vertical-rl; transform: rotate(180deg); }
+
+  .hero h1 { font-size: clamp(2.8rem, 6vw, 4.9rem); }
+  .promise { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 2rem; max-width: 40rem; }
+  .promise div { background: rgba(255,255,255,.8); border: 1px solid var(--line); border-radius: 14px; padding: .9rem 1rem; }
+  .promise b { display: block; font-family: var(--head); font-size: 1.55rem; font-weight: 600; color: var(--ink); letter-spacing: -.02em; line-height: 1; margin-bottom: .35rem; }
+  .promise span { font-size: .8rem; color: var(--muted); line-height: 1.4; display: block; }
+  .hero-photo { position: relative; margin: 0; border-radius: 22px; overflow: hidden; aspect-ratio: 4 / 5; box-shadow: 0 2px 4px rgba(15,26,20,.06), 0 24px 60px rgba(15,26,20,.18); background: #dfe6e1; }
+  .hero-photo > img:first-child { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 55%; }
+  .hero-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(10,20,14,.72)); pointer-events: none; }
+  .tag-after { position: absolute; top: 1rem; left: 1rem; z-index: 2; font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; background: var(--green); color: #fff; padding: .35rem .75rem; border-radius: 999px; }
+  .usda-float { position: absolute; top: 1rem; right: 1rem; z-index: 2; height: 54px; width: auto; background: #fff; border-radius: 8px; padding: 4px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+  .usa-chain { position: absolute; left: 1rem; right: 1rem; bottom: 1rem; z-index: 2; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,.25); border-radius: 14px; overflow: hidden; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .usa-chain div { background: rgba(255,255,255,.88); padding: .7rem .65rem; }
+  .usa-chain i { font-style: normal; font-family: var(--mono); font-size: .62rem; color: var(--green); }
+  .usa-chain b { display: block; font-family: var(--head); font-size: .95rem; color: var(--ink); font-weight: 600; margin-top: .1rem; }
+  .usa-chain span { display: block; font-size: .7rem; color: var(--muted); line-height: 1.3; margin-top: .15rem; }
+  .video-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 3rem; align-items: center; }
+  .video-h { font-size: clamp(2rem, 3.8vw, 3rem); margin-top: .7rem; letter-spacing: -.03em; }
+  .video-p { color: var(--muted); font-size: 1.05rem; font-weight: 300; margin-top: .9rem; }
+  .video-credit { font-size: .8rem; color: var(--muted); margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .video-frame { border-radius: 20px; overflow: hidden; background: #000; box-shadow: 0 2px 4px rgba(15,26,20,.06), 0 24px 60px rgba(15,26,20,.18); aspect-ratio: 16 / 9; }
+  .video-frame video { width: 100%; height: 100%; display: block; object-fit: cover; background: #000; }
+  .watch-link { display: inline-flex; align-items: center; gap: .5rem; margin-top: 1rem; font-weight: 600; color: var(--ink); font-size: .95rem; }
+  .watch-link i { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-style: normal; font-size: .7rem; padding-left: 2px; }
+  /* phone action bar */
+  .mbar { display: none; }
+  * { -webkit-tap-highlight-color: transparent; }
 
   /* credentials band */
   .creds { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--paper); }
@@ -352,6 +381,7 @@
     .cred:nth-child(n+3) { border-top: 1px solid var(--line); }
   }
   @media (max-width: 960px) {
+    .video-grid { grid-template-columns: 1fr; gap: 1.5rem; }
     .hero-grid, .apply-grid, .numbers, .proof, .maker { grid-template-columns: 1fr; }
     .maker-logos { border-right: 0; border-bottom: 1px solid var(--line); padding: 1.75rem; }
     .maker-copy { padding: 1.75rem; }
@@ -371,6 +401,18 @@
     .hero h1 { font-size: 2.45rem; }
     .hero-sub { font-size: 1.02rem; }
     .hero-facts { display: none; }
+    .hero h1 { font-size: 2.7rem; }
+    .promise { grid-template-columns: 1fr; gap: .5rem; }
+    .promise div { display: grid; grid-template-columns: 76px 1fr; align-items: center; gap: .75rem; padding: .75rem .9rem; }
+    .promise b { margin: 0; font-size: 1.35rem; }
+    .hero-photo { aspect-ratio: 4 / 5; border-radius: 18px; }
+    .usa-chain { grid-template-columns: 1fr 1fr; }
+    .usda-float { height: 44px; }
+    .form-group input, .form-group select, .form-group textarea, .code-row input { font-size: 16px; }
+    .mbar { display: flex; gap: .5rem; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; padding: .65rem max(1rem, env(safe-area-inset-left)) calc(.65rem + env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-right)); background: rgba(255,255,255,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line); transform: translateY(110%); transition: transform .25s ease; }
+    .mbar.show { transform: none; }
+    .mbar .btn { flex: 1; padding: .8rem 1rem; }
+    footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
     .impact-band { grid-template-columns: 1fr; }
     .impact-band > div { border-left: 0 !important; border-top: 1px solid #23342a; }
     .impact-band > div:first-child { border-top: 0; }
@@ -465,38 +507,32 @@
 <header class="hero" id="home">
   <div class="wrap hero-grid">
     <div>
-      <div class="chip"><i></i>Bio-based roof rejuvenation · Powered by Peak 301®</div>
-      <h1>Add years to aging roofs.<br><span class="soft">Not tons to landfills.</span></h1>
-      <p class="hero-sub">Peak 301 Pros GA gives Georgia contractors a <b>white-label roof rejuvenation service</b>, made from American-grown soybeans and applied by certified crews. You sell it under your brand. We do the work. You keep everything above <b>$85 per square</b>.</p>
+      <div class="chip"><i></i>Referral Partner Program · Free to join</div>
+      <h1>New division.<br>New revenue.<br><span class="soft">Zero investment.</span></h1>
+      <p class="hero-sub">Partner with Peak 301 Pros GA and offer your customers <b>best-in-class roof rejuvenation</b>: a next-generation, bio-based technology grown, made and distributed in the USA. You sell it under your brand. Our certified crews apply it. You keep everything above <b>$85 a square</b>.</p>
       <div class="hero-ctas">
         <a href="#apply" class="btn btn-red">Become a referral partner &rarr;</a>
-        <a href="#science" class="btn btn-line">See the science</a>
+        <a href="#earn" class="btn btn-line">See what you'll make</a>
       </div>
-      <div class="hero-facts">
-        <div class="fact"><b>96%</b><small>USDA Certified Biobased</small></div>
-        <div class="fact"><b>6 yr</b><small>Transferable warranty</small></div>
-        <div class="fact"><b>$0</b><small>Equipment or inventory</small></div>
+      <a href="#video" class="watch-link"><i>▶</i>Watch the 1-minute video</a>
+      <div class="promise">
+        <div><b>$0</b><span>to join. No fees, equipment, inventory or crews.</span></div>
+        <div><b>New</b><span>service line your customers haven't been offered yet.</span></div>
+        <div><b>$1,000</b><span>typical profit on a 25-square roof. Real money.</span></div>
       </div>
     </div>
 
-    <aside class="snap" aria-label="Peak 301 lab snapshot">
-      <div class="snap-head"><span class="label">Peak 301 · Lab snapshot</span><span class="dot"></span></div>
-      <svg viewBox="0 0 360 170" role="img" aria-label="Restored shingle illustration">
-        <path d="M30 98 Q180 74 330 98 L330 130 Q180 106 30 130Z" fill="#3f4a42"/>
-        <path d="M30 130 Q180 106 330 130 L330 140 Q180 116 30 140Z" fill="#c9bfb4"/>
-        <g fill="#5d675f"><circle cx="46" cy="93" r="5"/><circle cx="72" cy="89" r="5"/><circle cx="98" cy="86" r="5"/><circle cx="124" cy="83" r="5"/><circle cx="150" cy="82" r="5"/><circle cx="176" cy="81" r="5"/><circle cx="202" cy="81" r="5"/><circle cx="228" cy="82" r="5"/><circle cx="254" cy="84" r="5"/><circle cx="280" cy="87" r="5"/><circle cx="306" cy="90" r="5"/></g>
-        <path d="M60 50 q120 -30 240 0" fill="none" stroke="#2f9a62" stroke-width="1.6" stroke-dasharray="4 5"/>
-        <path d="M292 44l8 6-9 4" fill="none" stroke="#2f9a62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="180" y="28" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1d7a4b">FLEXIBILITY RESTORED</text>
-      </svg>
-      <div class="snap-rows">
-        <div class="snap-row"><span>Color change</span><s>Product A −25%</s><b>−1%</b></div>
-        <div class="snap-row"><span>Granule adhesion</span><s>Product A −18%</s><b>+8%</b></div>
-        <div class="snap-row"><span>Fire burn pattern</span><s>Control 44″</s><b>14″</b></div>
-        <div class="snap-row"><span>Hail impact</span><s>Product A Fail</s><b>Pass</b></div>
+    <figure class="hero-photo">
+      <img src="assets/roof-after.jpg" alt="A rejuvenated asphalt shingle roof after Peak 301 treatment" fetchpriority="high">
+      <figcaption class="tag-after">After Peak 301</figcaption>
+      <img class="usda-float" src="assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product 96%">
+      <div class="usa-chain" aria-label="Grown, made and distributed in the USA">
+        <div><i>01</i><b>Grown</b><span>American soybean farms</span></div>
+        <div><i>02</i><b>Made</b><span>Ames, Iowa by Colorbiotics</span></div>
+        <div><i>03</i><b>Distributed</b><span>Peak 301 Pros, nationwide</span></div>
+        <div><i>04</i><b>Applied</b><span>Certified crews in Georgia</span></div>
       </div>
-      <div class="snap-foot">Independent testing by PRI Group, as published by Colorbiotics.</div>
-    </aside>
+    </figure>
   </div>
 </header>
 
@@ -509,6 +545,24 @@
     <div class="cred"><div class="lab-ico" style="color:var(--green)"><svg width="24" height="24"><use href="#i-flask"/></svg></div><div class="txt"><b>Independently lab tested</b>By PRI Group against untreated shingles and a competing rejuvenator</div></div>
   </div>
 </div>
+
+<!-- VIDEO -->
+<section class="block" id="video" style="padding-bottom:0">
+  <div class="wrap video-grid">
+    <div class="reveal">
+      <div class="label">Watch · 1 minute</div>
+      <h2 class="video-h">See Peak 301 at work.</h2>
+      <p class="video-p">A quick look at how Peak 301 restores aging asphalt shingles, from the roof to the science inside the shingle.</p>
+      <p class="video-credit">Video produced by Colorbiotics, featuring Gene Russell of Peak 301 Pros.</p>
+    </div>
+    <div class="video-frame reveal">
+      <video controls playsinline preload="none" poster="assets/video/peak301-colorbiotics-poster.jpg">
+        <source src="assets/video/peak301-colorbiotics.mp4" type="video/mp4">
+        <a href="assets/video/peak301-colorbiotics.mp4">Watch the Peak 301 video</a>
+      </video>
+    </div>
+  </div>
+</section>
 
 <!-- THE SCIENCE -->
 <section class="block" id="science">
@@ -815,6 +869,11 @@
   </div>
 </section>
 
+<div class="mbar" id="mbar" aria-label="Quick actions">
+  <a href="#apply" class="btn btn-red">Become a partner</a>
+  <a href="/partners/" class="btn btn-line">Partner login</a>
+</div>
+
 <footer>
   <div class="wrap">
     <div class="foot-grid">
@@ -870,6 +929,19 @@ document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click
   window.addEventListener('touchmove', e => { if (drag) move(e.touches[0].clientX); }, { passive: true });
   window.addEventListener('mouseup', () => drag = false);
   window.addEventListener('touchend', () => drag = false);
+})();
+
+// "Watch" link scrolls to the video and starts it
+(function(){
+  const l = document.querySelector('.watch-link'), v = document.querySelector('#video video');
+  if (l && v) l.addEventListener('click', () => setTimeout(() => { v.play().catch(()=>{}); }, 600));
+})();
+
+// Phone action bar: appears once the visitor scrolls past the opening
+(function(){
+  const bar = document.getElementById('mbar'), hero = document.getElementById('home');
+  if (!bar || !hero || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(es => es.forEach(e => bar.classList.toggle('show', !e.isIntersecting)), { threshold: 0.05 }).observe(hero);
 })();
 
 // Reveal on scroll + journey highlight

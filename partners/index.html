@@ -166,6 +166,7 @@ body{-webkit-font-smoothing:antialiased}
 .gate-card .kicker{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--green);text-align:center}
 .gate-card label{font:600 12px var(--body);letter-spacing:0;text-transform:none;color:var(--ink)}
 .gate-card input{border:1.5px solid #cfd8d1;border-radius:999px;background:var(--bg);font-size:16px;padding:12px 16px}
+body{padding-bottom:env(safe-area-inset-bottom)}
 .gate-card input:focus{outline:none;border-color:var(--green-2);background:#fff;box-shadow:0 0 0 4px rgba(47,154,98,.15)}
 .gate-card .btn.primary{padding:12px;font-size:15px}
 .gatehelp a{color:var(--ink);text-decoration:underline}
@@ -200,6 +201,13 @@ tbody tr:hover td{background:#fafcfa}
 .gate-card .showcode{justify-content:flex-start;text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)}
 .gate-card .showcode input{width:auto;padding:0;border-radius:4px;accent-color:var(--green)}
 </style>
+<link rel="manifest" href="/partners/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="P301 Portal">
+<meta name="theme-color" content="#ffffff">
 </head>
 <body>
 
@@ -218,6 +226,7 @@ tbody tr:hover td{background:#fafcfa}
       <div class="err" id="err" hidden></div>
       <button class="btn primary" type="submit" id="gatebtn">Sign in &rarr;</button>
       <p class="gatehelp">Keep your code within your company. Need your code or a new one? Call 404-323-1869.<br>Not a partner yet? <a href="https://peakprosga.com/#apply">Learn about the program</a></p>
+      <p class="gatehelp" id="a2hs" hidden><b>iPhone tip:</b> tap the Share button, then <b>Add to Home Screen</b>, to open the portal like an app.</p>
     </div>
   </form>
 </section>
@@ -341,6 +350,7 @@ let session = null; // {token, role, accounts}
 let current = "all", filter = "all", jobs = [], viewJobs = [];
 
 function save(){ try{ sessionStorage.setItem("p3p_portal", JSON.stringify(session)); }catch(e){} }
+try{ if(/iP(hone|ad|od)/.test(navigator.userAgent) && !navigator.standalone){ const t=document.getElementById("a2hs"); if(t) t.hidden=false; } }catch(e){}
 function restore(){ try{ return JSON.parse(sessionStorage.getItem("p3p_portal")||"null"); }catch(e){ return null; } }
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,3200); }
 
