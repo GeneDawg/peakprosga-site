@@ -216,7 +216,7 @@ tbody tr:hover td{background:#fafcfa}
     <div class="in">
       <img src="/assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros GA">
       <div class="kicker">Peak 301 Pros GA · Partner Portal</div>
-      <h1>Sign in to your dashboard</h1>
+      <h1 id="gatetitle">Sign in to your dashboard</h1>
       <p>Enter your company's private access code to see your jobs, photos, invoices and warranties. You'll only ever see your own company's jobs.</p>
       <div>
         <label for="code">Access code</label>
@@ -350,6 +350,7 @@ let session = null; // {token, role, accounts}
 let current = "all", filter = "all", jobs = [], viewJobs = [];
 
 function save(){ try{ sessionStorage.setItem("p3p_portal", JSON.stringify(session)); }catch(e){} }
+try{ if(new URLSearchParams(location.search).get("next")==="submit"){ const t=document.getElementById("gatetitle"); if(t) t.textContent="Sign in to submit a job"; } }catch(e){}
 try{ if(/iP(hone|ad|od)/.test(navigator.userAgent) && !navigator.standalone){ const t=document.getElementById("a2hs"); if(t) t.hidden=false; } }catch(e){}
 function restore(){ try{ return JSON.parse(sessionStorage.getItem("p3p_portal")||"null"); }catch(e){ return null; } }
 function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,3200); }
@@ -378,7 +379,7 @@ $("gateform").addEventListener("submit", async e => {
     const res = await fetch("/api/portal/login", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ code }) });
     const body = await res.json();
     if (!res.ok) throw new Error(body.error || "Sign-in failed.");
-    session = body; save(); $("code").value = ""; startApp();
+    session = body; save(); $("code").value = ""; if (new URLSearchParams(location.search).get("next") === "submit") { location.replace("/login.html"); return; } startApp();
   } catch (err) {
     $("err").textContent = err.message; $("err").hidden = false;
   } finally {
@@ -614,7 +615,7 @@ $("invrows").addEventListener("click", e => {
 });
 
 const saved = restore();
-if (saved && saved.token){ session = saved; startApp(); }
+if (saved && saved.token){ session = saved; if (new URLSearchParams(location.search).get("next") === "submit") location.replace("/login.html"); else startApp(); }
 })();
 </script>
 </body>

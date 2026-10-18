@@ -107,9 +107,9 @@
 <!-- ====================  LOGIN SCREEN ==================== -->
 <div id="login-screen">
   <div class="page-header">
-    <div class="page-tag">Approved partners only</div>
-    <h1 class="page-title">Submit a job</h1>
-    <p class="page-sub">Sign in with your company's partner access code to submit Peak 301 assignments. It's the same code you use for your Partner Dashboard.</p>
+    <div class="page-tag">Partner portal</div>
+    <h1 class="page-title">Please sign in again</h1>
+    <p class="page-sub">Your session timed out. Enter your access code and press Submit again. Everything you typed is still on the form.</p>
   </div>
 
   <div class="login-wrap">
@@ -332,7 +332,7 @@
       errorBox.style.display = 'block';
       input.value = '';
     } finally {
-      btn.disabled = false; btn.textContent = 'Enter Portal →';
+      btn.disabled = false; btn.textContent = 'Continue →';
     }
   }
 
@@ -358,8 +358,12 @@
     document.getElementById('partner-token').value = s.token;
   });
 
+  // The form lives inside the partner portal: anyone not signed in goes to the portal sign-in,
+  // which brings them straight back here. (The sign-in box below only appears if a session
+  // expires while a partner is filling out the form, so their entries aren't lost.)
   const existing = readPortal();
   if (existing) showPortal(existing);
+  else location.replace('/partners/?next=submit');
 
   document.getElementById('access-code').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') attemptLogin();
