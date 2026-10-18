@@ -29,3 +29,17 @@
     X-Robots-Tag = "noindex, nofollow"
     Referrer-Policy = "no-referrer"
     Cache-Control = "no-store"
+
+# Partner portal on its own address: partners.peakprosga.com opens the sign-in/dashboard,
+# and /submit opens the job form. (Active once the partners subdomain is added to this Netlify site.)
+[[redirects]]
+  from = "https://partners.peakprosga.com/"
+  to = "/partners/"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://partners.peakprosga.com/submit"
+  to = "/login.html"
+  status = 200
+  force = true
