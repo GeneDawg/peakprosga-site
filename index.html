@@ -222,6 +222,20 @@
   section.tint { background: linear-gradient(180deg, #f6f8f6, #eef5ef); }
   .stage svg { background: none; }
   @media (prefers-reduced-motion: reduce) { .hero::before, .hero::after { animation: none; } }
+  .field { margin-top: 1.25rem; }
+  .field-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem; flex-wrap: wrap; margin: 2.5rem 0 1.25rem; }
+  .field-head h3 { font-size: clamp(1.6rem, 2.8vw, 2.2rem); margin-top: .5rem; letter-spacing: -.03em; }
+  .field-head p { color: var(--muted); max-width: 26rem; font-size: .95rem; }
+  .field-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 210px; gap: .9rem; }
+  .field-grid figure { position: relative; margin: 0; border-radius: 18px; overflow: hidden; background: #dfe6e1; }
+  .field-grid img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
+  .field-grid figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(10,20,14,.6)); pointer-events: none; }
+  .field-grid figcaption { position: absolute; left: .9rem; bottom: .8rem; right: .9rem; z-index: 1; color: #fff; font-size: .84rem; font-weight: 500; display: flex; align-items: center; gap: .5rem; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+  .field-grid figcaption b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--leaf); color: var(--ink); font-size: .7rem; font-family: var(--mono); text-shadow: none; }
+  @media (hover: hover) { .field-grid figure:hover img { transform: scale(1.04); } }
+  .f-a { grid-column: span 2; grid-row: span 2; }
+  .f-b { grid-row: span 2; }
+  .f-e, .f-f { grid-column: span 2; }
   /* phone action bar */
   .mbar { display: none; }
   * { -webkit-tap-highlight-color: transparent; }
@@ -412,6 +426,10 @@
   }
   @media (max-width: 960px) {
     .video-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .field-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 170px; }
+    .f-a { grid-column: span 2; grid-row: span 1; }
+    .f-b { grid-row: span 2; }
+    .f-e, .f-f { grid-column: span 2; }
     .hero-grid, .apply-grid, .numbers, .proof, .maker { grid-template-columns: 1fr; }
     .maker-logos { border-right: 0; border-bottom: 1px solid var(--line); padding: 1.75rem; }
     .maker-copy { padding: 1.75rem; }
@@ -558,8 +576,8 @@
     </div>
 
     <figure class="hero-photo">
-      <img src="assets/roof-after.jpg" alt="A rejuvenated asphalt shingle roof after Peak 301 treatment" fetchpriority="high">
-      <figcaption class="tag-after">After Peak 301</figcaption>
+      <img src="assets/photos/hero-crew-spraying.jpg" alt="Drone view of a certified crew member spray-applying Peak 301 to an asphalt shingle roof" fetchpriority="high">
+      <figcaption class="tag-after">Peak 301 being applied</figcaption>
       <img class="usda-float" src="assets/brand/usda-biobased-96.png" alt="USDA Certified Biobased Product 96%">
       <div class="usa-chain" aria-label="Grown, made and distributed in the USA">
         <div><i>01</i><b>Grown</b><span>American soybean farms</span></div>
@@ -683,13 +701,18 @@
       </div>
     </div>
 
-    <div class="slider-wrap reveal">
-      <div class="slider-container" id="slider" aria-label="Before and after comparison. Drag to compare.">
-        <img src="assets/roof-before.jpg" alt="Roof before Peak 301 treatment, faded aging shingles">
-        <div class="slider-after" id="sliderAfter"><img src="assets/roof-after.jpg" alt="Roof after Peak 301 treatment, rejuvenated shingles"></div>
-        <div class="slider-label before">Before</div>
-        <div class="slider-label after">After Peak 301</div>
-        <div class="slider-handle" id="sliderHandle"><span>⟷</span></div>
+    <div class="field reveal">
+      <div class="field-head">
+        <div><div class="label">From the field</div><h3>Real Georgia roofs. <span class="serif soft-g">Real crews.</span></h3></div>
+        <p>Every job is applied by a certified two-person crew in a single visit, with no tear-off and no mess.</p>
+      </div>
+      <div class="field-grid">
+        <figure class="f-a"><img loading="lazy" src="assets/photos/crew-two-applicators.jpg" alt="Drone view of two applicators treating an asphalt shingle roof"><figcaption>Certified crew, one visit</figcaption></figure>
+        <figure class="f-b"><img loading="lazy" src="assets/photos/tudor-application.jpg" alt="Peak 301 being applied to a Tudor-style home behind blooming hydrangeas"><figcaption>No tear-off. The landscaping stays put.</figcaption></figure>
+        <figure class="f-c"><img loading="lazy" src="assets/photos/just-applied.jpg" alt="Light haze of freshly applied Peak 301 on a low-slope roof"><figcaption><b>1</b> Just applied</figcaption></figure>
+        <figure class="f-d"><img loading="lazy" src="assets/photos/absorbed.jpg" alt="The same roof after Peak 301 has absorbed into the shingle surface"><figcaption><b>2</b> Absorbed into the shingle</figcaption></figure>
+        <figure class="f-e"><img loading="lazy" src="assets/photos/crew-aerial.jpg" alt="Two crew members applying Peak 301 across a roof section"><figcaption>Every shingle, edge to edge</figcaption></figure>
+        <figure class="f-f"><img loading="lazy" src="assets/photos/treated-roof-drone.jpg" alt="Drone inspection view of a treated asphalt shingle roof"><figcaption>Drone-documented results</figcaption></figure>
       </div>
     </div>
   </div>
@@ -986,18 +1009,7 @@ const mobileMenu = document.getElementById('mobileMenu');
 hamburger.addEventListener('click', () => { const o = mobileMenu.classList.toggle('open'); hamburger.classList.toggle('open', o); hamburger.setAttribute('aria-expanded', o); });
 document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); hamburger.setAttribute('aria-expanded', false); }));
 
-// Before/after slider
-(function(){
-  const slider = document.getElementById('slider'), after = document.getElementById('sliderAfter'), handle = document.getElementById('sliderHandle');
-  let drag = false;
-  function move(x){ const r = slider.getBoundingClientRect(); const p = Math.max(.05, Math.min(.95, (x - r.left) / r.width)) * 100; after.style.clipPath = `inset(0 0 0 ${p}%)`; handle.style.left = p + '%'; }
-  slider.addEventListener('mousedown', e => { drag = true; move(e.clientX); });
-  slider.addEventListener('touchstart', e => { drag = true; move(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('mousemove', e => { if (drag) move(e.clientX); });
-  window.addEventListener('touchmove', e => { if (drag) move(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('mouseup', () => drag = false);
-  window.addEventListener('touchend', () => drag = false);
-})();
+
 
 // "Watch" link scrolls to the video and starts it
 (function(){
