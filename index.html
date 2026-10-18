@@ -192,6 +192,19 @@
   .video-frame video { width: 100%; height: 100%; display: block; object-fit: cover; background: #000; }
   .watch-link { display: inline-flex; align-items: center; gap: .5rem; margin-top: 1rem; font-weight: 600; color: var(--ink); font-size: .95rem; }
   .watch-link i { width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-style: normal; font-size: .7rem; padding-left: 2px; }
+  .math { margin-top: 1.25rem; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; }
+  .math-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .math-head h3 { font-size: 1.35rem; margin-top: .4rem; }
+  .math-head p { color: var(--muted); font-size: .95rem; }
+  .math-head p b { color: var(--ink); }
+  .math-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  .math-table th { font-family: var(--mono); font-size: .68rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); text-align: right; padding: .6rem .75rem; border-bottom: 1px solid var(--line-2); }
+  .math-table th:first-child, .math-table td:first-child { text-align: left; }
+  .math-table td { padding: .9rem .75rem; border-bottom: 1px solid var(--line); text-align: right; font-family: var(--head); font-weight: 600; font-size: 1.1rem; color: var(--ink); }
+  .math-table td:first-child { font-family: var(--sans); font-size: .95rem; font-weight: 500; color: var(--text); }
+  .math-table td:last-child { color: var(--green); }
+  .math-table tr.best td { background: var(--green-tint); }
+  .math-table tr:last-child td { border-bottom: 0; }
   /* phone action bar */
   .mbar { display: none; }
   * { -webkit-tap-highlight-color: transparent; }
@@ -429,6 +442,10 @@
     .form-grid { grid-template-columns: 1fr; }
     .code-row { flex-direction: column; }
     .compare th, .compare td { padding: .7rem .65rem; font-size: .84rem; }
+    .math { padding: 1.2rem; }
+    .math-table th, .math-table td { padding: .7rem .4rem; }
+    .math-table td { font-size: .95rem; }
+    .math-table td:first-child { font-size: .85rem; }
     .lab { font-size: .8rem; }
     .lab th, .lab td { padding: .6rem .3rem; }
     .journey .label { display: none; }
@@ -762,7 +779,7 @@
           <div class="ledger-row"><span>You charge the homeowner <span class="mono" style="color:var(--muted)">$125/sq</span></span><b>$3,750</b></div>
           <div class="ledger-row"><span>You pay Peak 301 Pros GA <span class="mono" style="color:var(--muted)">$85/sq</span></span><b>$2,550</b></div>
           <div class="ledger-row profit"><span><b style="font-family:var(--sans);font-size:1rem;color:var(--ink)">Your gross profit</b></span><b>$1,200</b></div>
-          <div class="ledger-foot">At 4–8 jobs a month, that's $4,800–$9,600 in added gross profit, with no new crew or equipment.</div>
+          <div class="ledger-foot">At 2–4 roofs a week, that's <b style="color:var(--ink)">$10,400–$20,800 a month</b> in added gross profit, with no new crew or equipment.</div>
         </div>
         <div class="card reveal">
           <h3>Pay only when you sell.</h3>
@@ -777,6 +794,23 @@
           </ul>
           <p class="fine">Example only. You set your own price. Partner rate is $85 per square, measured by EagleView.</p>
         </div>
+      </div>
+      <div class="math reveal">
+        <div class="math-head">
+          <div><div class="label">The math</div><h3>2 to 4 Peak 301 roofs a week</h3></div>
+          <p>$40 profit per square × 30 squares = <b>$1,200 per roof</b></p>
+        </div>
+        <div style="overflow-x:auto">
+        <table class="math-table">
+          <thead><tr><th>Roofs per week</th><th>Per week</th><th>Per month</th><th>Per year</th></tr></thead>
+          <tbody>
+            <tr><td>2 roofs</td><td>$2,400</td><td>$10,400</td><td>$124,800</td></tr>
+            <tr><td>3 roofs</td><td>$3,600</td><td>$15,600</td><td>$187,200</td></tr>
+            <tr class="best"><td>4 roofs</td><td>$4,800</td><td>$20,800</td><td>$249,600</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="fine">Gross profit before your own sales costs. Per month uses 52 weeks ÷ 12 (about 4.33 weeks); per year uses 52 weeks. Based on a $125/sq sell price and the $85/sq partner rate. Example only; your price and volume set your results.</p>
       </div>
       <div class="next"><a href="#apply">Next: apply in two minutes ↓</a></div>
     </div>
