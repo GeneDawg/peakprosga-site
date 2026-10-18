@@ -11,7 +11,7 @@
 <link rel="icon" href="assets/brand/peak301-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Inter+Tight:wght@500;600;700&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!--
   MARKET SETTINGS — to copy this site for another market (Florida, Houston...), change:
     • "GA" / "Georgia" in the title, logo badge and copy
@@ -33,6 +33,7 @@
     --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --head: 'Inter Tight', 'Inter', system-ui, sans-serif;
     --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --serif: 'Fraunces', Georgia, serif;
     --radius: 14px;
     --shadow: 0 1px 2px rgba(15,26,20,.04), 0 8px 24px rgba(15,26,20,.06);
   }
@@ -84,7 +85,15 @@
   .hero { position: relative; padding: 136px 0 72px; overflow: hidden; background:
       radial-gradient(700px 420px at 88% 0%, rgba(140,198,63,.16), transparent 70%),
       radial-gradient(600px 400px at 0% 100%, rgba(29,122,75,.08), transparent 70%), #fff; }
-  .hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 75%); -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.55), transparent 75%); pointer-events: none; }
+  .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none; z-index: 0; }
+  .hero::before { width: 620px; height: 620px; right: -160px; top: -180px; background: radial-gradient(circle at 40% 40%, rgba(140,198,63,.30), rgba(47,154,98,.10) 55%, transparent 70%); animation: drift1 22s ease-in-out infinite alternate; }
+  .hero::after { width: 520px; height: 520px; left: -200px; bottom: -220px; background: radial-gradient(circle at 50% 50%, rgba(47,154,98,.18), rgba(140,198,63,.08) 55%, transparent 70%); animation: drift2 26s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(-80px, 60px) scale(1.08); } }
+  @keyframes drift2 { to { transform: translate(90px, -50px) scale(1.1); } }
+  .hero-grid { z-index: 1; }
+  .serif { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; }
+  .soft-g { color: var(--green); }
+  .hero h1 .serif { font-weight: 400; letter-spacing: -.035em; }
   .hero-grid { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 3.5rem; align-items: center; }
   .chip { display: inline-flex; align-items: center; gap: .5rem; font-size: .8rem; font-weight: 500; color: var(--green); background: var(--green-tint); border: 1px solid #cfe7d9; border-radius: 999px; padding: .35rem .8rem .35rem .45rem; margin-bottom: 1.4rem; }
   .chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--green-2); box-shadow: 0 0 0 4px rgba(47,154,98,.18); margin-left: .25rem; }
@@ -127,14 +136,15 @@
   .snap-row s { font-family: var(--mono); font-size: .8rem; color: #9aa59f; text-decoration: none; }
   .snap-row b { font-family: var(--mono); font-weight: 500; color: var(--green); }
   .snap-foot { padding: .8rem 1.4rem; background: var(--paper); border-top: 1px solid var(--line); font-size: .74rem; color: var(--muted); }
-  .impact-band { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr; gap: 0; background: var(--ink); color: #cfdad3; border-radius: 18px; overflow: hidden; }
-  .impact-band > div { padding: 2rem 1.75rem; border-left: 1px solid #23342a; }
+  .impact-band { position: relative; display: grid; grid-template-columns: 1.1fr 1fr 1fr 1fr; gap: 0; background: linear-gradient(135deg, #eef6f0 0%, #e3f1e7 55%, #f3f8ec 100%); color: var(--text); border-radius: 22px; overflow: hidden; border: 1px solid #d6e8dc; }
+  .impact-band > div { position: relative; z-index: 1; padding: 2.2rem 1.75rem 7.5rem; border-left: 1px solid rgba(29,122,75,.14); }
   .impact-band > div:first-child { border-left: 0; }
-  .impact-band h2 { color: #fff; font-size: clamp(1.5rem, 2.6vw, 2rem); margin-top: .6rem; }
-  .impact-band .big { font-family: var(--head); font-size: 2.4rem; font-weight: 600; color: #fff; letter-spacing: -.03em; line-height: 1; margin: .2rem 0 .6rem; }
-  .impact-band .big small { font-size: .95rem; color: var(--leaf); font-weight: 500; letter-spacing: 0; }
-  .impact-band p { font-size: .9rem; font-weight: 300; }
-  .impact-band .label { color: var(--leaf); }
+  .impact-band h2 { color: var(--ink); font-size: clamp(1.6rem, 2.7vw, 2.1rem); margin-top: .6rem; }
+  .impact-band .big { font-family: var(--head); font-size: 2.6rem; font-weight: 600; color: var(--ink); letter-spacing: -.03em; line-height: 1; margin: .2rem 0 .6rem; }
+  .impact-band .big small { font-size: .95rem; color: var(--green); font-weight: 500; letter-spacing: 0; }
+  .impact-band p { font-size: .9rem; color: var(--muted); }
+  .impact-band .label { color: var(--green); }
+  .impact-art { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 120px; z-index: 0; pointer-events: none; }
 
   .cred-pair { display: flex; align-items: center; gap: .6rem; flex: none; }
   .cred .cred-pair img.sika { height: 28px; }
@@ -205,6 +215,13 @@
   .math-table td:last-child { color: var(--green); }
   .math-table tr.best td { background: var(--green-tint); }
   .math-table tr:last-child td { border-bottom: 0; }
+  @media (hover: hover) {
+    .card, .step, .stage, .promise div, .org-flow .node { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .card:hover, .step:hover, .stage:hover, .org-flow .node:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(15,26,20,.08); border-color: #cfe1d5; }
+  }
+  section.tint { background: linear-gradient(180deg, #f6f8f6, #eef5ef); }
+  .stage svg { background: none; }
+  @media (prefers-reduced-motion: reduce) { .hero::before, .hero::after { animation: none; } }
   /* phone action bar */
   .mbar { display: none; }
   * { -webkit-tap-highlight-color: transparent; }
@@ -389,7 +406,7 @@
     .creds-grid { grid-template-columns: 1fr 1fr; }
     .impact-band { grid-template-columns: 1fr 1fr; }
     .impact-band > div:nth-child(3) { border-left: 0; }
-    .impact-band > div:nth-child(n+3) { border-top: 1px solid #23342a; }
+    .impact-band > div:nth-child(n+3) { border-top: 1px solid rgba(29,122,75,.14); }
     .cred:nth-child(3) { border-left: 0; padding-left: 0; }
     .cred:nth-child(n+3) { border-top: 1px solid var(--line); }
   }
@@ -427,7 +444,8 @@
     .mbar .btn { flex: 1; padding: .8rem 1rem; }
     footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
     .impact-band { grid-template-columns: 1fr; }
-    .impact-band > div { border-left: 0 !important; border-top: 1px solid #23342a; }
+    .impact-band > div { border-left: 0 !important; border-top: 1px solid rgba(29,122,75,.14); padding-bottom: 1.6rem; }
+    .impact-band > div:last-of-type { padding-bottom: 7rem; }
     .impact-band > div:first-child { border-top: 0; }
     .hero-ctas .btn { flex: 1; }
     .chip { font-size: .72rem; }
@@ -525,7 +543,7 @@
   <div class="wrap hero-grid">
     <div>
       <div class="chip"><i></i>Referral Partner Program · Free to join</div>
-      <h1>New division.<br>New revenue.<br><span class="soft">Zero investment.</span></h1>
+      <h1>New division.<br>New revenue.<br><span class="soft serif">Zero investment.</span></h1>
       <p class="hero-sub">Partner with Peak 301 Pros GA and offer your customers <b>best-in-class roof rejuvenation</b>: a next-generation, bio-based technology grown, made and distributed in the USA. You sell it under your brand. Our certified crews apply it. You keep everything above <b>$85 a square</b>.</p>
       <div class="hero-ctas">
         <a href="#apply" class="btn btn-red">Become a referral partner &rarr;</a>
@@ -535,7 +553,7 @@
       <div class="promise">
         <div><b>$0</b><span>to join. No fees, equipment, inventory or crews.</span></div>
         <div><b>New</b><span>service line your customers haven't been offered yet.</span></div>
-        <div><b>$1,200</b><span>typical profit on an average 30-square Georgia roof. Real money.</span></div>
+        <div><b data-count="1200" data-prefix="$">$1,200</b><span>typical profit on an average 30-square Georgia roof. Real money.</span></div>
       </div>
     </div>
 
@@ -568,7 +586,7 @@
   <div class="wrap video-grid">
     <div class="reveal">
       <div class="label">Watch · 1 minute</div>
-      <h2 class="video-h">See Peak 301 at work.</h2>
+      <h2 class="video-h">See Peak 301 <span class="serif soft-g">at work.</span></h2>
       <p class="video-p">A quick look at how Peak 301 restores aging asphalt shingles, from the roof to the science inside the shingle.</p>
       <p class="video-credit">Video produced by Colorbiotics, featuring Gene Russell of Peak 301 Pros.</p>
     </div>
@@ -586,47 +604,44 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="label">The science</div>
-      <h2>Roofs don't wear out all at once. They dry out.</h2>
+      <h2>Roofs don't wear out all at once. <span class="serif soft-g">They dry out.</span></h2>
       <p>Asphalt shingles age as sun and heat break down the asphalt that holds them together. Peak 301 is a soybean-based treatment that works inside the shingle, restoring the flexibility the roof has lost.</p>
     </div>
 
     <div class="sci-grid">
       <article class="stage reveal">
-        <svg viewBox="0 0 360 200" role="img" aria-label="Aged shingle: cracked, brittle, losing granules">
-          <rect x="30" y="98" width="300" height="34" rx="3" fill="#6b5f55"/>
-          <rect x="30" y="132" width="300" height="12" rx="2" fill="#c9bfb4"/>
-          <g fill="#8b8178"><circle cx="48" cy="94" r="5"/><circle cx="74" cy="95" r="4"/><circle cx="118" cy="94" r="5"/><circle cx="170" cy="95" r="4"/><circle cx="246" cy="94" r="5"/><circle cx="300" cy="95" r="4"/></g>
-          <g fill="#8b8178" opacity=".8"><circle cx="96" cy="160" r="4"/><circle cx="140" cy="168" r="3.5"/><circle cx="210" cy="164" r="4"/><circle cx="262" cy="171" r="3"/></g>
-          <path d="M92 98l8 14-6 10M200 98l-5 12 7 9M276 98l6 11-5 13" fill="none" stroke="#f6f8f6" stroke-width="2.2" stroke-linecap="round"/>
-          <g stroke="#d7262e" stroke-width="1.6" fill="none" stroke-linecap="round"><path d="M120 30v40M110 60l10 10 10-10"/><path d="M230 30v40M220 60l10 10 10-10"/></g>
-          <text x="180" y="36" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#67756d">UV + HEAT</text>
-        </svg>
+        <svg viewBox="0 0 360 230" role="img" aria-label="Aged shingle cross-section: oxidized asphalt, micro-cracks and granule loss"><defs>
+  <linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfdfb"/><stop offset="1" stop-color="#eaf2ec"/></linearGradient>
+  <radialGradient id="agr" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#b9c1bb"/><stop offset=".55" stop-color="#7f8a83"/><stop offset="1" stop-color="#4c5550"/></radialGradient>
+  <radialGradient id="agr2" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#a9b4ad"/><stop offset=".55" stop-color="#66736b"/><stop offset="1" stop-color="#36403a"/></radialGradient>
+  <pattern id="amat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e8dfd2"/><path d="M0 0v6" stroke="#cfc2ae" stroke-width="1.4"/></pattern>
+</defs><rect width="360" height="230" fill="url(#abg)"/><g opacity=".9"><circle cx="54" cy="44" r="16" fill="#f6c86a" opacity=".35"/><circle cx="54" cy="44" r="9" fill="#f2b84b" opacity=".85"/><path d="M68.0 44.0 L75.0 44.0" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M65.3 52.2 L71.0 56.3" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M58.3 57.3 L60.5 64.0" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M49.7 57.3 L47.5 64.0" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M42.7 52.2 L37.0 56.3" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M40.0 44.0 L33.0 44.0" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M42.7 35.8 L37.0 31.7" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M49.7 30.7 L47.5 24.0" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M58.3 30.7 L60.5 24.0" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><path d="M65.3 35.8 L71.0 31.7" stroke="#f2b84b" stroke-width="1.4" stroke-linecap="round" opacity=".7"/></g><path d="M110 26 q-5 10 0 20 q5 10 0 20" stroke="#e8875b" stroke-width="1.3" fill="none" opacity=".55" stroke-linecap="round"/><path d="M170 26 q-5 10 0 20 q5 10 0 20" stroke="#e8875b" stroke-width="1.3" fill="none" opacity=".55" stroke-linecap="round"/><path d="M230 26 q-5 10 0 20 q5 10 0 20" stroke="#e8875b" stroke-width="1.3" fill="none" opacity=".55" stroke-linecap="round"/><path d="M290 26 q-5 10 0 20 q5 10 0 20" stroke="#e8875b" stroke-width="1.3" fill="none" opacity=".55" stroke-linecap="round"/><defs><linearGradient id="aasp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b7e72"/><stop offset="1" stop-color="#61574f"/></linearGradient></defs><rect x="24" y="124" width="312" height="34" rx="3" fill="url(#aasp)"/><rect x="24" y="158" width="312" height="12" rx="2" fill="url(#amat)"/><rect x="24" y="170" width="312" height="8" rx="2" fill="#7a6e64" opacity=".5"/><circle cx="53.5" cy="118.3" r="5.4" fill="url(#agr)"/><circle cx="63.2" cy="119.5" r="4.3" fill="url(#agr)"/><circle cx="72.1" cy="118.8" r="5.1" fill="url(#agr)"/><circle cx="82.3" cy="119.9" r="5.6" fill="url(#agr)"/><circle cx="128.2" cy="119.3" r="4.9" fill="url(#agr)"/><circle cx="138.8" cy="119.8" r="5.6" fill="url(#agr)"/><circle cx="158.4" cy="118.9" r="5.7" fill="url(#agr)"/><circle cx="181.1" cy="118.4" r="5.9" fill="url(#agr)"/><circle cx="192.6" cy="120.7" r="5.4" fill="url(#agr)"/><circle cx="216.0" cy="118.9" r="5.1" fill="url(#agr)"/><circle cx="225.4" cy="121.9" r="4.3" fill="url(#agr)"/><circle cx="248.4" cy="119.8" r="5.7" fill="url(#agr)"/><circle cx="260.1" cy="119.1" r="6.0" fill="url(#agr)"/><circle cx="270.8" cy="121.4" r="4.3" fill="url(#agr)"/><circle cx="293.5" cy="118.5" r="5.0" fill="url(#agr)"/><circle cx="312.4" cy="119.6" r="4.3" fill="url(#agr)"/><circle cx="321.4" cy="118.7" r="5.1" fill="url(#agr)"/><circle cx="331.8" cy="121.0" r="5.4" fill="url(#agr)"/><path d="M96 124 l5 9 -4 7 6 9 -3 7" stroke="#f3eee8" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M188 124 l5 9 -4 7 6 9 -3 7" stroke="#f3eee8" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M262 124 l5 9 -4 7 6 9 -3 7" stroke="#f3eee8" stroke-width="1.6" fill="none" stroke-linejoin="round"/><circle cx="70" cy="190" r="4" fill="url(#agr)" opacity=".85"/><path d="M70 183 v-7" stroke="#9aa59f" stroke-width=".8" stroke-dasharray="2 2"/><circle cx="140" cy="203" r="3.5" fill="url(#agr)" opacity=".85"/><path d="M140 196.5 v-7" stroke="#9aa59f" stroke-width=".8" stroke-dasharray="2 2"/><circle cx="214" cy="196" r="4.4" fill="url(#agr)" opacity=".85"/><path d="M214 188.6 v-7" stroke="#9aa59f" stroke-width=".8" stroke-dasharray="2 2"/><circle cx="300" cy="207" r="3.2" fill="url(#agr)" opacity=".85"/><path d="M300 200.8 v-7" stroke="#9aa59f" stroke-width=".8" stroke-dasharray="2 2"/><circle cx="250" cy="214" r="2.6" fill="url(#agr)" opacity=".85"/><path d="M250 208.4 v-7" stroke="#9aa59f" stroke-width=".8" stroke-dasharray="2 2"/><path d="M188 140 L150 100" stroke="#4f5d55" stroke-width=".8" fill="none"/><circle cx="188" cy="140" r="2" fill="#4f5d55"/><text x="147" y="103" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8.5" letter-spacing=".6" fill="#4f5d55">MICRO-CRACKS</text><path d="M140 203 L96 214" stroke="#4f5d55" stroke-width=".8" fill="none"/><circle cx="140" cy="203" r="2" fill="#4f5d55"/><text x="93" y="217" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8.5" letter-spacing=".6" fill="#4f5d55">GRANULE LOSS</text><path d="M300 148 L238 104" stroke="#4f5d55" stroke-width=".8" fill="none"/><circle cx="300" cy="148" r="2" fill="#4f5d55"/><text x="241" y="107" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="8.5" letter-spacing=".6" fill="#4f5d55">OXIDIZED ASPHALT</text></svg>
         <div class="stage-body"><div class="label red">01 · Aging</div><h3>Oils oxidize, shingles turn brittle</h3><p>Over years of Georgia sun, the asphalt loses the oils that keep it pliable. Shingles crack, curl and shed the granules that protect them.</p></div>
       </article>
 
       <article class="stage reveal">
-        <svg viewBox="0 0 360 200" role="img" aria-label="Peak 301 applied and absorbing into the shingle">
-          <defs><linearGradient id="soak" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f9a62" stop-opacity=".55"/><stop offset="1" stop-color="#2f9a62" stop-opacity="0"/></linearGradient></defs>
-          <rect x="30" y="98" width="300" height="34" rx="3" fill="#5a5048"/>
-          <rect x="30" y="98" width="300" height="34" rx="3" fill="url(#soak)"/>
-          <rect x="30" y="132" width="300" height="12" rx="2" fill="#c9bfb4"/>
-          <g fill="#7f766e"><circle cx="48" cy="94" r="5"/><circle cx="74" cy="95" r="4"/><circle cx="104" cy="94" r="5"/><circle cx="140" cy="95" r="4"/><circle cx="170" cy="94" r="5"/><circle cx="206" cy="95" r="4"/><circle cx="246" cy="94" r="5"/><circle cx="276" cy="95" r="4"/><circle cx="306" cy="94" r="5"/></g>
-          <g fill="#2f9a62"><circle cx="90" cy="52" r="3"/><circle cx="130" cy="66" r="3"/><circle cx="170" cy="46" r="3"/><circle cx="210" cy="62" r="3"/><circle cx="250" cy="50" r="3"/><circle cx="290" cy="64" r="3"/><circle cx="110" cy="80" r="2.4"/><circle cx="190" cy="78" r="2.4"/><circle cx="270" cy="80" r="2.4"/></g>
-          <g fill="#1d7a4b" opacity=".75"><circle cx="80" cy="112" r="2"/><circle cx="150" cy="118" r="2"/><circle cx="220" cy="110" r="2"/><circle cx="292" cy="120" r="2"/></g>
-          <text x="180" y="28" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1d7a4b">BIO-BASED TREATMENT</text>
-        </svg>
+        <svg viewBox="0 0 360 230" role="img" aria-label="Peak 301 spray-applied; the bio-based formula absorbs into the asphalt"><defs>
+  <linearGradient id="bbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfdfb"/><stop offset="1" stop-color="#eaf2ec"/></linearGradient>
+  <radialGradient id="bgr" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#b9c1bb"/><stop offset=".55" stop-color="#7f8a83"/><stop offset="1" stop-color="#4c5550"/></radialGradient>
+  <radialGradient id="bgr2" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#a9b4ad"/><stop offset=".55" stop-color="#66736b"/><stop offset="1" stop-color="#36403a"/></radialGradient>
+  <pattern id="bmat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e8dfd2"/><path d="M0 0v6" stroke="#cfc2ae" stroke-width="1.4"/></pattern>
+</defs><defs>
+<linearGradient id="basp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3e6a50"/><stop offset=".45" stop-color="#5d6458"/><stop offset="1" stop-color="#5a5049"/></linearGradient>
+<linearGradient id="bmist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f9a62" stop-opacity=".45"/><stop offset="1" stop-color="#8cc63f" stop-opacity="0"/></linearGradient>
+</defs><rect width="360" height="230" fill="url(#bbg)"/><path d="M120 14 h96" stroke="#2c3a32" stroke-width="5" stroke-linecap="round"/><rect x="208" y="8" width="22" height="14" rx="3" fill="#0f1a14"/><rect x="226" y="11" width="10" height="8" rx="2" fill="#d7262e"/><path d="M236 15 L330 92 L130 92 Z" fill="url(#bmist)" opacity=".0"/><path d="M234 18 L320 112 L150 112 Z" fill="url(#bmist)"/><circle cx="234.8" cy="47.4" r="1.5" fill="#2f9a62" opacity="0.84"/><circle cx="256.6" cy="104.4" r="1.2" fill="#2f9a62" opacity="0.48"/><circle cx="233.3" cy="43.6" r="1.8" fill="#2f9a62" opacity="0.49"/><circle cx="234.0" cy="24.3" r="1.5" fill="#2f9a62" opacity="0.66"/><circle cx="215.8" cy="104.1" r="1.7" fill="#2f9a62" opacity="0.69"/><circle cx="255.2" cy="80.8" r="2.2" fill="#2f9a62" opacity="0.78"/><circle cx="209.9" cy="97.5" r="1.5" fill="#2f9a62" opacity="0.57"/><circle cx="232.5" cy="32.7" r="1.1" fill="#2f9a62" opacity="0.39"/><circle cx="238.7" cy="41.5" r="1.4" fill="#2f9a62" opacity="0.38"/><circle cx="234.0" cy="24.0" r="1.1" fill="#2f9a62" opacity="0.55"/><circle cx="233.1" cy="26.1" r="1.8" fill="#2f9a62" opacity="0.43"/><circle cx="236.0" cy="45.2" r="1.5" fill="#2f9a62" opacity="0.42"/><circle cx="197.5" cy="95.3" r="1.6" fill="#2f9a62" opacity="0.62"/><circle cx="236.4" cy="31.2" r="1.4" fill="#2f9a62" opacity="0.50"/><circle cx="252.9" cy="93.6" r="1.0" fill="#2f9a62" opacity="0.87"/><circle cx="246.7" cy="68.4" r="1.7" fill="#2f9a62" opacity="0.36"/><circle cx="211.9" cy="68.4" r="2.1" fill="#2f9a62" opacity="0.73"/><circle cx="235.7" cy="45.9" r="1.2" fill="#2f9a62" opacity="0.77"/><circle cx="220.1" cy="68.7" r="1.4" fill="#2f9a62" opacity="0.47"/><circle cx="199.6" cy="92.2" r="2.1" fill="#2f9a62" opacity="0.79"/><circle cx="215.2" cy="92.7" r="1.3" fill="#2f9a62" opacity="0.63"/><circle cx="245.8" cy="53.9" r="1.0" fill="#2f9a62" opacity="0.50"/><circle cx="229.0" cy="45.8" r="2.2" fill="#2f9a62" opacity="0.60"/><circle cx="194.0" cy="102.7" r="2.2" fill="#2f9a62" opacity="0.55"/><circle cx="237.9" cy="42.5" r="1.3" fill="#2f9a62" opacity="0.46"/><circle cx="211.7" cy="76.4" r="2.1" fill="#2f9a62" opacity="0.61"/><circle cx="215.9" cy="78.9" r="1.1" fill="#2f9a62" opacity="0.71"/><circle cx="210.0" cy="100.4" r="2.0" fill="#2f9a62" opacity="0.61"/><circle cx="229.2" cy="39.0" r="1.4" fill="#2f9a62" opacity="0.79"/><circle cx="238.1" cy="105.6" r="1.5" fill="#2f9a62" opacity="0.87"/><circle cx="250.0" cy="84.9" r="1.2" fill="#2f9a62" opacity="0.43"/><circle cx="208.4" cy="100.0" r="1.2" fill="#2f9a62" opacity="0.80"/><circle cx="217.9" cy="106.3" r="1.5" fill="#2f9a62" opacity="0.65"/><circle cx="238.5" cy="35.0" r="2.3" fill="#2f9a62" opacity="0.71"/><circle cx="213.8" cy="68.2" r="1.6" fill="#2f9a62" opacity="0.83"/><circle cx="249.6" cy="93.4" r="1.3" fill="#2f9a62" opacity="0.51"/><circle cx="231.4" cy="44.2" r="1.3" fill="#2f9a62" opacity="0.58"/><circle cx="229.2" cy="35.0" r="1.5" fill="#2f9a62" opacity="0.60"/><circle cx="213.0" cy="73.0" r="1.5" fill="#2f9a62" opacity="0.85"/><circle cx="230.7" cy="66.1" r="1.7" fill="#2f9a62" opacity="0.36"/><circle cx="243.3" cy="61.0" r="1.0" fill="#2f9a62" opacity="0.79"/><circle cx="233.7" cy="38.5" r="1.9" fill="#2f9a62" opacity="0.66"/><circle cx="232.2" cy="51.4" r="1.7" fill="#2f9a62" opacity="0.78"/><circle cx="233.1" cy="32.9" r="1.3" fill="#2f9a62" opacity="0.50"/><circle cx="230.4" cy="88.9" r="1.7" fill="#2f9a62" opacity="0.77"/><circle cx="234.5" cy="100.6" r="1.8" fill="#2f9a62" opacity="0.63"/><rect x="24" y="124" width="312" height="34" rx="3" fill="url(#basp)"/><rect x="24" y="158" width="312" height="12" rx="2" fill="url(#bmat)"/><rect x="24" y="170" width="312" height="8" rx="2" fill="#7a6e64" opacity=".5"/><circle cx="31.3" cy="119.8" r="5.3" fill="url(#bgr)"/><circle cx="42.0" cy="120.7" r="5.3" fill="url(#bgr)"/><circle cx="54.1" cy="119.2" r="6.3" fill="url(#bgr)"/><circle cx="67.3" cy="117.9" r="6.0" fill="url(#bgr)"/><circle cx="77.6" cy="119.4" r="4.4" fill="url(#bgr)"/><circle cx="88.1" cy="118.1" r="5.9" fill="url(#bgr)"/><circle cx="100.1" cy="120.9" r="5.7" fill="url(#bgr)"/><circle cx="111.3" cy="120.2" r="4.7" fill="url(#bgr)"/><circle cx="122.4" cy="117.7" r="6.4" fill="url(#bgr)"/><circle cx="133.9" cy="118.9" r="5.3" fill="url(#bgr)"/><circle cx="156.5" cy="118.1" r="5.4" fill="url(#bgr)"/><circle cx="167.2" cy="118.2" r="5.6" fill="url(#bgr)"/><circle cx="179.6" cy="117.9" r="5.9" fill="url(#bgr)"/><circle cx="189.4" cy="120.2" r="4.3" fill="url(#bgr)"/><circle cx="198.3" cy="121.2" r="5.1" fill="url(#bgr)"/><circle cx="207.5" cy="121.0" r="4.5" fill="url(#bgr)"/><circle cx="227.3" cy="118.0" r="5.7" fill="url(#bgr)"/><circle cx="239.4" cy="118.2" r="5.6" fill="url(#bgr)"/><circle cx="250.0" cy="120.7" r="4.3" fill="url(#bgr)"/><circle cx="259.5" cy="119.0" r="5.4" fill="url(#bgr)"/><circle cx="269.7" cy="118.5" r="5.4" fill="url(#bgr)"/><circle cx="278.8" cy="120.3" r="4.3" fill="url(#bgr)"/><circle cx="288.7" cy="119.4" r="5.9" fill="url(#bgr)"/><circle cx="320.2" cy="118.4" r="5.8" fill="url(#bgr)"/><path d="M80 130 v18" stroke="#b8e2c8" stroke-width="1.4" stroke-linecap="round"/><path d="M76.5 144 l3.5 5 3.5-5" stroke="#b8e2c8" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M150 130 v18" stroke="#b8e2c8" stroke-width="1.4" stroke-linecap="round"/><path d="M146.5 144 l3.5 5 3.5-5" stroke="#b8e2c8" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M220 130 v18" stroke="#b8e2c8" stroke-width="1.4" stroke-linecap="round"/><path d="M216.5 144 l3.5 5 3.5-5" stroke="#b8e2c8" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M290 130 v18" stroke="#b8e2c8" stroke-width="1.4" stroke-linecap="round"/><path d="M286.5 144 l3.5 5 3.5-5" stroke="#b8e2c8" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g stroke="#d9f0e2" stroke-width=".9" fill="#d9f0e2"><path d="M112 141 l7 -4 7 4 7 -4" fill="none"/><circle cx="112" cy="141" r="1.6"/><circle cx="119" cy="137" r="1.6"/><circle cx="126" cy="141" r="1.6"/><circle cx="133" cy="137" r="1.6"/></g><g stroke="#d9f0e2" stroke-width=".9" fill="#d9f0e2"><path d="M186 137 l7 -4 7 4 7 -4" fill="none"/><circle cx="186" cy="137" r="1.6"/><circle cx="193" cy="133" r="1.6"/><circle cx="200" cy="137" r="1.6"/><circle cx="207" cy="133" r="1.6"/></g><g stroke="#d9f0e2" stroke-width=".9" fill="#d9f0e2"><path d="M256 143 l7 -4 7 4 7 -4" fill="none"/><circle cx="256" cy="143" r="1.6"/><circle cx="263" cy="139" r="1.6"/><circle cx="270" cy="143" r="1.6"/><circle cx="277" cy="139" r="1.6"/></g><path d="M178 92 L44 58" stroke="#1d7a4b" stroke-width=".8" fill="none"/><circle cx="178" cy="92" r="2" fill="#1d7a4b"/><text x="47" y="61" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="8.5" letter-spacing=".6" fill="#1d7a4b">SOY-BASED FORMULA</text><path d="M256 143 L300 196" stroke="#1d7a4b" stroke-width=".8" fill="none"/><circle cx="256" cy="143" r="2" fill="#1d7a4b"/><text x="297" y="199" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="8.5" letter-spacing=".6" fill="#1d7a4b">ABSORBS INTO ASPHALT</text></svg>
         <div class="stage-body"><div class="label">02 · Treatment</div><h3>One spray-applied application</h3><p>Certified crews apply Peak 301 across every shingle in a single visit. The soybean-based formula absorbs into the asphalt instead of sitting on top like a coating.</p></div>
       </article>
 
       <article class="stage reveal">
-        <svg viewBox="0 0 360 200" role="img" aria-label="Restored shingle: flexible with granules held in place">
-          <path d="M30 108 Q180 84 330 108 L330 140 Q180 116 30 140Z" fill="#3f4a42"/>
-          <path d="M30 140 Q180 116 330 140 L330 150 Q180 126 30 150Z" fill="#c9bfb4"/>
-          <g fill="#5d675f"><circle cx="46" cy="103" r="5"/><circle cx="72" cy="99" r="5"/><circle cx="98" cy="96" r="5"/><circle cx="124" cy="93" r="5"/><circle cx="150" cy="92" r="5"/><circle cx="176" cy="91" r="5"/><circle cx="202" cy="91" r="5"/><circle cx="228" cy="92" r="5"/><circle cx="254" cy="94" r="5"/><circle cx="280" cy="97" r="5"/><circle cx="306" cy="100" r="5"/></g>
-          <path d="M60 60 q120 -30 240 0" fill="none" stroke="#2f9a62" stroke-width="1.6" stroke-dasharray="4 5"/>
-          <path d="M292 54l8 6-9 4" fill="none" stroke="#2f9a62" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="180" y="36" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#1d7a4b">FLEX RESTORED</text>
-        </svg>
+        <svg viewBox="0 0 360 230" role="img" aria-label="Restored shingle: flexible, granules held in place"><defs>
+  <linearGradient id="cbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfdfb"/><stop offset="1" stop-color="#eaf2ec"/></linearGradient>
+  <radialGradient id="cgr" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#b9c1bb"/><stop offset=".55" stop-color="#7f8a83"/><stop offset="1" stop-color="#4c5550"/></radialGradient>
+  <radialGradient id="cgr2" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#a9b4ad"/><stop offset=".55" stop-color="#66736b"/><stop offset="1" stop-color="#36403a"/></radialGradient>
+  <pattern id="cmat" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#e8dfd2"/><path d="M0 0v6" stroke="#cfc2ae" stroke-width="1.4"/></pattern>
+</defs><defs>
+<linearGradient id="casp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f3a33"/><stop offset="1" stop-color="#1c241f"/></linearGradient>
+<radialGradient id="cglow" cx=".5" cy=".55" r=".6"><stop offset="0" stop-color="#8cc63f" stop-opacity=".35"/><stop offset="1" stop-color="#8cc63f" stop-opacity="0"/></radialGradient>
+</defs><rect width="360" height="230" fill="url(#cbg)"/><ellipse cx="180" cy="140" rx="170" ry="70" fill="url(#cglow)"/><path d="M24 130 Q180 100 336 130 L336 164 Q180 134 24 164 Z" fill="url(#casp)"/><path d="M24 164 Q180 134 336 164 L336 176 Q180 146 24 176 Z" fill="url(#cmat)"/><circle cx="31.9" cy="124.1" r="5.9" fill="url(#cgr2)"/><circle cx="30.3" cy="122.2" r="1.9" fill="#fff" opacity=".35"/><circle cx="43.0" cy="122.8" r="5.3" fill="url(#cgr2)"/><circle cx="41.4" cy="120.9" r="1.7" fill="#fff" opacity=".35"/><circle cx="53.6" cy="121.0" r="5.4" fill="url(#cgr2)"/><circle cx="52.0" cy="119.1" r="1.7" fill="#fff" opacity=".35"/><circle cx="64.8" cy="118.7" r="5.9" fill="url(#cgr2)"/><circle cx="63.2" cy="116.8" r="1.9" fill="#fff" opacity=".35"/><circle cx="75.8" cy="118.0" r="5.2" fill="url(#cgr2)"/><circle cx="74.2" cy="116.1" r="1.7" fill="#fff" opacity=".35"/><circle cx="86.4" cy="116.5" r="5.4" fill="url(#cgr2)"/><circle cx="84.8" cy="114.6" r="1.7" fill="#fff" opacity=".35"/><circle cx="97.4" cy="115.0" r="5.7" fill="url(#cgr2)"/><circle cx="95.8" cy="113.1" r="1.8" fill="#fff" opacity=".35"/><circle cx="109.1" cy="113.4" r="6.2" fill="url(#cgr2)"/><circle cx="107.5" cy="111.5" r="2.0" fill="#fff" opacity=".35"/><circle cx="120.3" cy="113.5" r="5.1" fill="url(#cgr2)"/><circle cx="118.7" cy="111.6" r="1.6" fill="#fff" opacity=".35"/><circle cx="131.3" cy="112.0" r="5.9" fill="url(#cgr2)"/><circle cx="129.7" cy="110.1" r="1.9" fill="#fff" opacity=".35"/><circle cx="142.9" cy="111.6" r="5.7" fill="url(#cgr2)"/><circle cx="141.3" cy="109.7" r="1.8" fill="#fff" opacity=".35"/><circle cx="154.1" cy="111.3" r="5.6" fill="url(#cgr2)"/><circle cx="152.5" cy="109.4" r="1.8" fill="#fff" opacity=".35"/><circle cx="164.8" cy="111.4" r="5.2" fill="url(#cgr2)"/><circle cx="163.2" cy="109.5" r="1.7" fill="#fff" opacity=".35"/><circle cx="175.1" cy="111.4" r="5.2" fill="url(#cgr2)"/><circle cx="173.5" cy="109.5" r="1.6" fill="#fff" opacity=".35"/><circle cx="184.9" cy="111.8" r="4.7" fill="url(#cgr2)"/><circle cx="183.3" cy="109.9" r="1.5" fill="#fff" opacity=".35"/><circle cx="194.3" cy="111.8" r="4.8" fill="url(#cgr2)"/><circle cx="192.7" cy="109.9" r="1.5" fill="#fff" opacity=".35"/><circle cx="203.7" cy="112.1" r="4.7" fill="url(#cgr2)"/><circle cx="202.1" cy="110.2" r="1.5" fill="#fff" opacity=".35"/><circle cx="214.1" cy="111.4" r="5.8" fill="url(#cgr2)"/><circle cx="212.5" cy="109.5" r="1.9" fill="#fff" opacity=".35"/><circle cx="224.8" cy="112.7" r="5.0" fill="url(#cgr2)"/><circle cx="223.2" cy="110.8" r="1.6" fill="#fff" opacity=".35"/><circle cx="234.6" cy="113.5" r="4.9" fill="url(#cgr2)"/><circle cx="233.0" cy="111.6" r="1.6" fill="#fff" opacity=".35"/><circle cx="244.1" cy="114.3" r="4.7" fill="url(#cgr2)"/><circle cx="242.5" cy="112.4" r="1.5" fill="#fff" opacity=".35"/><circle cx="254.6" cy="114.0" r="5.9" fill="url(#cgr2)"/><circle cx="253.0" cy="112.1" r="1.9" fill="#fff" opacity=".35"/><circle cx="266.5" cy="115.1" r="6.0" fill="url(#cgr2)"/><circle cx="264.9" cy="113.2" r="1.9" fill="#fff" opacity=".35"/><circle cx="278.0" cy="116.7" r="5.7" fill="url(#cgr2)"/><circle cx="276.4" cy="114.8" r="1.8" fill="#fff" opacity=".35"/><circle cx="288.6" cy="118.7" r="5.1" fill="url(#cgr2)"/><circle cx="287.0" cy="116.8" r="1.6" fill="#fff" opacity=".35"/><circle cx="298.6" cy="120.2" r="5.0" fill="url(#cgr2)"/><circle cx="297.0" cy="118.3" r="1.6" fill="#fff" opacity=".35"/><circle cx="308.5" cy="121.6" r="5.1" fill="url(#cgr2)"/><circle cx="306.9" cy="119.7" r="1.6" fill="#fff" opacity=".35"/><circle cx="318.8" cy="123.0" r="5.3" fill="url(#cgr2)"/><circle cx="317.2" cy="121.1" r="1.7" fill="#fff" opacity=".35"/><circle cx="328.9" cy="125.3" r="4.9" fill="url(#cgr2)"/><circle cx="327.3" cy="123.4" r="1.6" fill="#fff" opacity=".35"/><circle cx="339.0" cy="126.8" r="5.3" fill="url(#cgr2)"/><circle cx="337.4" cy="124.9" r="1.7" fill="#fff" opacity=".35"/><path d="M70 62 Q180 18 290 62" stroke="#2f9a62" stroke-width="1.6" fill="none" stroke-dasharray="5 5"/><path d="M282 54 l9 8 -11 4" stroke="#2f9a62" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M78 70 l-9 -8 11 -4" stroke="#2f9a62" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="180" y="22" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="1" fill="#1d7a4b">FLEXIBILITY RESTORED</text><path d="M122 112 L64 200" stroke="#1d7a4b" stroke-width=".8" fill="none"/><circle cx="122" cy="112" r="2" fill="#1d7a4b"/><text x="67" y="203" text-anchor="start" font-family="IBM Plex Mono, monospace" font-size="8.5" letter-spacing=".6" fill="#1d7a4b">GRANULES HELD IN PLACE</text><g transform="translate(312 196)"><path d="M0 12 C0 2 6 -4 16 -5 C15 5 9 11 1 12 Z" fill="#8cc63f" opacity=".85"/><path d="M1 11 L10 2" stroke="#1d7a4b" stroke-width="1"/></g></svg>
         <div class="stage-body"><div class="label">03 · Restored</div><h3>Flexible, protected, warrantied</h3><p>Shingles regain flexibility and hold their granules, so they can bounce back from weather. One application is backed by a 6-year transferable warranty.</p></div>
       </article>
     </div>
@@ -693,7 +708,7 @@
       </div>
       <div class="maker-copy">
         <div class="label">Who makes it</div>
-        <h2>Made by Colorbiotics, part of the Sika family.</h2>
+        <h2>Made by Colorbiotics, part of the <span class="serif soft-g">Sika family.</span></h2>
         <p>Peak 301® is developed and manufactured in Ames, Iowa by Colorbiotics, a Sika company. Sika has been building trust in construction chemistry since 1910, and that heritage stands behind every roof we treat.</p>
 </div>
       </div>
@@ -724,11 +739,30 @@
     <div class="impact-band reveal">
       <div>
         <div class="label">Impact</div>
-        <h2>Keep good roofs on American homes longer.</h2>
+        <h2>Keep good roofs on American homes <span class="serif soft-g">longer.</span></h2>
       </div>
       <div><div class="big">6+ <small>years</small></div><p>Added roof life from one application, backed by a transferable warranty, for a fraction of replacement cost.</p></div>
-      <div><div class="big">15M <small>tons/yr</small></div><p>Asphalt shingle waste generated in the U.S. each year (EPA estimate). Every roof that lasts longer delays its share.</p></div>
-      <div><div class="big">96% <small>biobased</small></div><p>Made from American-grown soybeans, putting U.S. farm products to work on U.S. roofs instead of petroleum.</p></div>
+      <div><div class="big"><span data-count="15" data-suffix="M">15M</span> <small>tons/yr</small></div><p>Asphalt shingle waste generated in the U.S. each year (EPA estimate). Every roof that lasts longer delays its share.</p></div>
+      <div><div class="big"><span data-count="96" data-suffix="%">96%</span> <small>biobased</small></div><p>Made from American-grown soybeans, putting U.S. farm products to work on U.S. roofs instead of petroleum.</p></div>
+      <svg class="impact-art" viewBox="0 0 1200 120" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
+        <defs><linearGradient id="fieldg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8cc63f" stop-opacity=".35"/><stop offset="1" stop-color="#2f9a62" stop-opacity=".25"/></linearGradient></defs>
+        <path d="M0 78 C180 52 360 60 520 74 C700 90 860 70 1000 62 C1090 57 1150 60 1200 64 V120 H0Z" fill="url(#fieldg)"/>
+        <g stroke="#2f9a62" stroke-opacity=".45" stroke-width="1.2" fill="none">
+          <path d="M0 92 C200 72 380 80 540 90 C720 102 880 86 1200 80"/>
+          <path d="M0 104 C220 86 400 94 560 102 C740 112 900 98 1200 94"/>
+          <path d="M0 116 C240 100 420 108 580 114 C760 122 920 110 1200 106"/>
+        </g>
+        <g fill="#2f9a62" fill-opacity=".55">
+          <path d="M80 80 q4 -12 10 -14 q-2 9 -10 14z"/><path d="M90 82 q-7 -9 -16 -9 q5 7 16 9z"/>
+          <path d="M260 76 q4 -12 10 -14 q-2 9 -10 14z"/><path d="M270 78 q-7 -9 -16 -9 q5 7 16 9z"/>
+          <path d="M440 80 q4 -12 10 -14 q-2 9 -10 14z"/><path d="M450 82 q-7 -9 -16 -9 q5 7 16 9z"/>
+        </g>
+        <g stroke="#0f1a14" stroke-opacity=".55" stroke-width="1.4" fill="none" stroke-linejoin="round">
+          <path d="M890 72 L960 30 L1030 72"/><path d="M902 64 V96 H1018 V64"/><path d="M944 96 V78 H966 V96"/><path d="M990 44 V34 H1002 V51"/>
+        </g>
+        <path d="M896 70 L960 32 L1024 70" stroke="#2f9a62" stroke-width="3" fill="none" stroke-linejoin="round" stroke-opacity=".7"/>
+        <circle cx="1110" cy="30" r="12" fill="#f2c45e" fill-opacity=".55"/>
+      </svg>
     </div>
     <p class="fine">Landfill figure: U.S. EPA estimate as reported by the Asphalt Shingle Recycling Forum (shinglerecycling.org).</p>
   </div>
@@ -749,7 +783,7 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <div class="label">Step 1 of 3 · How it works</div>
-        <h2>You sell it. We apply it. You get paid.</h2>
+        <h2>You sell it. We apply it. <span class="serif soft-g">You get paid.</span></h2>
         <p>For roofing, pressure-wash, gutter and general contractors. We work as your subcontractor behind the scenes, and the homeowner only ever deals with you.</p>
       </div>
       <div class="steps">
@@ -821,7 +855,7 @@
       <div class="reveal">
         <div class="sec-head" style="margin-bottom:1.25rem">
           <div class="label">Step 3 of 3 · Apply</div>
-          <h2>Become a referral partner.</h2>
+          <h2>Become a <span class="serif soft-g">referral partner.</span></h2>
           <p>Roofing, wash, gutter and other exterior-service companies are all welcome.</p>
         </div>
         <ul class="checks">
@@ -969,6 +1003,20 @@ document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click
 (function(){
   const l = document.querySelector('.watch-link'), v = document.querySelector('#video video');
   if (l && v) l.addEventListener('click', () => setTimeout(() => { v.play().catch(()=>{}); }, 600));
+})();
+
+// Count-up numbers when they scroll into view
+(function(){
+  const els = document.querySelectorAll('[data-count]');
+  if (!els.length || !('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const fmt = (n, el) => (el.dataset.prefix||'') + Math.round(n).toLocaleString('en-US') + (el.dataset.suffix||'');
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; io.unobserve(e.target);
+    const el = e.target, end = +el.dataset.count, t0 = performance.now(), d = 1100;
+    const step = t => { const k = Math.min(1, (t - t0) / d), ease = 1 - Math.pow(1 - k, 3); el.textContent = fmt(end * ease, el); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }), { threshold: .6 });
+  els.forEach(el => io.observe(el));
 })();
 
 // Phone action bar: appears once the visitor scrolls past the opening
