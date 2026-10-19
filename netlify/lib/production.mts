@@ -135,20 +135,36 @@ export async function handOffToSub(job: any, est: any, sq: number, contractorNam
   let workOrder: HandOff["workOrder"] = null;
   try {
     const type = await workOrderType();
-    const wo = await jnWrite("POST", "/v2/workorders", {
+    // JobNimbus only accepts work order lines that come from the price list, so use the Peak 301 product
+    // (labor only: the sub's pay), and fall back to a work order with no lines if that is refused.
+    const products = await jnAll("/v2/products", {}, 5).catch(() => [] as any[]);
+    const wanted = Netlify.env.get("PORTAL_WO_PRODUCT") || Netlify.env.get("PORTAL_PRODUCT_NAME") || "Peak 301 Referral Partner Install";
+    const product = products.find((p: any) => p.name === wanted && p.is_active !== false);
+    const base = {
       ...(type ? { record_type_name: type } : {}),
       related: [{ id: job.jnid, type: "job", name: job.name }],
       subcontractors: sub ? [{ id: sub.jnid, name: sub.display_name }] : [],
       owners: [{ id: USERS.gene }],
       sales_rep: USERS.gene,
-      items: [{
-        name: "Peak 301 install labor", description: instructions, item_type: "labor", uom: "SQ",
-        quantity: sq, price: LABOR_PER_SQ, cost: LABOR_PER_SQ, amount: labor,
-      }],
       customer_note: instructions,
       internal_note: `Created automatically when ${contractorName} signed. Pay ${SUB_NAME()} ${money(labor)}.`,
-    });
-    workOrder = { jnid: wo.jnid, number: wo.number };
+    };
+    const tries: any[] = [];
+    if (product?.jnid) tries.push({ ...base, items: [{
+      jnid: product.jnid, name: product.name, description: instructions, item_type: product.item_type || "labor+material", uom: "SQ",
+      quantity: sq, price: 0, cost: 0, amount: 0, labor: { price: LABOR_PER_SQ, cost: LABOR_PER_SQ, amount: labor },
+    }] });
+    tries.push({ ...base, items: [] });
+    let lastErr: any = null;
+    for (const body of tries) {
+      try {
+        const wo = await jnWrite("POST", "/v2/workorders", body);
+        workOrder = { jnid: wo.jnid, number: wo.number };
+        if (!body.items.length) problems.push("Work order made without a price line; the squares and labor pay are in its notes and in Shadie's task");
+        break;
+      } catch (e) { lastErr = e; }
+    }
+    if (!workOrder) throw lastErr;
   } catch (e: any) {
     problems.push(`Could not create the work order: ${String(e.message || e).slice(0, 200)}`);
   }
