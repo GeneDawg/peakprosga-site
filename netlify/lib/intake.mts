@@ -5,6 +5,7 @@
 //   4. a task for Eddie with the job price and labor pay ($20 per square, confirmed from EagleView)
 // Writes use JOBNIMBUS_WRITE_KEY when set, otherwise JOBNIMBUS_API_KEY.
 import { accounts, env, HttpError, type Account } from "./portal.mts";
+import { subMode } from "./production.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
 const USERS = {
@@ -144,14 +145,16 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
   const shadie = await jnWrite("POST", "/tasks", {
     title: `${tag}Shadie: EagleView + estimate - ${addr.address_line1 || clean(a.property_address)}`,
     record_type_name: "Task",
-    description: `1. Order the EagleView QuickSquares report for ${clean(a.property_address)} (contractor says ${sq ? sq + " sq" : "size not given"}).\n2. When it arrives, create the estimate on this job from the "Peak 301 Only" layout using the EagleView squares.\n3. Send it for signature to ${acct ? acct.name : "the contractor"}. The board moves to Estimate Sent, then Scheduled when they sign; Eddie gets the schedule task with labor at $${LABOR_PER_SQ}/sq.`,
+    description: `1. Order the EagleView QuickSquares report for ${clean(a.property_address)} (contractor says ${sq ? sq + " sq" : "size not given"}).\n2. When it arrives, create the estimate on this job from the "Peak 301 Only" layout using the EagleView squares.\n3. Send it for signature to ${acct ? acct.name : "the contractor"}. The board moves to Estimate Sent, then Scheduled when they sign; ${subMode() ? "a work order for the install is created automatically" : `Eddie gets the schedule task with labor at $${LABOR_PER_SQ}/sq`}.`,
     related: [{ id: job.jnid }],
     owners: [{ id: USERS.gene }],
     date_start: t,
     date_end: t + day,
   });
 
-  // 4. Eddie: production with price and labor
+  // 4. Eddie: production with price and labor. With a subcontractor (PORTAL_SUB_NAME) the install is handed off by
+  //    work order when the contractor signs, so no task is made here.
+  if (subMode()) return { contractor: acct?.key || null, homeowner: homeowner.jnid, job: job.jnid, tasks: [shadie.jnid] };
   const labor = sq ? sq * LABOR_PER_SQ : null;
   const eddie = await jnWrite("POST", "/tasks", {
     title: `${tag}Eddie: schedule Peak 301 - ${addr.address_line1 || clean(a.property_address)}`,
