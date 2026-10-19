@@ -4,6 +4,7 @@
 //   Invoiced       -> Paid & Closed   once the invoice is paid and the payment has cleared; open tasks are completed
 // Moving a job to Job Completed stays a person's call (Eddie/Shadie), because only they know the work is done.
 import { accounts, jnAll, loadJobs, norm } from "./portal.mts";
+import { handOffToSub, subMode, SUB_NAME } from "./production.mts";
 import { addTask, contractorFor, createInvoiceFromEstimate, jnWrite, jobTasks, money, round2, setStatus, USERS, NET_DAYS } from "./billing.mts";
 
 export const STATUS = {
@@ -41,10 +42,15 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
       // 1. Waiting on the contractor's signature.
       if (status === STATUS.assigned || (STATUS.sent && status === STATUS.sent)) {
         if (est && isSigned(est)) {
-          log(job, `estimate #${est.number} signed -> ${STATUS.scheduled}; Eddie task to schedule`);
+          log(job, `estimate #${est.number} signed -> ${STATUS.scheduled}; ${subMode() ? `work order to ${SUB_NAME()}` : "Eddie task to schedule"}`);
           if (!dry) {
             await setStatus(job, STATUS.scheduled);
             const sq = round2((est.items || []).reduce((a: number, i: any) => a + (/sq/i.test(i.uom || "") ? Number(i.quantity || 0) : 0), 0));
+            if (subMode()) {
+              const h = await handOffToSub(job, est, sq, acct?.name || "the contractor");
+              if (h.problems.length) log(job, `hand-off needs a person: ${h.problems.join("; ").slice(0, 300)}`);
+              continue;
+            }
             await addTask(job, `Eddie: contractor signed - schedule Peak 301 - ${job.name}`,
               `${acct?.name || "The contractor"} signed estimate #${est.number}. Schedule the install.\n${sq ? `${sq} sq. Labor: ${sq} × $20 = ${money(sq * 20)}.\n` : ""}When the work is done, move the job to ${STATUS.completed}; the invoice is created automatically.`,
               USERS.eddie, 2);
