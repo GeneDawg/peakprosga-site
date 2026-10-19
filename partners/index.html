@@ -425,7 +425,11 @@ async function subRun(action){
   }catch(e){ out.textContent=String(e); }
 }
 $("subcheck").addEventListener("click",()=>subRun("check"));
-$("subtest").addEventListener("click",()=>{ if(confirm("Run the hand-off on this TEST job? It creates a work order and a CompanyCam invite.")) subRun("test"); });
+$("subtest").addEventListener("click",(e)=>{
+  const b=e.currentTarget;
+  if(b.dataset.armed!=="1"){ b.dataset.armed="1"; b.textContent="Click again to run the test"; setTimeout(()=>{ b.dataset.armed=""; b.textContent="Test on this TEST job"; },8000); return; }
+  b.dataset.armed=""; b.textContent="Test on this TEST job"; subRun("test");
+});
 
 const sel = $("partner");
 function startApp(){
