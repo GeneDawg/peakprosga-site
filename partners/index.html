@@ -549,13 +549,11 @@ function billModal(j){
       <div class="row"><span>Job</span><span>#${esc(j.number)} · ${esc(j.address)}</span></div>
       <label for="sq" class="note">EagleView squares (from the QuickSquares report)</label>
       <input id="sq" type="number" step="0.01" min="0.1" inputmode="decimal" required style="font:600 18px var(--body);padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
-      <div class="row"><span>Peak 301 Referral Partner Install at $85/SQ</span><span id="sqprice">—</span></div>
-      <div class="row"><span>Eddie's labor at $20/SQ</span><span id="sqlabor">—</span></div>
+      <div class="row"><span>Profit margin</span><span>Begins at 50%</span></div>
       <button class="btn primary" type="submit" id="billgo">Create estimate in JobNimbus</button>
     </form>
     <p class="note">The estimate goes on this job addressed to the contractor, and Shadie gets a task to send it for signature. When they sign, the job moves to Scheduled. When it is marked Job Completed, the invoice (due 7 days after completion) is created automatically.</p>`);
   const sq = $("sq");
-  sq.addEventListener("input", ()=>{ const n=+sq.value||0; $("sqprice").textContent = n?money(n*85):"—"; $("sqlabor").textContent = n?money(n*20):"—"; });
   sq.focus();
   $("billform").addEventListener("submit", async e=>{
     e.preventDefault();
