@@ -33,7 +33,7 @@ export default async (req: Request, context: Context) => {
     return json({
       token: makeToken(session),
       role: session.role,
-      accounts: session.role === "admin" ? all.map(publicAccount) : all.filter((a) => a.key === session.key).map(publicAccount),
+      accounts: session.role !== "partner" ? all.map(publicAccount) : all.filter((a) => a.key === session.key).map(publicAccount),
     });
   } catch (e) {
     return handleError(e);

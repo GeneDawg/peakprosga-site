@@ -43,3 +43,12 @@
   to = "/login.html"
   status = 200
   force = true
+
+# National dashboard (Peak 301 Pros leadership): never indexed, never framed, never cached.
+[[headers]]
+  for = "/national/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "no-referrer"
+    Cache-Control = "no-store"

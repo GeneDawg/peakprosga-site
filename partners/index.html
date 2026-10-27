@@ -409,7 +409,7 @@ setInterval(() => {
 const sel = $("partner");
 function startApp(){
   $("gate").hidden = true; $("app").hidden = false; window.scrollTo(0,0);
-  const admin = session.role === "admin";
+  const admin = session.role !== "partner";
   $("adminbadge").hidden = !admin; $("switchwrap").hidden = !admin;
   if (admin){
     sel.innerHTML = '<option value="all">All contractors</option>' + session.accounts.map(a=>`<option value="${esc(a.key)}">${esc(a.name)} (${esc(a.prefix)})</option>`).join("");

@@ -13,7 +13,7 @@ export type Account = { key: string; name: string; prefix: string; contact?: str
 // v = fingerprint of the code used to sign in. Changing a partner's code in PORTAL_ACCOUNTS (or the admin code)
 // ends every session made with the old code on the next request.
 // j = set only on short-lived file links (one job, a few minutes), so those links can never act as a full sign-in.
-export type Session = { role: "admin" | "partner"; key?: string; exp: number; v?: string; j?: string };
+export type Session = { role: "admin" | "partner" | "viewer"; key?: string; exp: number; v?: string; j?: string };
 
 export function env(name: string): string {
   const v = Netlify.env.get(name);
@@ -67,6 +67,9 @@ const codePrint = (code: string) => createHmac("sha256", env("PORTAL_SESSION_SEC
 export function matchCode(code: string): Session | null {
   const exp = Date.now() + SESSION_HOURS * 3600_000;
   if (safeEqual(code, env("PORTAL_ADMIN_CODE"))) return { role: "admin", exp, v: codePrint(env("PORTAL_ADMIN_CODE")) };
+  // National read-only code (Peak 301 Pros leadership): sees every contractor, can change nothing.
+  const nat = Netlify.env.get("PORTAL_NATIONAL_CODE");
+  if (nat && safeEqual(code, nat)) return { role: "viewer", exp, v: codePrint(nat) };
   const acct = accounts().find((a) => safeEqual(code, a.code));
   return acct ? { role: "partner", key: acct.key, exp, v: codePrint(acct.code) } : null;
 }
@@ -91,7 +94,7 @@ export function readSession(req: Request): Session {
   if (s.exp < Date.now()) throw new HttpError(401, "Your session ended. Please sign in again.");
   if (s.j) throw new HttpError(401, "Please sign in with your access code.");
   // The code behind this session must still be current, and the partner must still exist.
-  const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : accounts().find((a) => a.key === s.key)?.code;
+  const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : s.role === "viewer" ? Netlify.env.get("PORTAL_NATIONAL_CODE") : accounts().find((a) => a.key === s.key)?.code;
   if (!current || s.v !== codePrint(current)) throw new HttpError(401, "Your access code has changed. Please sign in again.");
   return s;
 }
@@ -110,7 +113,7 @@ export function readFileTicket(ticket: string, jnid: string): Session | null {
   let s: Session;
   try { s = JSON.parse(Buffer.from(body, "base64url").toString()); } catch { return null; }
   if (!s.j || s.j !== jnid || s.exp < Date.now()) return null;
-  const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : accounts().find((a) => a.key === s.key)?.code;
+  const current = s.role === "admin" ? env("PORTAL_ADMIN_CODE") : s.role === "viewer" ? Netlify.env.get("PORTAL_NATIONAL_CODE") : accounts().find((a) => a.key === s.key)?.code;
   if (!current || s.v !== codePrint(current)) return null;
   return s;
 }

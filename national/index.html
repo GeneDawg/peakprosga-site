@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Peak 301 Pros · National Dashboard</title>
+<style>
+:root{--ink:#10241a;--mute:#5b6e63;--bg:#f6f8f6;--card:#fff;--line:#d9e3dc;--green:#1c6b45;--red:#d62027;--amber:#a86400;--soft:#e8f1ec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1240px;margin:0 auto;padding-block:20px 48px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line)}
+header img{height:38px;display:block}
+.tag{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+h1{font-size:clamp(1.5rem,4vw,2rem);margin:6px 0 2px;line-height:1.15}
+.sub{color:var(--mute);margin:0}
+button,input,select{font:inherit}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 16px;font-weight:600;cursor:pointer}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.gate{max-width:420px;margin:12vh auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;display:grid;gap:14px}
+.gate input{width:100%;padding:12px;border:2px solid var(--line);border-radius:10px;font:600 16px ui-monospace,Menlo,monospace;letter-spacing:.05em;text-transform:uppercase}
+.err{color:var(--red);font-weight:600;margin:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tile .k{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.tile .v{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile.due .v{color:var(--red)}
+h2{font-size:1.05rem;margin:22px 0 8px}
+.scroll{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:720px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:600;font-size:12px;background:var(--soft);color:var(--green)}
+.pill.due{background:#fde8e9;color:var(--red)}.pill.open{background:#e7eefb;color:#25489a}.pill.wait{background:#fff1d9;color:var(--amber)}
+.stbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.warn{background:#fff1d9;border:1px solid #f0d49b;border-radius:10px;padding:10px 14px;margin:10px 0;color:#6b4300}
+.muted{color:var(--mute)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <img src="/assets/brand/peak301pros-logo.png" alt="Peak 301 Pros" style="height:40px;justify-self:start">
+  <div><div class="tag">Leadership · view only</div><h1 style="font-size:1.4rem">National Dashboard</h1></div>
+  <form id="gf" style="display:grid;gap:12px">
+    <label for="code" class="muted">Enter your national access code</label>
+    <input id="code" type="password" autocomplete="off" autocapitalize="characters" spellcheck="false" required>
+    <p class="err" id="err" hidden></p>
+    <button class="btn primary" type="submit">Open dashboard</button>
+  </form>
+</div>
+
+<div id="app" class="wrap" hidden>
+  <header>
+    <img src="/assets/brand/peak301pros-logo.png" alt="Peak 301 Pros">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="muted" id="upd"></span><button class="btn" id="refresh" type="button">Refresh</button><button class="btn" id="out" type="button">Sign out</button></div>
+  </header>
+  <div class="tag" style="margin-top:18px">All states · view only</div>
+  <h1>National Dashboard</h1>
+  <p class="sub">Every Peak 301 Pros state site in one place: jobs, invoices and payments.</p>
+  <div id="warns"></div>
+  <div class="tiles" id="tiles"></div>
+  <h2>By state</h2>
+  <div class="scroll"><table><thead><tr><th>State</th><th class="n">Contractors</th><th class="n">Jobs</th><th class="n">Fulfilled</th><th class="n">Invoiced</th><th class="n">Outstanding</th><th class="n">Paid</th></tr></thead><tbody id="bystate"></tbody></table></div>
+  <h2>All jobs</h2>
+  <div class="stbar" id="chips"></div>
+  <div class="scroll"><table><thead><tr><th>State</th><th>Contractor</th><th>Homeowner / property</th><th>Assigned</th><th>Fulfilled</th><th>Invoice</th><th class="n">Amount</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD"});
+const fmtD=s=>s?new Date(s+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):"—";
+const STATES=[["GA","Georgia"],["SC","South Carolina"],["FL","Florida"],["AZ","Arizona"],["TX","Texas"]];
+let code="",data={},filter="ALL";
+try{code=sessionStorage.getItem("p3p_nat")||""}catch(e){}
+
+function status(j){const i=j.invoice;
+  if(i&&i.isPaid)return["Paid",""]; if(i)return["Outstanding","due"]; if(j.fulfilled)return["Not invoiced","wait"]; return["Awaiting service","open"];}
+
+async function loadOne(c){
+  const res=await fetch("/api/national?state="+c,{headers:{authorization:"Bearer "+code}});
+  if(res.status===401){throw new Error("auth");}
+  return res.json();
+}
+async function loadAll(){
+  $("refresh").disabled=true; $("refresh").textContent="Loading…";
+  const out={};
+  await Promise.all(STATES.map(async([c,n])=>{
+    try{out[c]=await loadOne(c);}catch(e){ if(e.message==="auth"){signOut("Your session code was not accepted.");return;} out[c]={code:c,name:n,ok:false,error:"Could not load.",jobs:[]}; }
+    data[c]=out[c]; render();
+  }));
+  $("refresh").disabled=false; $("refresh").textContent="Refresh";
+  $("upd").textContent="Updated "+new Date().toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+}
+function render(){
+  const all=Object.values(data); const jobs=all.flatMap(s=>s.jobs||[]);
+  const inv=jobs.filter(j=>j.invoice), due=inv.filter(j=>!j.invoice.isPaid), paid=inv.filter(j=>j.invoice.isPaid);
+  const tile=(k,v,c="")=>`<div class="tile ${c}"><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  $("tiles").innerHTML=tile("Jobs assigned",jobs.length)+tile("Fulfilled",jobs.filter(j=>j.fulfilled).length)+tile("Outstanding",money(due.reduce((s,j)=>s+j.invoice.due,0)),"due")+tile("Paid",money(paid.reduce((s,j)=>s+j.invoice.total,0)));
+  $("warns").innerHTML=all.filter(s=>!s.ok).map(s=>`<div class="warn"><b>${esc(s.name)}</b>: ${esc(s.error||"not loaded")}</div>`).join("");
+  $("bystate").innerHTML=STATES.map(([c,n])=>{const s=data[c];if(!s)return`<tr><td>${n}</td><td colspan="6" class="muted">Loading…</td></tr>`;
+    const js=s.jobs||[],iv=js.filter(j=>j.invoice),d=iv.filter(j=>!j.invoice.isPaid),p=iv.filter(j=>j.invoice.isPaid);
+    return`<tr><td><b>${esc(n)}</b>${s.ok?"":' <span class="pill wait">unavailable</span>'}</td><td class="n">${new Set(js.map(j=>j.contractor)).size}</td><td class="n">${js.length}</td><td class="n">${js.filter(j=>j.fulfilled).length}</td><td class="n">${iv.length}</td><td class="n">${money(d.reduce((a,j)=>a+j.invoice.due,0))}</td><td class="n">${money(p.reduce((a,j)=>a+j.invoice.total,0))}</td></tr>`}).join("");
+  $("chips").innerHTML=[["ALL","All states"],...STATES].map(([c,n])=>`<button type="button" class="chip" data-c="${c}" aria-pressed="${filter===c}">${esc(n)}</button>`).join("");
+  const list=jobs.filter(j=>filter==="ALL"||j.state===filter).sort((a,b)=>(b.fulfilled||b.assigned||"").localeCompare(a.fulfilled||a.assigned||""));
+  $("rows").innerHTML=list.length?list.map(j=>{const[s,c]=status(j);return`<tr><td><b>${esc(j.state)}</b></td><td>${esc(j.contractor)}</td><td><b>${esc(j.owner)}</b><div class="muted">${esc(j.address)}</div></td><td>${fmtD(j.assigned)}</td><td>${fmtD(j.fulfilled)}</td><td><span class="pill ${c}">${s}</span></td><td class="n">${j.invoice?money(j.invoice.total):"—"}</td></tr>`}).join(""):`<tr><td colspan="7" class="muted">No jobs yet.</td></tr>`;
+}
+$("chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(b){filter=b.dataset.c;render();}});
+function show(){ $("gate").hidden=true; $("app").hidden=false; STATES.forEach(([c,n])=>{data[c]=undefined;delete data[c]}); render(); loadAll(); }
+function signOut(msg){ code=""; try{sessionStorage.removeItem("p3p_nat")}catch(e){} $("app").hidden=true; $("gate").hidden=false; $("err").textContent=msg||""; $("err").hidden=!msg; }
+$("gf").addEventListener("submit",async e=>{e.preventDefault(); code=$("code").value.trim(); if(!code)return;
+  const r=await fetch("/api/national",{headers:{authorization:"Bearer "+code}});
+  if(!r.ok){$("err").textContent="That code didn't match. Check it and try again.";$("err").hidden=false;return;}
+  try{sessionStorage.setItem("p3p_nat",code)}catch(e){} $("code").value=""; $("err").hidden=true; show(); });
+$("refresh").addEventListener("click",loadAll); $("out").addEventListener("click",()=>signOut());
+if(code) show();
+})();
+</script>
+</body>
+</html>
