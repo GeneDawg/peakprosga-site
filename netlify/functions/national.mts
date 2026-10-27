@@ -4,12 +4,12 @@ import { timingSafeEqual } from "node:crypto";
 // National dashboard for Peak 301 Pros leadership (read only).
 // GET ?state=GA|SC|FL|AZ|TX  with  Authorization: Bearer <national code>  -> that state's jobs.
 // This function signs in to each state site with the same national code (a read-only role on each site) and merges the results.
-const STATES = [
-  { code: "GA", name: "Georgia", base: "https://peakprosga.com" },
-  { code: "SC", name: "South Carolina", base: "https://peakprossc.com" },
-  { code: "FL", name: "Florida", base: "https://peakprosfl.com" },
-  { code: "AZ", name: "Arizona", base: "https://peakprosaz.com" },
-  { code: "TX", name: "Texas", base: "https://peakproshouston.com" },
+const STATES: { code: string; name: string; base: string; alt: string }[] = [
+  { code: "GA", name: "Georgia", base: "https://peakprosga.com", alt: "https://keen-faun-d66c11.netlify.app" },
+  { code: "SC", name: "South Carolina", base: "https://peakprossc.com", alt: "https://peakpros-sc.netlify.app" },
+  { code: "FL", name: "Florida", base: "https://peakprosfl.com", alt: "https://peakprosfl.netlify.app" },
+  { code: "AZ", name: "Arizona", base: "https://peakprosaz.com", alt: "https://peakprosaz.netlify.app" },
+  { code: "TX", name: "Texas", base: "https://peakproshouston.com", alt: "https://peakproshouston.netlify.app" },
 ];
 
 const canon = (c: string) => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -21,12 +21,18 @@ const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });
 
 async function loadState(s: (typeof STATES)[number], code: string) {
+  const first = await loadFrom(s, s.base, code);
+  if (first.ok || !first.retry) return first;
+  return loadFrom(s, s.alt, code); // fall back to the site's netlify.app address
+}
+
+async function loadFrom(s: (typeof STATES)[number], base: string, code: string): Promise<any> {
   const ctl = AbortSignal.timeout(9000);
   try {
-    const lr = await fetch(`${s.base}/api/portal/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code }), signal: ctl });
+    const lr = await fetch(`${base}/api/portal/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code }), signal: ctl });
     const login: any = await lr.json().catch(() => ({}));
     if (!lr.ok || !login.token) return { ...s, ok: false, error: login.error || `Sign-in failed (${lr.status})`, jobs: [] };
-    const jr = await fetch(`${s.base}/api/portal/jobs?account=all&lite=1`, { headers: { authorization: `Bearer ${login.token}` }, signal: ctl });
+    const jr = await fetch(`${base}/api/portal/jobs?account=all&lite=1`, { headers: { authorization: `Bearer ${login.token}` }, signal: ctl });
     const body: any = await jr.json().catch(() => ({}));
     if (!jr.ok) return { ...s, ok: false, error: body.error || `Could not load jobs (${jr.status})`, jobs: [] };
     const names = new Map<string, string>((login.accounts || []).map((a: any) => [a.key, a.name]));
@@ -37,7 +43,7 @@ async function loadState(s: (typeof STATES)[number], code: string) {
     }));
     return { ...s, ok: true, error: null, jobs };
   } catch (e: any) {
-    return { ...s, ok: false, error: "Could not reach this state's site right now.", jobs: [] };
+    return { ...s, ok: false, retry: true, error: "Could not reach this state's site right now.", jobs: [] };
   }
 }
 
@@ -52,7 +58,7 @@ export default async (req: Request) => {
   const want = (new URL(req.url).searchParams.get("state") || "").toUpperCase();
   const st = STATES.find((x) => x.code === want);
   if (!st) return json({ ok: true, states: STATES.map((x) => ({ code: x.code, name: x.name })) });
-  const { base, ...out } = await loadState(st, code);
+  const { base, alt, retry, ...out } = await loadState(st, code);
   return json({ updated: new Date().toISOString(), ...out });
 };
 
