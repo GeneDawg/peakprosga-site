@@ -85,7 +85,7 @@ export async function buildEstimate(jobId: string, squares: number) {
   const item = {
     jnid: product?.jnid,
     name: product?.name || PRODUCT_NAME,
-    description: product?.description || "Peak 301 roof rejuvenation installed by Go Dawgs Roof Roof as subcontractor for a Peak 301 referral partner.",
+    description: product?.description || "Peak 301 roof rejuvenation, installed as subcontractor for a Peak 301 referral partner.",
     item_type: "labor+material",
     uom: "SQ",
     quantity: sq,
