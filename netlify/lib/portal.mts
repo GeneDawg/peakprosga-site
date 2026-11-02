@@ -316,6 +316,7 @@ export type PortalJob = {
   assigned: string | null;
   fulfilled: string | null;
   files: { invoices: PortalFile[]; reports: PortalFile[]; photos: PortalFile[] };
+  squares: number | null; // roof squares on the job's invoice (or signed estimate when not invoiced yet)
   invoice: null | {
     processing: boolean;
     clearsOn: string | null;
@@ -380,6 +381,24 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
     (inv) => !inv.is_archived && inv.is_active !== false && norm(inv.status_name) !== "void" && (inv.related || []).some((r: any) => ids.has(r.id)),
   );
 
+  // Squares = the SQ line items on a document. A job with two invoices (e.g. a duplicate) counts the largest
+  // single document once, so a duplicate never doubles the squares.
+  let estimatesRaw: any[] = [];
+  try {
+    estimatesRaw = (await jnAll("/v2/estimates")).filter(
+      (e) => !e.is_archived && e.is_active !== false && norm(e.status_name) !== "void" && (e.related || []).some((r: any) => ids.has(r.id)),
+    );
+  } catch (e) {
+    console.error("estimates lookup failed", e);
+  }
+  const sqOf = (doc: any) => (doc.items || []).reduce((a: number, i: any) => a + (/^sq/i.test(String(i.uom || "")) ? Number(i.quantity || 0) : 0), 0);
+  const squaresFor = (jobId: string): number | null => {
+    const rel = (rows: any[]) => rows.filter((r) => (r.related || []).some((x: any) => x.id === jobId)).map(sqOf).filter((n) => n > 0);
+    const fromInv = rel(invoicesRaw);
+    const best = fromInv.length ? Math.max(...fromInv) : Math.max(0, ...rel(estimatesRaw));
+    return best > 0 ? Math.round(best * 100) / 100 : null;
+  };
+
   const filesByJob = new Map<string, PortalJob["files"]>();
   if (withFiles) {
     await Promise.all(mine.map(async ({ job }) => filesByJob.set(job.jnid, await jobFiles(job.jnid))));
@@ -419,6 +438,7 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
       assigned: toISO(job.date_created),
       fulfilled: fulfillmentDate(job),
       files: filesByJob.get(job.jnid) || { invoices: [], reports: [], photos: [] },
+      squares: squaresFor(job.jnid),
       invoice,
     };
   });
