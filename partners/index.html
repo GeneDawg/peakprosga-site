@@ -200,6 +200,33 @@ tbody tr:hover td{background:#fafcfa}
 @media (max-width:720px){header.top .brand .tag{display:none} header.top img{height:34px} .band .actions{width:100%} .band .actions .btn{width:100%}}
 .gate-card .showcode{justify-content:flex-start;text-transform:none;letter-spacing:0;font-weight:500;color:var(--muted)}
 .gate-card .showcode input{width:auto;padding:0;border-radius:4px;accent-color:var(--green)}
+
+/* partner rewards (quarterly, by squares sprayed) */
+.rw{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin-block:0 22px}
+.rw-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px 16px;flex-wrap:wrap}
+.rw-eye{font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.rw-main{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px}
+.rw-sq{font:600 34px/1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.rw-sq small{font:500 14px var(--body);color:var(--muted);letter-spacing:0}
+.rw-tier{display:inline-block;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;background:var(--soft);color:var(--ink);white-space:nowrap}
+.rw-tier.t1{background:#e6e9ec;color:#3d4852}.rw-tier.t2{background:#fbeec4;color:#7a5600}.rw-tier.t3{background:var(--ink);color:#fff}
+.rw-bar{position:relative;height:14px;border-radius:999px;background:var(--soft);margin-top:14px;overflow:hidden}
+.rw-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--leaf));min-width:4px}
+.rw-tick{position:absolute;top:0;bottom:0;width:2px;background:var(--surface)}
+.rw-next{margin:10px 0 0;font-weight:600}
+.rw-note{margin:4px 0 0;font-size:13px;color:var(--muted)}
+.rw-credit{margin-top:12px;background:var(--ok-bg);color:var(--ok);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:600}
+.rw-ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.rw-step{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--muted)}
+.rw-step b{display:block;color:var(--ink);font-size:14px}
+.rw-step .r{display:block;font:500 12px var(--mono);margin-bottom:2px}
+.rw-step.on{border-color:var(--green);box-shadow:inset 0 0 0 1px var(--green);background:var(--ok-bg)}
+.rw-fine{margin:12px 0 0;font-size:12px;color:var(--muted)}
+.rw-board{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+.rw-board th{text-align:left;font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+.rw-board td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.rw-board .n{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:720px){.rw-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.rw-sq{font-size:30px}.rw-board .opt{display:none}}
 </style>
 <link rel="manifest" href="/partners/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
@@ -266,6 +293,7 @@ tbody tr:hover td{background:#fafcfa}
     <button class="tab" role="tab" id="tab-inv" aria-selected="false" type="button">Invoices</button>
   </div>
   <div class="stats" id="stats"></div>
+  <section class="rw" id="rewards" aria-label="Partner Rewards" hidden></section>
   <section id="view-jobs">
 
   <div class="toolbar">
@@ -454,6 +482,70 @@ $("tab-inv").addEventListener("click",()=>setView("inv"));
 const LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 function acct(key){ return session.accounts.find(a=>a.key===key) || {name:key,prefix:"?"}; }
 
+/* ---------- partner rewards ----------
+   Quarterly (calendar quarters, Eastern time). A job's squares land in the quarter the roof was sprayed
+   (its fulfillment date) and count once its invoice is paid. Free/complimentary jobs do not count.
+   The tier reached in a quarter sets the per-square credit on the NEXT quarter's invoices.
+   To change the program, edit REWARDS only. */
+const REWARDS = {
+  start: "2026-10-01", // program launch: jobs sprayed before this never count
+  tiers: [
+    { n: "Base",     min: 0,   credit: 0, perk: "$85/sq partner rate" },
+    { n: "Silver",   min: 150, credit: 2, perk: "$2/sq credit next quarter" },
+    { n: "Gold",     min: 300, credit: 4, perk: "$4/sq credit + priority scheduling" },
+    { n: "Platinum", min: 500, credit: 6, perk: "$6/sq credit, priority scheduling + co-branded marketing" },
+  ],
+};
+const todayET = () => new Intl.DateTimeFormat("en-CA",{timeZone:"America/New_York",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+function quarterOf(iso){
+  const y = +iso.slice(0,4), q = Math.floor((+iso.slice(5,7)-1)/3)+1, p = n => String(n).padStart(2,"0");
+  const start = `${y}-${p((q-1)*3+1)}-01`, end = new Date(Date.UTC(y, q*3, 0)).toISOString().slice(0,10);
+  return { label: `Q${q} ${y}`, start, end };
+}
+const prevQuarter = q => quarterOf(new Date(Date.parse(q.start+"T12:00:00Z") - 864e5).toISOString().slice(0,10));
+const rnd = n => Math.round(n*100)/100;
+function tierIndex(sq){ let i = 0; REWARDS.tiers.forEach((t,k)=>{ if (sq >= t.min) i = k; }); return i; }
+function tally(js, q){
+  let counted = 0, pending = 0;
+  for (const j of js){
+    if (!j.fulfilled || !j.squares || j.fulfilled < q.start || j.fulfilled > q.end || j.fulfilled < REWARDS.start) continue;
+    if (j.invoice && j.invoice.total <= 0) continue; // complimentary job
+    if (j.invoice && j.invoice.isPaid) counted += j.squares; else pending += j.squares;
+  }
+  return { counted: rnd(counted), pending: rnd(pending) };
+}
+const tierPill = i => `<span class="rw-tier t${i}">${REWARDS.tiers[i].n}</span>`;
+function renderRewards(js, all){
+  const el = $("rewards"), now = todayET(), q = quarterOf(now), T = REWARDS.tiers;
+  if (now < REWARDS.start){ el.hidden = true; return; }
+  const left = Math.round((Date.parse(q.end) - Date.parse(now))/864e5);
+  const head = `<div class="rw-top"><span class="rw-eye">Partner Rewards · ${q.label}</span><span class="rw-eye">Ends ${fmtD(q.end)} · ${left} day${left===1?"":"s"} left</span></div>`;
+  const fine = `<p class="rw-fine">Squares count in the quarter the roof is sprayed, once that invoice is paid. Complimentary jobs do not count. The tier you finish a quarter in sets your per-square credit on the next quarter's Peak 301 invoices. Credits have no cash value. Tiers reset each quarter.</p>`;
+  if (all){
+    const rows = session.accounts.map(a => ({ a, t: tally(jobs.filter(j=>j.account===a.key), q) })).sort((x,y)=>y.t.counted-x.t.counted || y.t.pending-x.t.pending);
+    const tot = rows.reduce((s,r)=>s+r.t.counted,0);
+    el.innerHTML = head + `<div class="rw-main"><span class="rw-sq">${rnd(tot)} <small>paid squares this quarter, all contractors</small></span></div>
+      <table class="rw-board"><thead><tr><th>Contractor</th><th>Tier</th><th class="n">Paid sq</th><th class="n opt">Awaiting payment</th><th class="n opt">To next tier</th></tr></thead><tbody>${rows.map(r=>{
+        const i = tierIndex(r.t.counted), nx = T[i+1];
+        return `<tr><td><b>${esc(r.a.name)}</b></td><td>${tierPill(i)}</td><td class="n">${r.t.counted}</td><td class="n opt">${r.t.pending||"—"}</td><td class="n opt">${nx ? rnd(nx.min-r.t.counted)+" to "+nx.n : "Top tier"}</td></tr>`;
+      }).join("")}</tbody></table>` + fine;
+    el.hidden = false; return;
+  }
+  const t = tally(js, q), i = tierIndex(t.counted), nx = T[i+1], top = T[T.length-1].min;
+  const pct = Math.min(100, t.counted/top*100);
+  const pq = prevQuarter(q), pi = pq.end >= REWARDS.start ? tierIndex(tally(js, pq).counted) : 0;
+  el.innerHTML = head + `
+    <div class="rw-main"><span class="rw-sq">${t.counted} <small>squares this quarter</small></span>${tierPill(i)}</div>
+    <div class="rw-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${top}" aria-valuenow="${Math.min(top,t.counted)}" aria-label="Progress toward ${T[T.length-1].n}">
+      <div class="rw-fill" style="width:${pct}%"></div>${T.slice(1,-1).map(x=>`<span class="rw-tick" style="left:${x.min/top*100}%"></span>`).join("")}
+    </div>
+    <p class="rw-next">${nx ? `${rnd(nx.min-t.counted)} more squares to reach ${nx.n} (${nx.perk}).` : `You reached ${T[i].n}, the top tier. ${T[i].perk}.`}</p>
+    ${t.pending ? `<p class="rw-note">Plus ${t.pending} sq sprayed this quarter that will count once the invoice is paid.</p>` : ""}
+    ${T[pi].credit ? `<div class="rw-credit">You finished ${pq.label} at ${T[pi].n}: $${T[pi].credit}/sq credit on this quarter's invoices.</div>` : ""}
+    <div class="rw-ladder">${T.map((x,k)=>`<div class="rw-step${k===i?" on":""}"><span class="r">${x.min}${T[k+1]?"–"+(T[k+1].min-1):"+"} sq</span><b>${x.n}</b>${x.perk}</div>`).join("")}</div>` + fine;
+  el.hidden = false;
+}
+
 function render(){
   const all = current === "all";
   const a = all ? null : acct(current);
@@ -486,6 +578,7 @@ function render(){
       <td class="c-war"><span class="lbl">Peak 301 Warranty</span>${inv && inv.processing ? `<span class="lock">${LOCK}Unlocks when payment clears${inv.clearsOn?" (about "+fmtD(inv.clearsOn)+")":""}</span>` : inv && inv.isPaid ? `<button class="btn sm ok" type="button" data-war="${i}">Download warranty</button>${j.fulfilled?`<div class="inv"><span class="meta">6 yrs · through ${fmtD(addYears(j.fulfilled,6))}</span></div>`:""}` : `<span class="lock">${LOCK}${inv ? "Unlocks when invoice is paid" : "Issued after payment"}</span>`}</td>
     </tr>`;}).join("") : `<tr><td colspan="8" class="empty">${jobs.length ? "No jobs match this filter." : "No jobs yet. Jobs you assign through peakprosga.com will appear here."}</td></tr>`;
   renderInvoices(js, all);
+  renderRewards(js, all);
 }
 
 let invJobs = [];
