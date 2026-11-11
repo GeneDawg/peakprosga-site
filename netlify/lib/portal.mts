@@ -228,6 +228,8 @@ function cleanName(s: string): string {
  * A referral lead source alone is not enough: partners also refer regular GDRR roofing work.
  */
 export function isPeakJob(job: any): boolean {
+  // Florida referral jobs share this JobNimbus account in their own workflow ("Peak 301 Referral - FL") and belong to peakprosfl.com.
+  if (/-\s*fl$/.test(norm(job.record_type_name))) return false;
   const marker = norm(Netlify.env.get("PORTAL_PEAK_TAG") || "Peak 301");
   const tags = (job.tags || []).map((x: any) => norm(typeof x === "string" ? x : x?.name));
   return tags.includes(marker) || norm(job.record_type_name).includes(marker);
