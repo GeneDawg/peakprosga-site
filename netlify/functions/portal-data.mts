@@ -1,5 +1,6 @@
 import type { Config } from "@netlify/functions";
 import { allowedAccounts, handleError, json, loadJobs, readSession } from "../lib/portal.mts";
+import { rewardsPayload } from "../lib/rewards.mts";
 
 // GET ?account=<key|all> -> the jobs, invoices and warranty status this session may see.
 export default async (req: Request) => {
@@ -8,7 +9,7 @@ export default async (req: Request) => {
     const requested = new URL(req.url).searchParams.get("account");
     const accts = allowedAccounts(session, requested);
     const { jobs } = await loadJobs(accts, !new URL(req.url).searchParams.get("lite"));
-    return json({ updated: new Date().toISOString(), jobs });
+    return json({ updated: new Date().toISOString(), jobs, rewards: rewardsPayload(jobs, accts.map((a) => a.key)) });
   } catch (e) {
     return handleError(e);
   }

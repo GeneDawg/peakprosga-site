@@ -270,6 +270,17 @@ function matchAccount(job: any, contact: any, accts: Account[]): { acct: Account
   return null;
 }
 
+/**
+ * Roof squares of Peak 301 on an estimate or invoice. Only the Peak 301 install line counts: roof wash and tune-up
+ * lines on the same roof are left out, so a full-service job is not counted twice.
+ */
+export function peakSquares(doc: any): number {
+  const sq = (doc.items || []).filter((i: any) => /^sq/i.test(String(i.uom || "")) && Number(i.quantity || 0) > 0 && !/credit/i.test(String(i.name || "")));
+  const core = sq.filter((i: any) => !/wash|tune/i.test(String(i.name || "")));
+  if (core.length) return core.reduce((a: number, i: any) => a + Number(i.quantity), 0);
+  return sq.length ? Math.max(...sq.map((i: any) => Number(i.quantity))) : 0;
+}
+
 export type PortalFile = { id: string; name: string; date: string | null };
 
 /** Files on a job that partners may open: invoice PDFs, photo reports and photos. Warranty files stay private. */
@@ -393,7 +404,7 @@ export async function loadJobs(accts: Account[], withFiles = false): Promise<{ j
   } catch (e) {
     console.error("estimates lookup failed", e);
   }
-  const sqOf = (doc: any) => (doc.items || []).reduce((a: number, i: any) => a + (/^sq/i.test(String(i.uom || "")) ? Number(i.quantity || 0) : 0), 0);
+  const sqOf = peakSquares;
   const squaresFor = (jobId: string): number | null => {
     const rel = (rows: any[]) => rows.filter((r) => (r.related || []).some((x: any) => x.id === jobId)).map(sqOf).filter((n) => n > 0);
     const fromInv = rel(invoicesRaw);

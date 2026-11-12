@@ -4,7 +4,7 @@
 //     and gives Shadie a task to send it for signature.
 //   createInvoiceFromEstimate(job, estimate): when the job reaches Job Completed, copies the estimate's lines into a
 //     Net 5 invoice (PORTAL_NET_DAYS) addressed to the contractor. Sending stays a one-click step in JobNimbus.
-import { accounts, env, HttpError, jn, jnAll, type Account } from "./portal.mts";
+import { accounts, env, HttpError, jn, jnAll, peakSquares, type Account } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
 // Price list item "Peak 301 Referral Partner Install": $85/SQ = $65 material line (cost $14) + $20 labor (cost $20).
@@ -136,21 +136,36 @@ export async function buildEstimate(jobId: string, squares: number) {
 }
 
 /** Copies the job's estimate into a Net 5 invoice addressed to the contractor. */
-export async function createInvoiceFromEstimate(job: any, estimate: any) {
+export type RewardsCredit = { rate: number; tier: string; quarter: string };
+
+export async function createInvoiceFromEstimate(job: any, estimate: any, credit?: RewardsCredit | null) {
   const acct = contractorFor(job);
   const t = now();
   const items = (estimate.items || []).map((i: any) => {
     const { lineId, ...rest } = i;
     return rest;
   });
+  // Partner Rewards: the tier earned last quarter comes off the Peak 301 line as a per-square credit.
+  // JobNimbus only accepts price-list items on an invoice (no custom lines), so the credit lowers the price of the
+  // Peak 301 install line itself and is spelled out in that line's description and in the invoice note.
+  const line = items.find((i: any) => /^sq/i.test(String(i.uom || "")) && Number(i.quantity || 0) > 0 && !/wash|tune/i.test(String(i.name || "")));
+  const sq = line ? round2(Number(line.quantity)) : 0;
+  const rate = credit && credit.rate > 0 && line ? Math.min(credit.rate, Number(line.price || 0)) : 0;
+  const off = round2(sq * rate);
+  if (off > 0) {
+    line.price = round2(Number(line.price) - rate);
+    line.amount = round2(sq * line.price);
+    line.description = `${line.description || ""}\nPartner Rewards credit applied: ${credit!.tier} tier earned in ${credit!.quarter}, $${rate} off per square on ${sq} squares (-${money(off)}).`.trim();
+  }
+  const subtotal = round2(Number(estimate.subtotal || 0) - off), total = round2(Number(estimate.total || 0) - off);
   return jnWrite("POST", "/v2/invoices", {
     related: relatedFor(job, acct),
     items,
     sections: estimate.sections || [],
-    subtotal: estimate.subtotal,
-    total: estimate.total,
+    subtotal: off ? subtotal : estimate.subtotal,
+    total: off ? total : estimate.total,
     cost: estimate.cost,
-    margin: estimate.margin,
+    margin: off && total ? round2(((total - Number(estimate.cost || 0)) / total) * 100) : estimate.margin,
     tax: estimate.tax || 0,
     sales_rep: job.sales_rep || undefined,
     owners: job.owners || undefined,
@@ -159,6 +174,6 @@ export async function createInvoiceFromEstimate(job: any, estimate: any) {
     terms: NET_DAYS,
     status: 1,
     template_id: acct?.invoiceTemplateId || Netlify.env.get("PORTAL_INVOICE_TEMPLATE_ID") || undefined,
-    note: `Estimate #${estimate.number ?? ""} signed by ${acct?.name || "the contractor"}. Payment due Net ${NET_DAYS}.`,
+    note: `Estimate #${estimate.number ?? ""} signed by ${acct?.name || "the contractor"}. Payment due Net ${NET_DAYS}.${off ? ` Partner Rewards credit applied: ${money(off)}.` : ""}`,
   });
 }

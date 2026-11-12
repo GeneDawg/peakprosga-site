@@ -3,7 +3,8 @@
 //   Job Completed  -> Invoiced        creates the Net 5 invoice from the signed estimate (Shadie gets a "send invoice" task)
 //   Invoiced       -> Paid & Closed   once the invoice is paid and the payment has cleared; open tasks are completed
 // Moving a job to Job Completed stays a person's call (Eddie/Shadie), because only they know the work is done.
-import { accounts, jnAll, loadJobs, norm } from "./portal.mts";
+import { accounts, jnAll, loadJobs, norm, peakSquares } from "./portal.mts";
+import { creditFor } from "./rewards.mts";
 import { addTask, contractorFor, createInvoiceFromEstimate, jnWrite, jobTasks, money, round2, setStatus, USERS, NET_DAYS } from "./billing.mts";
 
 export const STATUS = {
@@ -44,7 +45,7 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
           log(job, `estimate #${est.number} signed -> ${STATUS.scheduled}; Eddie task to schedule`);
           if (!dry) {
             await setStatus(job, STATUS.scheduled);
-            const sq = round2((est.items || []).reduce((a: number, i: any) => a + (/sq/i.test(i.uom || "") ? Number(i.quantity || 0) : 0), 0));
+            const sq = round2(peakSquares(est));
             await addTask(job, `Eddie: contractor signed - schedule Peak 301 - ${job.name}`,
               `${acct?.name || "The contractor"} signed estimate #${est.number}. Schedule the install.\n${sq ? `${sq} sq. Labor: ${sq} × $20 = ${money(sq * 20)}.\n` : ""}When the work is done, move the job to ${STATUS.completed}; the invoice is created automatically.`,
               USERS.eddie, 2);
@@ -63,10 +64,12 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
         } else if (est) {
           log(job, `create Net ${NET_DAYS} invoice from estimate #${est.number} (${money(Number(est.total || 0))}) -> ${STATUS.invoiced}; Shadie task to send it`);
           if (!dry) {
-            const inv = await createInvoiceFromEstimate(job, est);
+            const key = portal.get(job.jnid)?.account;
+            const credit = key ? creditFor(jobs.filter((j) => j.account === key)) : null;
+            const inv = await createInvoiceFromEstimate(job, est, credit);
             await setStatus(job, STATUS.invoiced);
             await addTask(job, `Shadie: send invoice #${inv.number ?? ""} - ${job.name}`,
-              `Invoice #${inv.number ?? ""} for ${money(Number(inv.total ?? est.total ?? 0))} was created from estimate #${est.number}. Open it and click Send to ${acct?.name || "the contractor"} (Net ${NET_DAYS}, pay link included).`,
+              `Invoice #${inv.number ?? ""} for ${money(Number(inv.total ?? est.total ?? 0))} was created from estimate #${est.number}. Open it and click Send to ${acct?.name || "the contractor"} (Net ${NET_DAYS}, pay link included).${credit ? `\nPartner Rewards: ${credit.tier} credit from ${credit.quarter} is already on it ($${credit.rate}/sq).` : ""}`,
               USERS.gene);
           }
         } else {
