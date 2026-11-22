@@ -301,6 +301,8 @@
   }
 
   function showPortal(s) {
+    // Partners accept the partner agreement in the dashboard before the job form opens.
+    if (s.role === 'partner' && !(s.agreement && s.agreement.accepted)) { location.replace('/partners/?next=submit'); return; }
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('portal').style.display = 'block';
     document.getElementById('partner-token').value = s.token;

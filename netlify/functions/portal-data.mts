@@ -1,11 +1,13 @@
 import type { Config } from "@netlify/functions";
 import { allowedAccounts, handleError, json, loadJobs, readSession } from "../lib/portal.mts";
+import { requireAgreement } from "../lib/agreement.mts";
 import { rewardsPayload } from "../lib/rewards.mts";
 
 // GET ?account=<key|all> -> the jobs, invoices and warranty status this session may see.
 export default async (req: Request) => {
   try {
     const session = readSession(req);
+    await requireAgreement(session);
     const requested = new URL(req.url).searchParams.get("account");
     const accts = allowedAccounts(session, requested);
     const { jobs } = await loadJobs(accts, !new URL(req.url).searchParams.get("lite"));

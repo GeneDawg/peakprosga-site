@@ -227,6 +227,35 @@ tbody tr:hover td{background:#fafcfa}
 .rw-board td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
 .rw-board .n{text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width:720px){.rw-ladder{grid-template-columns:repeat(2,minmax(0,1fr))}.rw-sq{font-size:30px}.rw-board .opt{display:none}}
+/* agreement (first sign-in) */
+.agree{min-height:100%;background:var(--band);padding:32px 0 48px}
+.agree-card{background:#fff;color:#111214;width:min(760px,calc(100% - 32px));margin:0 auto;border-radius:12px;overflow:hidden;border-top:6px solid var(--red)}
+.agree-card .in{padding:26px 24px;display:flex;flex-direction:column;gap:14px}
+.agree-card img{height:56px;width:auto;align-self:center}
+.agree-card h1{font:600 clamp(24px,4vw,32px)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-align:center}
+.agree-card .lead{margin:0;color:#5d6068;text-align:center;font-size:14px}
+.agree-steps{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font:500 12px var(--mono);color:var(--muted)}
+.agree-steps b{color:var(--red)}
+.terms{border:1px solid var(--line);border-radius:10px;background:var(--soft);max-height:46vh;overflow:auto;padding:16px 18px;font-size:14px;line-height:1.55}
+.terms h3{font:600 15px var(--display);margin:16px 0 6px}
+.terms h3:first-child{margin-top:0}
+.terms p{margin:0 0 8px}
+.terms ul,.terms ol{margin:0 0 8px;padding-left:20px}
+.terms li{margin-bottom:4px}
+.scrollnote{font-size:12px;color:var(--muted);text-align:center;margin:-6px 0 0}
+.agree-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.agree-form .full{grid-column:1/-1}
+.agree-form label{display:block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#5d6068;margin-bottom:4px}
+.agree-form input[type=text],.agree-form input[type=email]{font:500 16px var(--body);padding:11px 12px;border:2px solid #cfd0d4;border-radius:8px;width:100%;background:#fff;color:#111214}
+.agree-form input[readonly]{background:#f4f4f5;color:#5d6068}
+.agree-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;background:#fff8f8;border:1px solid #f3c9cc;border-radius:8px;padding:12px}
+.agree-check input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:var(--red)}
+.agree-card .err{color:#b31a25;font-weight:600;font-size:14px;text-align:center}
+.agree-card .btn.primary{padding:13px 18px;font-size:16px}
+.agreeline{font:500 12px var(--mono);color:#bfc1c7;margin-top:4px}
+.agreeline a{color:#fff;text-decoration:underline;cursor:pointer}
+.agreeline .no{color:#ffb4b8}
+@media (max-width:600px){.agree-form{grid-template-columns:1fr}}
 </style>
 <link rel="manifest" href="/partners/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
@@ -258,6 +287,29 @@ tbody tr:hover td{background:#fafcfa}
   </form>
 </section>
 
+<section class="agree" id="agree" hidden>
+  <form class="agree-card" id="agreeform" autocomplete="on">
+    <div class="in">
+      <img src="/assets/brand/peak301pros-ga-logo.png" alt="Peak 301 Pros GA">
+      <div class="agree-steps"><span>1 · Sign in ✓</span><span><b>2 · Partner agreement</b></span><span>3 · Your dashboard</span></div>
+      <h1 id="agreetitle">Referral Partner Master Service Agreement</h1>
+      <p class="lead">One-time step before your dashboard and job form open. Please read the terms, then confirm below for <b id="agreeco">your company</b>.</p>
+      <div class="terms" id="terms" tabindex="0" aria-label="Agreement terms"><p>Loading the agreement…</p></div>
+      <p class="scrollnote">Scroll to read the full agreement. You can download a copy any time from your dashboard.</p>
+      <div class="agree-form">
+        <div class="full"><label for="ag-company">Company</label><input type="text" id="ag-company" readonly></div>
+        <div><label for="ag-name">Your full name</label><input type="text" id="ag-name" autocomplete="name" required></div>
+        <div><label for="ag-title">Your title</label><input type="text" id="ag-title" autocomplete="organization-title" placeholder="Owner, President…" required></div>
+        <div class="full"><label for="ag-email">Email for notices</label><input type="email" id="ag-email" autocomplete="email" required></div>
+      </div>
+      <label class="agree-check"><input type="checkbox" id="ag-ok"> <span>I have read the Referral Partner Master Service Agreement and I accept its terms on behalf of <b id="agreeco2">my company</b>. I am authorized to do so, and I agree that checking this box and typing my name is my electronic acknowledgement.</span></label>
+      <div class="err" id="agreeerr" hidden></div>
+      <button class="btn primary" type="submit" id="agreebtn">Accept and open my dashboard &rarr;</button>
+      <p class="gatehelp">Questions about the agreement? Call 404-323-1869 or email gene@peak301pros.com. <a href="#" id="agreeout">Sign out</a></p>
+    </div>
+  </form>
+</section>
+
 <div id="app" hidden>
 <header class="top">
   <div class="wrap">
@@ -276,6 +328,7 @@ tbody tr:hover td{background:#fafcfa}
       <div class="eyebrow">Referral Partner Portal · Serviced by Peak 301 Pros</div>
       <h1 id="pname">Partner</h1>
       <div class="acct" id="acct"></div>
+      <div class="agreeline" id="agreeline"></div>
     </div>
     <div class="actions">
       <div id="switchwrap" hidden>
@@ -407,7 +460,7 @@ $("gateform").addEventListener("submit", async e => {
     const res = await fetch("/api/portal/login", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ code }) });
     const body = await res.json();
     if (!res.ok) throw new Error(body.error || "Sign-in failed.");
-    session = body; save(); $("code").value = ""; if (new URLSearchParams(location.search).get("next") === "submit") { location.replace("/login.html"); return; } startApp();
+    session = body; save(); $("code").value = ""; afterSignIn();
   } catch (err) {
     $("err").textContent = err.message; $("err").hidden = false;
   } finally {
@@ -416,6 +469,7 @@ $("gateform").addEventListener("submit", async e => {
 });
 
 function signOut(){
+  $("agree").hidden = true;
   session = null; try{ sessionStorage.removeItem("p3p_portal"); }catch(e){}
   jobs = []; filter = "all"; resetChips();
   $("app").hidden = true; $("gate").hidden = false; $("code").focus();
@@ -435,7 +489,93 @@ setInterval(() => {
 }, 60 * 1000);
 
 const sel = $("partner");
+const nextSubmit = () => new URLSearchParams(location.search).get("next") === "submit";
+const needsAgreement = () => session && session.role === "partner" && !(session.agreement && session.agreement.accepted);
+function afterSignIn(){
+  if (needsAgreement()) return showAgreement();
+  if (nextSubmit()) { location.replace("/login.html"); return; }
+  startApp();
+}
+
+/* ---------- partner agreement (first sign-in, and again when a new version is issued) ---------- */
+function termsHtml(a){
+  const li = xs => xs.map(t=>`<li>${esc(t)}</li>`).join("");
+  return (a.intro||[]).map(p=>`<p>${esc(p)}</p>`).join("") + (a.sections||[]).map(sec =>
+    `<h3>${esc(sec.h)}</h3>` + (sec.p||[]).map(p=>`<p>${esc(p)}</p>`).join("") +
+    (sec.list?`<ul>${li(sec.list)}</ul>`:"") + (sec.ol?`<ol>${li(sec.ol)}</ol>`:"")).join("");
+}
+async function showAgreement(){
+  $("gate").hidden = true; $("app").hidden = true; $("agree").hidden = false; window.scrollTo(0,0);
+  $("agreeerr").hidden = true;
+  const co = (session.accounts[0] && session.accounts[0].name) || "your company";
+  $("agreeco").textContent = co; $("agreeco2").textContent = co; $("ag-company").value = co;
+  try {
+    const res = await api("/api/portal/agreement");
+    const a = await res.json();
+    if (!res.ok) throw new Error(a.error || "Could not load the agreement.");
+    if (a.accepted){ session.agreement = { version: a.version, accepted: true }; save(); $("agree").hidden = true; return afterSignIn(); }
+    $("agreetitle").textContent = a.title; $("terms").innerHTML = termsHtml(a); $("terms").scrollTop = 0;
+    $("ag-name").focus();
+  } catch (err) {
+    $("terms").innerHTML = `<p>${esc(err.message)} Call ${PAY_PHONE} if this keeps happening.</p>`;
+  }
+}
+$("agreeout").addEventListener("click", e => { e.preventDefault(); signOut(); });
+$("agreeform").addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = $("agreebtn"), err = $("agreeerr");
+  err.hidden = true;
+  if (!$("ag-ok").checked){ err.textContent = "Please check the box to accept the agreement."; err.hidden = false; return; }
+  btn.disabled = true; btn.textContent = "Saving…";
+  try {
+    const res = await fetch("/api/portal/agreement", { method:"POST", headers:{ "content-type":"application/json", authorization:"Bearer " + session.token },
+      body: JSON.stringify({ name: $("ag-name").value, title: $("ag-title").value, email: $("ag-email").value, agree: true }) });
+    if (res.status === 401){ signOut(); throw new Error("Please sign in again."); }
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error || "Could not save. Please try again.");
+    session.agreement = { version: body.ack.version, accepted: true, at: body.ack.at, by: body.ack.name }; save();
+    $("agree").hidden = true; toast("Thank you. Your agreement is on file.");
+    afterSignIn();
+  } catch (x) { err.textContent = x.message; err.hidden = false; }
+  finally { btn.disabled = false; btn.textContent = "Accept and open my dashboard \u2192"; }
+});
+
+async function openAgreementPdf(account){
+  const w = window.open("", "_blank");
+  try {
+    const res = await api("/api/portal/agreement?pdf=1" + (account ? "&account=" + encodeURIComponent(account) : ""));
+    if (!res.ok){ const b = await res.json().catch(()=>({})); throw new Error(b.error || "Could not open the agreement."); }
+    const url = URL.createObjectURL(await res.blob());
+    if (w) w.location.href = url; else window.location.href = url;
+  } catch (err) { if (w) w.close(); toast(err.message); }
+}
+let agreeStatus = null; // staff view: acceptance per partner
+async function loadAgreeStatus(){
+  try { const r = await api("/api/portal/agreement?status=all"); if (r.ok){ agreeStatus = await r.json(); renderAgreeLine(); } } catch(e){}
+}
+function renderAgreeLine(){
+  const el = $("agreeline"); if (!el || !session) return;
+  const day = s => s ? new Date(s).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}) : "";
+  if (session.role === "partner"){
+    el.innerHTML = `Partner agreement on file · <a data-agpdf="">View / download</a>`;
+    return;
+  }
+  if (!agreeStatus){ el.textContent = ""; return; }
+  if (current === "all"){
+    const n = agreeStatus.partners.filter(p=>p.accepted).length;
+    el.innerHTML = `Partner agreements: ${n} of ${agreeStatus.partners.length} accepted` + agreeStatus.partners.filter(p=>!p.accepted).map(p=>` · <span class="no">${esc(p.name)}: not yet</span>`).join("");
+    return;
+  }
+  const p = agreeStatus.partners.find(x=>x.account===current);
+  el.innerHTML = p && p.accepted
+    ? `Agreement accepted ${esc(day(p.at))} by ${esc(p.by)}${p.title?", "+esc(p.title):""} · <a data-agpdf="${esc(current)}">View record</a>`
+    : `<span class="no">Agreement not accepted yet</span> (asked at their next sign-in)`;
+}
+$("agreeline").addEventListener("click", e => { const a = e.target.closest("[data-agpdf]"); if (a){ e.preventDefault(); openAgreementPdf(a.dataset.agpdf); } });
+
 function startApp(){
+  if (needsAgreement()) return showAgreement();
+  $("agree").hidden = true;
   $("gate").hidden = true; $("app").hidden = false; window.scrollTo(0,0);
   const admin = session.role !== "partner";
   $("adminbadge").hidden = !admin; $("switchwrap").hidden = !admin;
@@ -443,9 +583,10 @@ function startApp(){
     sel.innerHTML = '<option value="all">All contractors</option>' + session.accounts.map(a=>`<option value="${esc(a.key)}">${esc(a.name)} (${esc(a.prefix)})</option>`).join("");
     current = "all"; sel.value = "all";
   } else current = session.accounts[0].key;
+  if (admin) loadAgreeStatus();
   load();
 }
-sel.addEventListener("change", () => { current = sel.value; render(); });
+sel.addEventListener("change", () => { current = sel.value; render(); renderAgreeLine(); });
 function resetChips(){ document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.f==="all")); }
 document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
   filter=b.dataset.f; document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b)); render();
@@ -457,6 +598,7 @@ async function load(){
   try {
     const res = await api("/api/portal/jobs?account=all");
     const body = await res.json();
+    if (res.status === 403 && body.error === "AGREEMENT_REQUIRED"){ if (session.agreement) session.agreement.accepted = false; save(); return showAgreement(); }
     if (!res.ok) throw new Error(body.error || "Could not load jobs.");
     jobs = body.jobs || [];
     rewards = body.rewards || null;
@@ -521,6 +663,7 @@ function render(){
   $("pname").textContent = all ? "All Contractors" : a.name;
   $("who").textContent = session.role === "admin" ? "Go Dawgs Roof Roof" : (session.accounts[0].contact || session.accounts[0].name);
   $("acct").textContent = all ? `${session.accounts.length} referral partners` : `Account code ${a.prefix}`;
+  renderAgreeLine();
   $("h-partner").hidden = !all;
   const js = all ? jobs : jobs.filter(j=>j.account===current);
   const due = js.filter(j=>j.invoice && !j.invoice.isPaid && !j.invoice.processing), paid = js.filter(j=>j.invoice && (j.invoice.isPaid || j.invoice.processing)), toinv = js.filter(j=>!j.invoice);
@@ -675,7 +818,7 @@ $("invrows").addEventListener("click", e => {
 });
 
 const saved = restore();
-if (saved && saved.token){ session = saved; if (new URLSearchParams(location.search).get("next") === "submit") location.replace("/login.html"); else startApp(); }
+if (saved && saved.token){ session = saved; afterSignIn(); }
 })();
 </script>
 </body>

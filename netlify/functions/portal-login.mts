@@ -1,6 +1,7 @@
 import type { Config, Context } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import { accounts, handleError, HttpError, json, makeToken, matchCode, publicAccount } from "../lib/portal.mts";
+import { AGREEMENT_VERSION, getAck } from "../lib/agreement.mts";
 
 // POST { code } -> a signed session for that contractor (or GDRR admin).
 // Guessing is slowed (0.8 s per wrong code) and capped: 8 wrong codes from one address in 15 minutes
@@ -30,9 +31,11 @@ export default async (req: Request, context: Context) => {
     }
     if (rec) { try { await store.delete(key); } catch {} }
     const all = accounts();
+    const accepted = session.role !== "partner" || !!(await getAck(session.key!));
     return json({
       token: makeToken(session),
       role: session.role,
+      agreement: { version: AGREEMENT_VERSION, accepted },
       accounts: session.role !== "partner" ? all.map(publicAccount) : all.filter((a) => a.key === session.key).map(publicAccount),
     });
   } catch (e) {

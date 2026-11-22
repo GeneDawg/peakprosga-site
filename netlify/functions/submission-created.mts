@@ -1,5 +1,6 @@
 import { accounts, sessionFromToken } from "../lib/portal.mts";
 import { createFromAssignment } from "../lib/intake.mts";
+import { getAck } from "../lib/agreement.mts";
 
 // Runs automatically every time a Netlify form on this site is submitted (Netlify signs these events).
 // Only the contractor assignment form creates JobNimbus records.
@@ -17,7 +18,9 @@ export default async (req: Request) => {
   const session = token ? sessionFromToken(token) : null;
   try {
     let result;
-    if (session?.role === "partner") {
+    const accepted = session?.role === "partner" && session.key ? !!(await getAck(session.key)) : false;
+    if (session?.role === "partner" && !accepted) console.log("assignment from a partner who has not accepted the agreement", session.key);
+    if (session?.role === "partner" && accepted) {
       const account = accounts().find((a) => a.key === session.key) || null;
       result = await createFromAssignment(data, { account });
     } else if (session?.role === "admin") {
