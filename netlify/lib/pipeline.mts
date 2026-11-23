@@ -5,7 +5,7 @@
 // Moving a job to Job Completed stays a person's call (Eddie/Shadie), because only they know the work is done.
 import { accounts, jnAll, loadJobs, norm, peakSquares } from "./portal.mts";
 import { creditFor } from "./rewards.mts";
-import { addTask, contractorFor, createInvoiceFromEstimate, jnWrite, jobTasks, money, round2, setStatus, USERS, NET_DAYS } from "./billing.mts";
+import { addTask, buildEstimate, contractorFor, createInvoiceFromEstimate, jnWrite, jobTasks, money, round2, setStatus, USERS, NET_DAYS } from "./billing.mts";
 
 export const STATUS = {
   assigned: Netlify.env.get("PORTAL_STATUS_ASSIGNED") || "Assigned",
@@ -15,6 +15,36 @@ export const STATUS = {
   invoiced: Netlify.env.get("PORTAL_STATUS_INVOICED") || "Invoiced",
   closed: Netlify.env.get("PORTAL_STATUS_CLOSED") || "Paid & Closed",
 };
+
+// Squares Shadie types into the JobNimbus Measurements tab ("Quick Squares (SQ)" first, then "Total Roof Area (SQ)").
+// Field names can be changed with PORTAL_MEASURE_FIELDS (comma separated). Returns 0 when nothing usable is filled in.
+const norm2 = (k: string) => String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+export function measurementFields(job: any, depth = 3): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const walk = (o: any, path: string, d: number) => {
+    if (!o || typeof o !== "object" || d < 0) return;
+    for (const [k, v] of Object.entries(o)) {
+      if (v && typeof v === "object") walk(v, `${path}${k}.`, d - 1);
+      else if (/square|roofarea|sq\b|measure/i.test(k)) out[`${path}${k}`] = v;
+    }
+  };
+  walk(job, "", depth);
+  return out;
+}
+export function measuredSquares(job: any): number {
+  const wanted = (Netlify.env.get("PORTAL_MEASURE_FIELDS") || "Quick Squares (SQ),Total Roof Area (SQ)").split(",").map(norm2).filter(Boolean);
+  const found: Record<string, unknown> = {};
+  const walk = (o: any, d: number) => {
+    if (!o || typeof o !== "object" || d < 0) return;
+    for (const [k, v] of Object.entries(o)) (v && typeof v === "object" ? walk(v, d - 1) : (found[norm2(k)] = v));
+  };
+  walk(job, 3);
+  for (const w of wanted) {
+    const n = Number(found[w]);
+    if (n > 0) return n;
+  }
+  return 0;
+}
 
 const live = (x: any) => !x.is_archived && x.is_active !== false && norm(x.status_name) !== "void";
 const isSigned = (e: any) => !!e.esigned || Number(e.date_signed || 0) > 0 || /^(signed|approved|accepted)/i.test(String(e.signature_status || "")) || /approved|accepted|signed/i.test(String(e.status_name || ""));
@@ -41,6 +71,21 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
     try {
       // 1. Waiting on the contractor's signature.
       if (status === STATUS.assigned || (STATUS.sent && status === STATUS.sent)) {
+        // 0. Squares entered on the Measurements tab and no estimate yet: build the draft estimate. Off unless PORTAL_AUTOESTIMATE_ON=1.
+        if (!est && status === STATUS.assigned && Netlify.env.get("PORTAL_AUTOESTIMATE_ON")) {
+          const sq = measuredSquares(job);
+          if (sq > 0) {
+            if (sq < 3 || sq > 150) {
+              log(job, `measurement ${sq} looks wrong (outside 3-150 sq) - task for Shadie to check it`);
+              if (!dry && !(await jobTasks(job.jnid)).some((t: any) => /check the squares/i.test(String(t.title || ""))))
+                await addTask(job, `Shadie: check the squares - ${job.name}`, `The measurement on this job reads ${sq} sq, which looks off. Fix it on the Measurements tab; the estimate is built on the next check.`, USERS.gene);
+            } else {
+              log(job, `measurement ${sq} sq found, no estimate -> build draft estimate (Shadie sends it)`);
+              if (!dry) await buildEstimate(job.jnid, sq);
+            }
+            continue;
+          }
+        }
         if (est && isSigned(est)) {
           log(job, `estimate #${est.number} signed -> ${STATUS.scheduled}; Eddie task to schedule`);
           if (!dry) {
