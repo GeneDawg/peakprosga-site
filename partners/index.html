@@ -567,9 +567,10 @@ function renderAgreeLine(){
     return;
   }
   const p = agreeStatus.partners.find(x=>x.account===current);
-  el.innerHTML = p && p.accepted
+  const jn = p && !p.jobnimbusLinked ? ` · <span class="no">JobNimbus contact not linked</span>` : "";
+  el.innerHTML = (p && p.accepted
     ? `Agreement accepted ${esc(day(p.at))} by ${esc(p.by)}${p.title?", "+esc(p.title):""} · <a data-agpdf="${esc(current)}">View record</a>`
-    : `<span class="no">Agreement not accepted yet</span> (asked at their next sign-in)`;
+    : `<span class="no">Agreement not accepted yet</span> (asked at their next sign-in)`) + jn;
 }
 $("agreeline").addEventListener("click", e => { const a = e.target.closest("[data-agpdf]"); if (a){ e.preventDefault(); openAgreementPdf(a.dataset.agpdf); } });
 

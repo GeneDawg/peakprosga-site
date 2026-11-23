@@ -1,6 +1,6 @@
 import type { Config, Context } from "@netlify/functions";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { accounts, allowedAccounts, handleError, HttpError, json, readSession } from "../lib/portal.mts";
+import { accounts, allowedAccounts, fillContactIds, handleError, HttpError, json, readSession } from "../lib/portal.mts";
 import { AGREEMENT_TITLE, AGREEMENT_VERSION, agreementPayload, getAck, INTRO, saveAck, SECTIONS, type Ack } from "../lib/agreement.mts";
 
 // GET                       -> the agreement text and whether this partner has accepted it
@@ -35,9 +35,10 @@ export default async (req: Request, context: Context) => {
 
     if (url.searchParams.get("status") === "all") {
       if (s.role === "partner") throw new HttpError(403, "Not allowed.");
+      await fillContactIds();
       const rows = await Promise.all(accounts().map(async (a) => {
         const k = await getAck(a.key);
-        return { account: a.key, name: a.name, accepted: !!k, by: k?.name || null, title: k?.title || null, at: k?.at || null };
+        return { account: a.key, name: a.name, jobnimbusLinked: !!a.contactId, accepted: !!k, by: k?.name || null, title: k?.title || null, at: k?.at || null };
       }));
       return json({ version: AGREEMENT_VERSION, partners: rows });
     }
