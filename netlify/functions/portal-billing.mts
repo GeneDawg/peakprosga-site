@@ -8,9 +8,9 @@ export default async (req: Request) => {
   try {
     const s = readSession(req);
     if (s.role !== "admin") throw new HttpError(403, "Admins only.");
-    const { job, squares } = await req.json();
+    const { job, squares, fullService } = await req.json();
     if (!job) throw new HttpError(400, "Missing job.");
-    return json(await buildEstimate(String(job), Number(squares)));
+    return json(await buildEstimate(String(job), Number(squares), { fullService: !!fullService }));
   } catch (e) {
     return handleError(e);
   }

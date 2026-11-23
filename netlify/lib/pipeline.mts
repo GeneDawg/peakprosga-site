@@ -46,6 +46,21 @@ export function measuredSquares(job: any): number {
   return 0;
 }
 
+// "Full service" checkbox / yes-no field on the job picks the three-line estimate (install + wash + tune-up). Field name: PORTAL_FULL_SERVICE_FIELD.
+export function isFullService(job: any): boolean {
+  const want = norm2(Netlify.env.get("PORTAL_FULL_SERVICE_FIELD") || "Full Service");
+  let hit = false;
+  const walk = (o: any, d: number) => {
+    if (!o || typeof o !== "object" || d < 0) return;
+    for (const [k, v] of Object.entries(o)) {
+      if (v && typeof v === "object") walk(v, d - 1);
+      else if (norm2(k) === want && (v === true || /^(true|yes|y|1|checked|on)$/i.test(String(v)))) hit = true;
+    }
+  };
+  walk(job, 3);
+  return hit;
+}
+
 const live = (x: any) => !x.is_archived && x.is_active !== false && norm(x.status_name) !== "void";
 const isSigned = (e: any) => !!e.esigned || Number(e.date_signed || 0) > 0 || /^(signed|approved|accepted)/i.test(String(e.signature_status || "")) || /approved|accepted|signed/i.test(String(e.status_name || ""));
 const isSent = (e: any) => Number(e.date_sign_requested || 0) > 0 || /sent|requested/i.test(String(e.signature_status || "")) || /sent/i.test(String(e.status_name || ""));
@@ -80,8 +95,8 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
               if (!dry && !(await jobTasks(job.jnid)).some((t: any) => /check the squares/i.test(String(t.title || ""))))
                 await addTask(job, `Shadie: check the squares - ${job.name}`, `The measurement on this job reads ${sq} sq, which looks off. Fix it on the Measurements tab; the estimate is built on the next check.`, USERS.gene);
             } else {
-              log(job, `measurement ${sq} sq found, no estimate -> build draft estimate (Shadie sends it)`);
-              if (!dry) await buildEstimate(job.jnid, sq);
+              log(job, `measurement ${sq} sq found, no estimate -> build draft estimate${isFullService(job) ? " - FULL SERVICE (install + wash + tune-up)" : ""} (Shadie sends it)`);
+              if (!dry) await buildEstimate(job.jnid, sq, { fullService: isFullService(job) });
             }
             continue;
           }

@@ -63,7 +63,7 @@ export async function setStatus(job: any, status: string) {
   return true;
 }
 
-export async function buildEstimate(jobId: string, squares: number, opts: { skipEddie?: boolean } = {}) {
+export async function buildEstimate(jobId: string, squares: number, opts: { skipEddie?: boolean; fullService?: boolean } = {}) {
   if (!(squares > 0 && squares < 1000)) throw new HttpError(400, "Enter the EagleView square count (for example 24.6).");
   const sq = round2(squares);
   const job = await jn(`/jobs/${encodeURIComponent(jobId)}`);
@@ -81,8 +81,21 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   await fillContactIds();
   const acct = contractorFor(job);
   const estimateTemplate = acct?.estimateTemplateId || Netlify.env.get("PORTAL_ESTIMATE_TEMPLATE_ID") || undefined;
-  const amount = round2(sq * (mat.price + lab.price));
-  const costTotal = round2(sq * (mat.cost + lab.cost));
+  // Full service = the complete application estimate: install + Roof Wash (per square) + Shingle Tune Up (one item).
+  const extra: any[] = [];
+  if (opts.fullService) {
+    const line = (name: string, uomName: string, qty: number, fb: { cost: number; price: number }) => {
+      const p = products.find((x: any) => x.name === name && x.is_active !== false);
+      const u = p?.uoms?.find((x: any) => x.uom === uomName) || p?.uoms?.[0];
+      const price = Number(u?.material?.price ?? fb.price), cost = Number(u?.material?.cost ?? fb.cost);
+      return { jnid: p?.jnid, name: p?.name || name, description: p?.description || "", item_type: "material", uom: u?.uom || uomName, quantity: qty, price, cost, amount: round2(qty * price), _cost: round2(qty * cost) };
+    };
+    extra.push(line("Roof Wash", "SQ", sq, { cost: 35, price: 38.5 }), line("Shingle Tune Up", "Items", 1, { cost: 150, price: 375 }));
+  }
+  const extraAmount = round2(extra.reduce((a, i) => a + i.amount, 0));
+  const extraCost = round2(extra.reduce((a, i) => a + i._cost, 0));
+  const amount = round2(sq * (mat.price + lab.price) + extraAmount);
+  const costTotal = round2(sq * (mat.cost + lab.cost) + extraCost);
   const item = {
     jnid: product?.jnid,
     name: product?.name || PRODUCT_NAME,
@@ -97,7 +110,7 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   };
   const estimate = await jnWrite("POST", "/v2/estimates", {
     related: relatedFor(job, acct),
-    items: [item],
+    items: [item, ...extra.map(({ _cost, ...rest }) => rest)],
     sections: [],
     subtotal: amount,
     total: amount,
@@ -129,7 +142,7 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   await addTask(
     job,
     `Shadie: send estimate #${estimate.number ?? ""} for signature - ${job.name}`,
-    `Open estimate #${estimate.number ?? ""} on this job and click Send for signature to ${acct?.name || "the contractor"}${acct ? "" : " (CONTRACTOR NOT MATCHED - check the job's contacts)"}.\n${sq} sq × $${mat.price + lab.price} = ${money(amount)}. Net ${NET_DAYS} once invoiced.\nWhen they sign, the job moves to Scheduled automatically.`,
+    `Open estimate #${estimate.number ?? ""} on this job and click Send for signature to ${acct?.name || "the contractor"}${acct ? "" : " (CONTRACTOR NOT MATCHED - check the job's contacts)"}.\n${opts.fullService ? `FULL SERVICE: ${sq} sq × $${mat.price + lab.price} install + ${sq} sq × $38.50 wash + $375 tune-up = ${money(amount)}.` : `${sq} sq × $${mat.price + lab.price} = ${money(amount)}.`} Net ${NET_DAYS} once invoiced.\nWhen they sign, the job moves to Scheduled automatically.`,
     USERS.gene,
   ).catch((e) => console.error("Shadie task failed", e));
 
