@@ -4,7 +4,7 @@
 //     and gives Shadie a task to send it for signature.
 //   createInvoiceFromEstimate(job, estimate): when the job reaches Job Completed, copies the estimate's lines into a
 //     Net 5 invoice (PORTAL_NET_DAYS) addressed to the contractor. Sending stays a one-click step in JobNimbus.
-import { accounts, env, HttpError, jn, jnAll, peakSquares, type Account } from "./portal.mts";
+import { accounts, env, fillContactIds, HttpError, jn, jnAll, peakSquares, type Account } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
 // Price list item "Peak 301 Referral Partner Install": $85/SQ = $65 material line (cost $14) + $20 labor (cost $20).
@@ -78,6 +78,7 @@ export async function buildEstimate(jobId: string, squares: number) {
   const mat = { cost: Number(unit.material?.cost ?? 14), price: Number(unit.material?.price ?? 65) };
   const lab = { cost: Number(unit.labor?.cost ?? 20), price: Number(unit.labor?.price ?? 20) };
 
+  await fillContactIds();
   const acct = contractorFor(job);
   const estimateTemplate = acct?.estimateTemplateId || Netlify.env.get("PORTAL_ESTIMATE_TEMPLATE_ID") || undefined;
   const amount = round2(sq * (mat.price + lab.price));
@@ -139,6 +140,7 @@ export async function buildEstimate(jobId: string, squares: number) {
 export type RewardsCredit = { rate: number; tier: string; quarter: string };
 
 export async function createInvoiceFromEstimate(job: any, estimate: any, credit?: RewardsCredit | null) {
+  await fillContactIds();
   const acct = contractorFor(job);
   const t = now();
   const items = (estimate.items || []).map((i: any) => {

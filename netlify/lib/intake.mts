@@ -4,7 +4,7 @@
 //   3. a task for Shadie (who signs in as Gene) to order the EagleView QuickSquares report
 //   4. a task for Eddie with the job price and labor pay ($20 per square, confirmed from EagleView)
 // Writes use JOBNIMBUS_WRITE_KEY when set, otherwise JOBNIMBUS_API_KEY.
-import { accounts, env, HttpError, type Account } from "./portal.mts";
+import { accounts, env, fillContactIds, HttpError, type Account } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
 const USERS = {
@@ -101,7 +101,9 @@ const now = () => Math.floor(Date.now() / 1000);
 // opts.unverified: the form arrived without a valid partner sign-in; the job is created but flagged for Shadie
 // and not attached to any contractor until a person checks it.
 export async function createFromAssignment(a: Assignment, opts: { test?: boolean; account?: Account | null; unverified?: boolean } = {}) {
-  const acct = opts.unverified ? null : opts.account || matchContractor(a);
+  await fillContactIds();
+  let acct = opts.unverified ? null : opts.account || matchContractor(a);
+  if (acct && !acct.contactId) acct = accounts().find((x) => x.key === acct!.key) || acct;
   const { text, sq, price } = summarize(a, acct);
   const addr = parseAddress(a.property_address || "");
   const tag = opts.test ? "TEST - " : opts.unverified ? "CHECK - " : "";

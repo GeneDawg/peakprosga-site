@@ -40,11 +40,14 @@ export function handleError(e: unknown): Response {
 
 /* ---------- accounts & sessions ---------- */
 
+// JobNimbus contact ids found by name for partners whose PORTAL_ACCOUNTS entry has no contactId (see fillContactIds).
+const foundContactIds = new Map<string, string>();
+
 export function accounts(): Account[] {
   try {
     const list = JSON.parse(env("PORTAL_ACCOUNTS"));
     if (!Array.isArray(list)) throw new Error("not a list");
-    return list;
+    return list.map((a: Account) => (a.contactId || !foundContactIds.has(a.key) ? a : { ...a, contactId: foundContactIds.get(a.key) }));
   } catch (e) {
     if (e instanceof HttpError) throw e;
     throw new HttpError(500, "The portal's PORTAL_ACCOUNTS setting is not valid.");
@@ -142,6 +145,33 @@ export function publicAccount(a: Account) {
 }
 
 /* ---------- JobNimbus ---------- */
+
+const squash = (s: any) => norm(s).replace(/[^a-z0-9]/g, "");
+/**
+ * A new partner can be added to PORTAL_ACCOUNTS before anyone looks up their JobNimbus contact id.
+ * This finds the contractor's contact by company or display name (the account name or any of its
+ * contactNames, ignoring case, spaces and punctuation) so their jobs are filed under them anyway.
+ * Only an exact, single match is used. Add contactId to PORTAL_ACCOUNTS to skip the lookup.
+ */
+export async function fillContactIds(): Promise<void> {
+  const missing = accounts().filter((a) => !a.contactId);
+  if (!missing.length) return;
+  let contacts: any[] = [];
+  try {
+    contacts = await jnAll("/contacts", { fields: "jnid,display_name,company,record_type_name,is_active,is_archived" });
+  } catch (e) {
+    console.error("contact lookup failed", e);
+    return;
+  }
+  for (const acct of missing) {
+    const names = new Set([acct.name, ...(acct.contactNames || [])].map(squash).filter(Boolean));
+    const hits = contacts.filter((c) => !c.is_archived && c.is_active !== false && (names.has(squash(c.company)) || names.has(squash(c.display_name))));
+    if (hits.length === 1) {
+      foundContactIds.set(acct.key, String(hits[0].jnid));
+      console.log("partner contact found by name", acct.key, hits[0].jnid, hits[0].display_name);
+    } else console.log("partner contact not found by name", acct.key, hits.length, "matches");
+  }
+}
 
 export async function jn(path: string, params: Record<string, string> = {}): Promise<any> {
   const url = new URL(JN_BASE + path);
@@ -252,7 +282,7 @@ function matchAccount(job: any, contact: any, accts: Account[]): { acct: Account
   const tags = [...(job.tags || []), ...(contact?.tags || [])].map((x: any) => norm(typeof x === "string" ? x : x?.name));
   for (const acct of accts) {
     const partnerNames = [acct.name, ...(acct.contactNames || [])].map(norm);
-    const partner = people.find((p) => partnerNames.includes(norm(p.name)));
+    const partner = people.find((p) => (acct.contactId && p.id === acct.contactId) || partnerNames.includes(norm(p.name)));
     if (partner) {
       const homeowner = people.find((p) => p !== partner);
       return { acct, owner: cleanName(homeowner?.name || String(job.name || "")) };
@@ -344,6 +374,11 @@ export type PortalJob = {
 };
 
 export async function loadJobs(accts: Account[], withFiles = false): Promise<{ jobs: PortalJob[]; raw: { jobs: any[]; invoices: any[] } }> {
+  if (accts.some((a) => !a.contactId)) {
+    await fillContactIds();
+    const fresh = new Map(accounts().map((a) => [a.key, a]));
+    accts = accts.map((a) => fresh.get(a.key) || a);
+  }
   const [jobsRaw, contactsRaw] = await Promise.all([
     jnAll("/jobs", { sort_field: "date_created", sort_direction: "desc" }),
     jnAll("/contacts", { fields: "jnid,display_name,source_name,tags" }),
