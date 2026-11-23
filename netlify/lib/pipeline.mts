@@ -81,7 +81,7 @@ export async function runPipeline(opts: { dry?: boolean } = {}) {
                 await addTask(job, `Shadie: check the squares - ${job.name}`, `The measurement on this job reads ${sq} sq, which looks off. Fix it on the Measurements tab; the estimate is built on the next check.`, USERS.gene);
             } else {
               log(job, `measurement ${sq} sq found, no estimate -> build draft estimate (Shadie sends it)`);
-              if (!dry) await buildEstimate(job.jnid, sq);
+              if (!dry) await buildEstimate(job.jnid, sq, { skipEddie: true }); // Eddie is not touched; he calls Gene
             }
             continue;
           }

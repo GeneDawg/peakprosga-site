@@ -63,7 +63,7 @@ export async function setStatus(job: any, status: string) {
   return true;
 }
 
-export async function buildEstimate(jobId: string, squares: number) {
+export async function buildEstimate(jobId: string, squares: number, opts: { skipEddie?: boolean } = {}) {
   if (!(squares > 0 && squares < 1000)) throw new HttpError(400, "Enter the EagleView square count (for example 24.6).");
   const sq = round2(squares);
   const job = await jn(`/jobs/${encodeURIComponent(jobId)}`);
@@ -115,7 +115,7 @@ export async function buildEstimate(jobId: string, squares: number) {
   const labor = round2(sq * LABOR_PER_SQ);
   let eddieUpdated = false;
   try {
-    for (const t of await jobTasks(job.jnid)) {
+    if (!opts.skipEddie) for (const t of await jobTasks(job.jnid)) {
       if (!/eddie/i.test(String(t.title || ""))) continue;
       await jnWrite("PUT", `/tasks/${t.jnid}`, {
         description: `${t.description || ""}\n\nEagleView confirmed: ${sq} sq. Labor: ${sq} × $${LABOR_PER_SQ} = ${money(labor)}. Job price: ${money(amount)} (estimate #${estimate.number ?? "—"}). Wait for the contractor's signature before scheduling.`.trim(),
