@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Accept your invite · Peak 301 Pros GA</title>
+<link rel="icon" href="/assets/brand/peak301-logo.png">
+<style>
+*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f6f6;color:#111}
+[hidden]{display:none!important}
+.sandbox{background:#C8102E;color:#fff;text-align:center;font-weight:700;font-size:13px;padding:6px}
+header{background:#000;padding:14px;text-align:center}header img{height:40px;background:#fff;border-radius:6px;padding:4px}
+main{max-width:520px;margin:24px auto;padding:0 16px}
+.card{background:#fff;border:1px solid #e3e3e3;border-radius:10px;padding:20px}
+input{font:16px system-ui;padding:10px;border:1px solid #ccc;border-radius:6px;width:100%}
+.btn{width:100%;margin-top:12px;border:0;background:#C8102E;color:#fff;border-radius:6px;padding:12px;font:700 16px system-ui;cursor:pointer}
+.err{color:#C8102E;font-weight:600}.muted{color:#666}
+li{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="sandbox">SANDBOX · test invites only</div>
+<header><img src="/assets/brand/peak301-logo.png" alt="Peak 301 Pros"></header>
+<main>
+  <div class="card" id="form">
+    <h1 style="margin-top:0;font-size:22px">Welcome to the Peak 301 Pros partner portal</h1>
+    <p class="muted">Confirm the email address this invite was sent to. The link works once.</p>
+    <form id="f"><input id="email" type="email" placeholder="you@company.com" required autocomplete="email"><button class="btn">Accept invite</button></form>
+    <p class="err" id="err" hidden></p>
+  </div>
+  <div class="card" id="done" hidden>
+    <h1 style="margin-top:0;font-size:22px">You're in, <span id="co"></span></h1>
+    <p class="muted">Sandbox: these are your test assignments. In the live portal this is where your dashboard opens.</p>
+    <ul id="list"></ul>
+  </div>
+</main>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const token = new URLSearchParams(location.search).get("t") || "";
+history.replaceState(null, "", location.pathname); // keep the one-time link out of browser history
+$("f").onsubmit = async e => {
+  e.preventDefault(); $("err").hidden = true;
+  try {
+    const res = await fetch("/api/ops/invite/redeem", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ token, email: $("email").value }) });
+    const b = await res.json(); if (!res.ok) throw new Error(b.error || "That didn't work.");
+    $("co").textContent = b.company.name; $("form").hidden = true; $("done").hidden = false;
+    const r = await fetch("/api/ops/assignments", { headers: { authorization: "Bearer " + b.token } });
+    const { assignments = [] } = await r.json();
+    $("list").innerHTML = assignments.length ? assignments.map(a => `<li><b>${esc(a.id)}</b> · ${esc(a.data.property_address)} · ${esc(a.state.replace(/_/g," "))}</li>`).join("") : `<li class="muted">No test assignments yet.</li>`;
+  } catch (err) { $("err").textContent = err.message; $("err").hidden = false; }
+};
+})();
+</script>
+</body>
+</html>

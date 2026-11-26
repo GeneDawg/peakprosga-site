@@ -77,6 +77,14 @@ export function matchCode(code: string): Session | null {
   return acct ? { role: "partner", key: acct.key, exp, v: codePrint(acct.code) } : null;
 }
 
+/** A partner session for one contractor, for sign-in routes other than the access code (Ops invites).
+ *  Tied to the contractor's current code like any other session, so changing their code still ends it. */
+export function partnerSession(key: string): Session {
+  const acct = accounts().find((a) => a.key === key);
+  if (!acct) throw new HttpError(404, "That contractor account was not found.");
+  return { role: "partner", key: acct.key, exp: Date.now() + SESSION_HOURS * 3600_000, v: codePrint(acct.code) };
+}
+
 const b64u = (s: string | Buffer) => Buffer.from(s).toString("base64url");
 const sign = (body: string) => createHmac("sha256", env("PORTAL_SESSION_SECRET")).update(body).digest("base64url");
 

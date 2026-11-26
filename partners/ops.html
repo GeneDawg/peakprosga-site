@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Ops Console (Sandbox) · Peak 301 Pros GA</title>
+<link rel="icon" href="/assets/brand/peak301-logo.png">
+<style>
+:root{--ink:#111;--muted:#666;--line:#e3e3e3;--soft:#f6f6f6;--red:#C8102E;--bg:#fff;--ok:#1d7a4b;--okbg:#e8f4ed;--warn:#8a5300;--warnbg:#fdf0d8;--info:#333;--infobg:#efefef}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--soft)}
+[hidden]{display:none!important}
+header{background:#000;color:#fff;padding:12px max(16px,env(safe-area-inset-left))}
+header .row{display:flex;align-items:center;gap:12px;max-width:1180px;margin:0 auto;flex-wrap:wrap}
+header img{height:34px;background:#fff;border-radius:6px;padding:3px}
+header h1{font-size:17px;margin:0;flex:1}
+.sandbox{background:var(--red);color:#fff;text-align:center;font-weight:700;font-size:13px;padding:6px}
+main{max-width:1180px;margin:0 auto;padding:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font:600 14px system-ui;cursor:pointer}
+.tabs button.on{background:#000;color:#fff;border-color:#000}
+.btn{border:1px solid #000;background:#000;color:#fff;border-radius:6px;padding:8px 14px;font:600 14px system-ui;cursor:pointer}
+.btn.ghost{background:#fff;color:#000}.btn.red{background:var(--red);border-color:var(--red)}.btn.sm{padding:4px 10px;font-size:13px}
+input,select,textarea{font:15px system-ui;padding:8px 10px;border:1px solid #ccc;border-radius:6px;width:100%}
+label{font-size:13px;font-weight:600;color:var(--muted);display:block;margin:8px 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tr.click{cursor:pointer}tr.click:hover{background:var(--soft)}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.s-needs_review{background:var(--warnbg);color:var(--warn)}.s-measurement_ordered,.s-accepted{background:var(--okbg);color:var(--ok)}
+.s-rejected{background:#fbe3e5;color:var(--red)}.s-received{background:var(--infobg)}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.muted{color:var(--muted)}.err{color:var(--red);font-weight:600}
+pre{white-space:pre-wrap;background:var(--soft);padding:10px;border-radius:6px;font-size:13px;margin:6px 0}
+.trail li{margin:4px 0}.linkbox{word-break:break-all;background:var(--okbg);padding:10px;border-radius:6px}
+@media(max-width:700px){td.hide,th.hide{display:none}}
+</style>
+</head>
+<body>
+<div class="sandbox">SANDBOX · mock data only · JobNimbus is simulated · nothing is emailed or texted</div>
+<header><div class="row"><img src="/assets/brand/peak301-logo.png" alt="Peak 301"><h1>Ops Console · Georgia referral network</h1><button class="btn ghost sm" id="out" hidden>Sign out</button></div></header>
+<main>
+  <section class="card" id="gate">
+    <h2 style="margin-top:0">Admin sign-in</h2>
+    <form id="gateform"><label for="code">GDRR admin access code</label><input id="code" autocomplete="off" type="password"><p><button class="btn">Sign in</button></p><p class="err" id="gerr" hidden></p></form>
+  </section>
+
+  <section id="app" hidden>
+    <div class="tabs" id="tabs">
+      <button data-t="intake" class="on">Intake</button><button data-t="review">Review queue <span id="rc"></span></button>
+      <button data-t="invites">Invites</button><button data-t="sim">Sandbox tester</button>
+    </div>
+
+    <div id="t-intake" class="card"><h2 style="margin-top:0">All assignments</h2><div id="list"></div></div>
+
+    <div id="t-review" class="card" hidden><h2 style="margin-top:0">Needs review</h2><p class="muted">Submissions from people who weren't signed in, contractors we couldn't match, missing details, or likely copies of an open job. Nothing goes to JobNimbus until you approve it.</p><div id="rlist"></div></div>
+
+    <div id="t-invites" class="card" hidden>
+      <h2 style="margin-top:0">Partner invites</h2>
+      <p class="muted">One link per person. Works once, expires in 72 hours, tied to their email. In the sandbox the link shows here and is never emailed.</p>
+      <form id="invform" class="grid"><div><label>Contractor</label><select id="invco"></select></div><div><label>Their email</label><input id="invemail" type="email" required></div><div style="align-self:end"><button class="btn red">Create invite link</button></div></form>
+      <div id="invlink"></div><div id="invlist" style="margin-top:12px"></div>
+    </div>
+
+    <div id="t-sim" class="card" hidden>
+      <h2 style="margin-top:0">Sandbox tester</h2>
+      <p class="muted">Send test assignments the way partners and the inbox would. Press "Send again" to replay the exact same submission and prove it doesn't make a second job.</p>
+      <form id="simform">
+        <div class="grid">
+          <div><label>Submitted as</label><select id="simas"></select></div>
+          <div><label>Homeowner name</label><input id="s_hn" value="Pat Sample"></div>
+          <div><label>Homeowner phone</label><input id="s_hp" value="555-0100"></div>
+          <div><label>Property address</label><input id="s_addr" value="123 Test Lane, Duluth, GA 30096"></div>
+          <div><label>Roof size (sq)</label><input id="s_sq" value="28"></div>
+          <div><label>Contact email</label><input id="s_em" value=""></div>
+        </div>
+        <p><button class="btn red">Submit form</button> <button class="btn ghost" type="button" id="replay" disabled>Send again (same submission)</button></p>
+      </form>
+      <hr style="border:0;border-top:1px solid var(--line)">
+      <h3>Simulate an email to assignment@peakprosusa.com</h3>
+      <div class="grid"><div><label>From</label><input id="e_from" placeholder="office@partner.com"></div></div>
+      <label>Body</label><textarea id="e_body" rows="4">Homeowner: Pat Sample
+Property address: 123 Test Ln, Duluth GA 30096
+Roof size: 28 sq</textarea>
+      <p><button class="btn ghost" id="sendmail">Send test email</button> <button class="btn ghost" id="reset" style="float:right">Wipe sandbox</button></p>
+      <div id="simout"></div>
+    </div>
+
+    <div id="detail" class="card" hidden></div>
+  </section>
+</main>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const LABEL = {received:"Received",needs_review:"Needs review",rejected:"Closed / rejected",accepted:"Accepted",measurement_ordered:"Measurement ordered"};
+const chip = s => `<span class="chip s-${s}">${esc(LABEL[s]||s)}</span>`;
+const when = s => new Date(s).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+let session = null, accounts = [], lastSim = null;
+try { session = JSON.parse(sessionStorage.getItem("p3p_ops")||"null"); } catch(e){}
+
+async function call(path, body){
+  const res = await fetch(path, { method: body ? "POST" : "GET", headers: { "content-type":"application/json", authorization: "Bearer " + (session?.token||"") }, body: body ? JSON.stringify(body) : undefined });
+  const data = await res.json().catch(()=>({}));
+  if (res.status === 401) { signOut(); throw new Error("Please sign in again."); }
+  if (!res.ok) throw new Error(data.error || ("Error " + res.status));
+  return data;
+}
+function signOut(){ session=null; sessionStorage.removeItem("p3p_ops"); $("app").hidden=true; $("gate").hidden=false; $("out").hidden=true; }
+$("out").onclick = signOut;
+
+$("gateform").onsubmit = async e => {
+  e.preventDefault(); $("gerr").hidden = true;
+  try {
+    const res = await fetch("/api/portal/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({code:$("code").value.trim()})});
+    const b = await res.json(); if(!res.ok) throw new Error(b.error||"Sign-in failed");
+    if (b.role !== "admin") throw new Error("This console is for GDRR admins.");
+    session = b; sessionStorage.setItem("p3p_ops", JSON.stringify(b)); start();
+  } catch(err){ $("gerr").textContent = err.message; $("gerr").hidden = false; }
+};
+
+function start(){
+  accounts = session.accounts || [];
+  $("gate").hidden = true; $("app").hidden = false; $("out").hidden = false;
+  const opts = accounts.map(a => `<option value="${esc(a.key)}">${esc(a.name)}</option>`).join("");
+  $("invco").innerHTML = opts;
+  $("simas").innerHTML = opts + `<option value="">Not signed in (unknown sender)</option>`;
+  load();
+}
+
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x===b));
+  ["intake","review","invites","sim"].forEach(t => $("t-"+t).hidden = t !== b.dataset.t);
+  $("detail").hidden = true;
+  if (b.dataset.t === "invites") loadInvites();
+});
+
+async function load(){
+  try {
+    const { assignments } = await call("/api/ops/assignments");
+    const coName = k => (accounts.find(a=>a.key===k)||{}).name || "—";
+    const row = a => `<tr class="click" data-id="${esc(a.id)}"><td class="mono">${esc(a.id)}</td><td>${chip(a.state)}</td><td>${esc(a.data.property_address)}</td><td class="hide">${esc(coName(a.companyKey))}${a.verified?"":" <span class=muted>(unverified)</span>"}</td><td class="hide">${a.sourceEvents.length > 1 ? a.sourceEvents.length + " copies" : esc(a.source)}</td><td class="hide">${when(a.createdAt)}</td></tr>`;
+    const head = `<tr><th>ID</th><th>Status</th><th>Property</th><th class="hide">Contractor</th><th class="hide">Source</th><th class="hide">Received</th></tr>`;
+    $("list").innerHTML = assignments.length ? `<table>${head}${assignments.map(row).join("")}</table>` : `<p class="muted">No assignments yet. Use the Sandbox tester tab to send one.</p>`;
+    const rev = assignments.filter(a => a.state === "needs_review");
+    $("rc").textContent = rev.length ? `(${rev.length})` : "";
+    $("rlist").innerHTML = rev.length ? `<table>${head}${rev.map(row).join("")}</table>` : `<p class="muted">Nothing waiting.</p>`;
+    document.querySelectorAll("tr.click").forEach(tr => tr.onclick = () => show(tr.dataset.id));
+  } catch(err){ $("list").innerHTML = `<p class="err">${esc(err.message)}</p>`; }
+}
+
+async function show(id){
+  const d = await call("/api/ops/assignment?id=" + encodeURIComponent(id));
+  const a = d.assignment, el = $("detail");
+  const review = a.state === "needs_review" ? `
+    <div class="card" style="background:var(--warnbg)"><b>Why it's held:</b><ul>${a.reviewReasons.map(r=>`<li>${esc(r)}</li>`).join("")}</ul>
+    <div class="grid"><div><label>File under contractor</label><select id="apco">${accounts.map(x=>`<option value="${esc(x.key)}" ${x.key===a.companyKey?"selected":""}>${esc(x.name)}</option>`).join("")}</select></div>
+    <div style="align-self:end"><button class="btn" id="apgo">Approve → create job</button></div>
+    ${a.duplicateOf?`<div style="align-self:end"><button class="btn ghost" id="mgo">Same job as ${esc(a.duplicateOf)}: merge</button></div>`:""}
+    <div style="align-self:end"><button class="btn ghost" id="rjgo">Reject</button></div></div></div>` : "";
+  el.innerHTML = `<h2 style="margin-top:0"><span class="mono">${esc(a.id)}</span> ${chip(a.state)}</h2>
+    ${review}
+    <div class="grid">
+      <div><label>Property</label>${esc(a.data.property_address)}</div>
+      <div><label>Homeowner</label>${esc(a.data.homeowner_name)} ${esc(a.data.homeowner_phone)}</div>
+      <div><label>Roof size (contractor)</label>${esc(a.data.roof_size||"—")} sq</div>
+      <div><label>Copies received</label>${a.sourceEvents.map(e=>esc(e.source)).join(", ")}</div>
+    </div>
+    <h3>JobNimbus (mock)</h3>
+    ${d.mockJob ? `<pre>Job: ${esc(d.mockJob.name)}
+Primary contact (billed): ${esc(d.mockContact?.display_name)}
+Homeowner (job detail): ${esc(d.mockJob["Homeowner Name"])} ${esc(d.mockJob["Homeowner Phone"])}
+Status: ${esc(d.mockJob.status_name)} · Assignment ID: ${esc(d.mockJob["Assignment ID"])}</pre>` : `<p class="muted">No job yet.</p>`}
+    <h3>Messages (rendered, not sent)</h3>
+    ${d.outbox.length ? d.outbox.map(m=>`<pre><b>To:</b> ${esc(m.to)}  ·  <b>Not sent</b> (${esc(m.reason)})
+<b>Subject:</b> ${esc(m.subject)}
+
+${esc(m.body)}</pre>`).join("") : `<p class="muted">None.</p>`}
+    <h3>Audit trail</h3>
+    <ol class="trail">${d.audit.map(e=>`<li><span class="muted">${when(e.at)}</span> · <b>${esc(e.action)}</b>${e.from||e.to?` ${esc(e.from||"")} → ${esc(e.to||"")}`:""} · <span class="mono">${esc(e.actor)}</span></li>`).join("")}</ol>`;
+  el.hidden = false; el.scrollIntoView({behavior:"smooth"});
+  const act = async body => { try { await call("/api/ops/review", { id: a.id, ...body }); await load(); show(a.id); } catch(err){ alertBox(err.message); } };
+  if ($("apgo")) $("apgo").onclick = () => act({ action:"approve", companyKey: $("apco").value });
+  if ($("rjgo")) $("rjgo").onclick = () => act({ action:"reject", reason:"Rejected in Ops console" });
+  if ($("mgo")) $("mgo").onclick = () => act({ action:"merge", into: a.duplicateOf });
+}
+function alertBox(msg){ $("simout").innerHTML = `<p class="err">${esc(msg)}</p>`; const d=$("detail"); d.insertAdjacentHTML("afterbegin", `<p class="err">${esc(msg)}</p>`); }
+
+async function loadInvites(){
+  try {
+    const { invites } = await call("/api/ops/invites");
+    const st = i => i.revokedAt ? "Cancelled" : i.usedAt ? "Used " + when(i.usedAt) : (Date.now() > Date.parse(i.expiresAt) ? "Expired" : "Open until " + when(i.expiresAt));
+    $("invlist").innerHTML = invites.length ? `<table><tr><th>Contractor</th><th>Email</th><th>Status</th><th></th></tr>${invites.map(i=>`<tr><td>${esc((accounts.find(a=>a.key===i.companyKey)||{}).name||i.companyKey)}</td><td>${esc(i.email)}</td><td>${esc(st(i))}</td><td>${!i.revokedAt&&!i.usedAt?`<button class="btn ghost sm" data-rv="${esc(i.id)}">Cancel</button> `:""}${!i.usedAt?`<button class="btn ghost sm" data-ri="${esc(i.id)}">New link</button>`:""}</td></tr>`).join("")}</table>` : `<p class="muted">No invites yet.</p>`;
+    document.querySelectorAll("[data-rv]").forEach(b => b.onclick = async () => { await call("/api/ops/invites",{action:"revoke",id:b.dataset.rv}); loadInvites(); });
+    document.querySelectorAll("[data-ri]").forEach(b => b.onclick = async () => { const r = await call("/api/ops/invites",{action:"reissue",id:b.dataset.ri}); showLink(r); loadInvites(); });
+  } catch(err){ $("invlist").innerHTML = `<p class="err">${esc(err.message)}</p>`; }
+}
+function showLink(r){ $("invlink").innerHTML = `<p class="linkbox"><b>Invite link for ${esc(r.invite.email)}</b> (works once, 72 h):<br><span class="mono">${esc(r.link)}</span></p>`; }
+$("invform").onsubmit = async e => { e.preventDefault(); try { showLink(await call("/api/ops/invites",{action:"issue",companyKey:$("invco").value,email:$("invemail").value})); $("invemail").value=""; loadInvites(); } catch(err){ $("invlink").innerHTML = `<p class="err">${esc(err.message)}</p>`; } };
+
+function report(r){ $("simout").innerHTML = `<p><b>${esc({created:"New assignment",replay:"Same submission again: no new assignment",duplicate:"Matched an open assignment: attached, no new job",suggested_duplicate:"Held for review next to the likely original"}[r.outcome]||r.outcome)}</b> → <a href="#" id="simopen" class="mono">${esc(r.assignment.id)}</a> ${chip(r.assignment.state)}</p>`; $("simopen").onclick = ev => { ev.preventDefault(); show(r.assignment.id); }; load(); }
+$("simform").onsubmit = async e => {
+  e.preventDefault();
+  const as = $("simas").value;
+  lastSim = { asCompany: as || null, eventId: "sim-" + Math.random().toString(36).slice(2,10), data: { company: as ? (accounts.find(a=>a.key===as)||{}).name : "", homeowner_name:$("s_hn").value, homeowner_phone:$("s_hp").value, property_address:$("s_addr").value, roof_size:$("s_sq").value, contact_email:$("s_em").value } };
+  try { report(await call("/api/ops/sandbox/form", lastSim)); $("replay").disabled = false; } catch(err){ $("simout").innerHTML = `<p class="err">${esc(err.message)}</p>`; }
+};
+$("replay").onclick = async () => { try { report(await call("/api/ops/sandbox/form", lastSim)); } catch(err){ $("simout").innerHTML = `<p class="err">${esc(err.message)}</p>`; } };
+$("sendmail").onclick = async () => { try { report(await call("/api/ops/sandbox/email", { from:$("e_from").value, body:$("e_body").value })); } catch(err){ $("simout").innerHTML = `<p class="err">${esc(err.message)}</p>`; } };
+$("reset").onclick = async () => { const b = $("reset"); if (b.dataset.arm !== "1") { b.dataset.arm = "1"; b.textContent = "Click again to wipe all sandbox data"; setTimeout(() => { b.dataset.arm = ""; b.textContent = "Wipe sandbox"; }, 4000); return; } b.dataset.arm = ""; b.textContent = "Wipe sandbox"; try { await call("/api/ops/sandbox/reset", {}); $("simout").innerHTML = `<p>Sandbox wiped.</p>`; $("detail").hidden = true; load(); } catch(err){ $("simout").innerHTML = `<p class="err">${esc(err.message)}</p>`; } };
+
+if (session && session.role === "admin") start();
+})();
+</script>
+</body>
+</html>
