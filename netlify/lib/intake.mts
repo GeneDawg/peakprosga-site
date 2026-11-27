@@ -77,6 +77,14 @@ function roofAge(v?: string): string | undefined {
   return undefined;
 }
 
+/** Machine-readable scope from the form's wash and tune-up choices. */
+export function scopeOf(a: Assignment): { wash: "gdrr" | "contractor" | "none"; tuneup: "standard" | "heavy" | "contractor" | "none" } {
+  const w = clean(a.roof_wash).toLowerCase(), t = clean(a.tune_up).toLowerCase();
+  const wash = /peak 301 pros/.test(w) ? "gdrr" : /contractor/.test(w) ? "contractor" : "none";
+  const tuneup = /heavy/.test(t) ? "heavy" : /standard/.test(t) ? "standard" : /contractor/.test(t) ? "contractor" : "none";
+  return { wash, tuneup };
+}
+
 export function summarize(a: Assignment, acct: Account | null) {
   const sq = Number(a.roof_size || 0) || null;
   const price = parseMoney(a.quoted_price);
@@ -88,8 +96,10 @@ export function summarize(a: Assignment, acct: Account | null) {
     `Roof size (contractor): ${sq ? sq + " sq" : "not given"} · Age: ${clean(a.roof_age) || "—"} · Type: ${clean(a.roof_type) || "—"}`,
     `Two story: ${clean(a.two_story) || "—"} · Steep pitch: ${clean(a.pitch) || "—"} · Damage: ${clean(a.damage) || "—"}`,
     `Quoted price: ${price ? money(price) : clean(a.quoted_price) || "—"}`,
+    `Roof wash: ${clean(a.roof_wash) || "—"} · Tune-up: ${clean(a.tune_up) || "—"}`,
     `Requested service date: ${clean(a.service_date) || "—"}`,
     a.scope_notes ? `Notes: ${clean(a.scope_notes)}` : "",
+    `Scope: wash=${scopeOf(a).wash}; tuneup=${scopeOf(a).tuneup}`,
   ].filter(Boolean);
   return { text: lines.join("\n"), sq, price };
 }
@@ -166,6 +176,7 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
       `Peak 301 job for ${acct ? acct.name : clean(a.company)}.`,
       `Job price (quoted to contractor): ${price ? money(price) : clean(a.quoted_price) || "—"}`,
       `Labor: $${LABOR_PER_SQ}/sq × EagleView squares. Estimate from contractor's ${sq ?? "?"} sq = ${labor ? money(labor) : "—"} (confirm with the EagleView report).`,
+      `Roof wash: ${clean(a.roof_wash) || "—"} · Tune-up: ${clean(a.tune_up) || "—"}`,
       `Requested date: ${clean(a.service_date) || "—"}`,
       a.scope_notes ? `Notes: ${clean(a.scope_notes)}` : "",
     ].filter(Boolean).join("\n"),
