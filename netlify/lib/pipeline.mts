@@ -41,6 +41,9 @@ export function measuredSquares(job: any): number {
   walk(job, 3);
   for (const w of wanted) {
     const n = Number(found[w]);
+    // EagleView's JobNimbus sync writes square FEET into "Total Roof Area (SQ)" (e.g. 2957.6 for 29.6 squares).
+    // No house roof is over 300 squares, so a bigger number is square feet: divide by 100.
+    if (n > 300) return Math.round(n) / 100;
     if (n > 0) return n;
   }
   return 0;
