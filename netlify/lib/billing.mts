@@ -91,11 +91,11 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   const acct = contractorFor(job);
   const estimateTemplate = acct?.estimateTemplateId || Netlify.env.get("PORTAL_ESTIMATE_TEMPLATE_ID") || undefined;
   const amount = round2(sq * (mat.price + lab.price));
-  const costTotal = round2(sq * (14 + LABOR_PER_SQ));
+  const costTotal = 0;
   // One customer-facing line at the all-in square price. Internal cost stays in the cost field (not printed).
   const unitPrice = round2(mat.price + lab.price);
   // Internal cost for margin tracking only (material $14 + applicator labor); never printed on the document.
-  const unitCost = round2(14 + LABOR_PER_SQ);
+  const unitCost = 0; // never stored on contractor documents: no cost, markup or margin anywhere on the estimate
   const item = {
     jnid: product?.jnid,
     name: product?.name || PRODUCT_NAME,
@@ -114,7 +114,7 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
     subtotal: amount,
     total: amount,
     cost: costTotal,
-    margin: amount ? round2(((amount - costTotal) / amount) * 100) : 0,
+    margin: 0,
     tax: 0,
     sales_rep: job.sales_rep || undefined,
     owners: job.owners || undefined,
