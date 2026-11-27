@@ -66,7 +66,22 @@ export async function setStatus(job: any, status: string) {
   return true;
 }
 
-export async function buildEstimate(jobId: string, squares: number, opts: { skipEddie?: boolean } = {}) {
+// Add-on services the contractor picks on the assignment form. Partner prices; no cost is ever stored on the estimate.
+export const WASH_PER_SQ = Number(Netlify.env.get("PORTAL_WASH_PER_SQ") || 35);
+export const TUNEUP_PRICE = { standard: Number(Netlify.env.get("PORTAL_TUNEUP_STANDARD") || 350), heavy: Number(Netlify.env.get("PORTAL_TUNEUP_HEAVY") || 550) };
+export type Scope = { wash: "gdrr" | "contractor" | "none"; tuneup: "standard" | "heavy" | "contractor" | "none" };
+
+/** Reads the "Scope: wash=...; tuneup=..." line the intake writes into the job description. */
+export function scopeFromJob(job: any): Scope {
+  const m = String(job?.description || "").match(/Scope:\s*wash=(\w+);\s*tuneup=(\w+)/i);
+  const wash = (m?.[1] || "none").toLowerCase(), tuneup = (m?.[2] || "none").toLowerCase();
+  return {
+    wash: wash === "gdrr" || wash === "contractor" ? wash : "none",
+    tuneup: tuneup === "standard" || tuneup === "heavy" || tuneup === "contractor" ? tuneup : "none",
+  } as Scope;
+}
+
+export async function buildEstimate(jobId: string, squares: number, opts: { skipEddie?: boolean; scope?: Partial<Scope> } = {}) {
   if (!(squares > 0 && squares < 1000)) throw new HttpError(400, "Enter the EagleView square count (for example 24.6).");
   const sq = round2(squares);
   const job = await jn(`/jobs/${encodeURIComponent(jobId)}`);
@@ -96,6 +111,7 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   const unitPrice = round2(mat.price + lab.price);
   // Internal cost for margin tracking only (material $14 + applicator labor); never printed on the document.
   const unitCost = 0; // never stored on contractor documents: no cost, markup or margin anywhere on the estimate
+  const scope: Scope = { ...scopeFromJob(job), ...(opts.scope || {}) } as Scope;
   const item = {
     jnid: product?.jnid,
     name: product?.name || PRODUCT_NAME,
@@ -105,14 +121,26 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
     quantity: sq,
     price: unitPrice,
     cost: unitCost,
-    amount: amount,
+    amount: round2(sq * unitPrice),
   };
+  const items: any[] = [item];
+  if (scope.wash === "gdrr") {
+    const p = products.find((x: any) => x.name === "Roof Wash" && x.is_active !== false);
+    items.push({ jnid: p?.jnid, name: p?.name || "Roof Wash", description: "Low-pressure soft wash of the roof before the Peak 301 application, per square.", item_type: "material", uom: "SQ", quantity: sq, price: WASH_PER_SQ, cost: 0, amount: round2(sq * WASH_PER_SQ) });
+  }
+  if (scope.tuneup === "standard" || scope.tuneup === "heavy") {
+    const p = products.find((x: any) => x.name === "Shingle Tune Up" && x.is_active !== false);
+    const price = TUNEUP_PRICE[scope.tuneup];
+    const desc = scope.tuneup === "heavy" ? "Heavy roof tune-up: shingle repairs up to 1 bundle, pipe boot replacement, sealant." : "Standard roof tune-up: shingle repairs up to 1/2 bundle, pipe boot replacement, sealant.";
+    items.push({ jnid: p?.jnid, name: p?.name || "Shingle Tune Up", description: desc, item_type: "material", uom: "Items", quantity: 1, price, cost: 0, amount: price });
+  }
+  const total = round2(items.reduce((t, i) => t + i.amount, 0));
   const estimate = await jnWrite("POST", "/v2/estimates", {
     related: relatedFor(job, acct),
-    items: [item],
+    items,
     sections: [],
-    subtotal: amount,
-    total: amount,
+    subtotal: total,
+    total,
     cost: costTotal,
     margin: 0,
     tax: 0,
@@ -130,7 +158,7 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
     if (!opts.skipEddie) for (const t of await jobTasks(job.jnid)) {
       if (!/eddie/i.test(String(t.title || ""))) continue;
       await jnWrite("PUT", `/tasks/${t.jnid}`, {
-        description: `${t.description || ""}\n\nEagleView confirmed: ${sq} sq. Labor: ${sq} × $${LABOR_PER_SQ} = ${money(labor)}. Job price: ${money(amount)} (estimate #${estimate.number ?? "—"}). Wait for the contractor's signature before scheduling.`.trim(),
+        description: `${t.description || ""}\n\nEagleView confirmed: ${sq} sq. Labor: ${sq} × $${LABOR_PER_SQ} = ${money(labor)}. Job price: ${money(total)} (estimate #${estimate.number ?? "—"}). Wait for the contractor's signature before scheduling.`.trim(),
       });
       eddieUpdated = true;
     }
@@ -145,17 +173,19 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
     sq < 10 || sq > 60 ? `Unusual size (${sq} sq) - compare against the EagleView report.` : "",
   ].filter(Boolean);
   const reviewBody = `Estimate #${estimate.number ?? ""} is built and waiting for approval. Review it, then click Send for signature.
-${sq} sq × $${unitPrice} = ${money(amount)} (Eddie labor ${money(labor)}). Net ${NET_DAYS} once invoiced.
+${items.map((i) => `${i.name}: ${i.quantity} ${i.uom} × $${i.price} = ${money(i.amount)}`).join("\n")}
+Total ${money(total)}. Eddie labor ${money(labor)} (internal). Net ${NET_DAYS} once invoiced.
+Wash: ${scope.wash === "gdrr" ? "we wash" : scope.wash === "contractor" ? "contractor washes" : "none"} · Tune-up: ${scope.tuneup === "standard" || scope.tuneup === "heavy" ? "we do " + scope.tuneup : scope.tuneup === "contractor" ? "contractor does it" : "none"}
 ${checks.join("\n")}
 When the contractor signs, the job moves to Scheduled and Eddie gets the production task automatically.`;
   await addTask(job, `APPROVE estimate #${estimate.number ?? ""} - ${job.name}`, reviewBody, USERS.gene, 0).catch((e) => console.error("review task failed", e));
-  await notifyStaff(`Approve estimate #${estimate.number ?? ""} - ${job.name} (${money(amount)})`, `${reviewBody}
+  await notifyStaff(`Approve estimate #${estimate.number ?? ""} - ${job.name} (${money(total)})`, `${reviewBody}
 
 Open the job: https://app.jobnimbus.com/job/${job.jnid}
 
 Gene or Shadie - whoever gets to it first approves and sends.`).catch((e) => console.error("notify failed", e));
 
-  return { squares: sq, price: amount, cost: costTotal, labor, contractor: acct?.name || null, estimateTemplate: estimateTemplate || null, estimate: { jnid: estimate.jnid, number: estimate.number }, eddieUpdated };
+  return { squares: sq, price: total, scope, cost: costTotal, labor, contractor: acct?.name || null, estimateTemplate: estimateTemplate || null, estimate: { jnid: estimate.jnid, number: estimate.number }, eddieUpdated };
 }
 
 /** Copies the job's estimate into a Net 5 invoice addressed to the contractor. */

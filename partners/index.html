@@ -755,17 +755,32 @@ function billModal(j){
       <div class="row"><span>Job</span><span>#${esc(j.number)} · ${esc(j.address)}</span></div>
       <label for="sq" class="note">EagleView squares (from the QuickSquares report)</label>
       <input id="sq" type="number" step="0.01" min="0.1" inputmode="decimal" required style="font:600 18px var(--body);padding:10px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
+      <label for="wash" class="note">Roof wash</label>
+      <select id="wash" style="font:500 15px var(--body);padding:8px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
+        <option value="auto">As picked on the assignment form</option>
+        <option value="gdrr">We wash it (per square)</option>
+        <option value="contractor">Contractor washes it</option>
+        <option value="none">No wash</option>
+      </select>
+      <label for="tune" class="note">Roof tune-up</label>
+      <select id="tune" style="font:500 15px var(--body);padding:8px;border:2px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)">
+        <option value="auto">As picked on the assignment form</option>
+        <option value="standard">We do it: Standard (up to 1/2 bundle)</option>
+        <option value="heavy">We do it: Heavy (up to 1 bundle)</option>
+        <option value="contractor">Contractor does it</option>
+        <option value="none">No tune-up</option>
+      </select>
       <div class="row"><span>Profit margin</span><span>Begins at 50%</span></div>
       <button class="btn primary" type="submit" id="billgo">Create estimate in JobNimbus</button>
     </form>
-    <p class="note">The estimate goes on this job addressed to the contractor, and Shadie gets a task to send it for signature. When they sign, the job moves to Scheduled. When it is marked Job Completed, the invoice (due 7 days after completion) is created automatically.</p>`);
+    <p class="note">The estimate goes on this job addressed to the contractor: Peak 301 at the partner rate, plus a wash line and a tune-up line when we're doing them. You and Shadie get an approval task and email. When they sign, the job moves to Scheduled. When it is marked Job Completed, the invoice (due 7 days after completion) is created automatically.</p>`);
   const sq = $("sq");
   sq.focus();
   $("billform").addEventListener("submit", async e=>{
     e.preventDefault();
     const go=$("billgo"); go.disabled=true; go.textContent="Creating…";
     try{
-      const res = await fetch("/api/portal/billing",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+session.token},body:JSON.stringify({job:j.jnid,squares:+sq.value})});
+      const res = await fetch("/api/portal/billing",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+session.token},body:JSON.stringify({job:j.jnid,squares:+sq.value,wash:$("wash").value,tuneup:$("tune").value})});
       const b = await res.json();
       if(!res.ok) throw new Error(b.error||"Could not create them.");
       closeModal(); toast(`Created estimate #${b.estimate.number??""} for ${money(b.price)}. Shadie has the send-for-signature task.`); load();
