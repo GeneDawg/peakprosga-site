@@ -118,7 +118,7 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
     placeholder = await jnWrite("POST", "/contacts", {
       ...splitName(a.company || "Unmatched contractor"),
       display_name: `CHECK - ${clean(a.company) || "Unmatched contractor"} (set the real contractor as main contact)`,
-      record_type_name: "Customer",
+      record_type_name: "Referral Partner",
       status_name: "New",
       description: "Placeholder: the assignment's contractor was not matched. Replace with the contractor's contact.",
       sales_rep: USERS.gene,
