@@ -8,8 +8,10 @@ import { notifyStaff } from "./notify.mts";
 import { accounts, env, fillContactIds, HttpError, jn, jnAll, peakSquares, type Account } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
-// Price list item "Peak 301 Referral Partner Install": $85/SQ = $65 material line (cost $14) + $20 labor (cost $20).
-const PRODUCT_NAME = Netlify.env.get("PORTAL_PRODUCT_NAME") || "Peak 301 Referral Partner Install";
+// Price list item "Peak 301 Roof Rejuvenation": $85/SQ, one line. (Legacy item split it $65 material + $20 labor.)
+// The contractor sees ONE line: "Peak 301 Rejuvenation", $85/SQ. Labor and Eddie's pay never appear on estimates or invoices.
+const PRODUCT_NAME = "Peak 301 Roof Rejuvenation"; // price list: Material, SQ, $85
+const LEGACY_PRODUCT_NAME = "Peak 301 Referral Partner Install";
 const FALLBACK = { material: { cost: 14, price: 65 }, labor: { cost: 20, price: 20 } };
 export const LABOR_PER_SQ = Number(Netlify.env.get("PORTAL_LABOR_PER_SQ") || 20);
 export const NET_DAYS = Number(Netlify.env.get("PORTAL_NET_DAYS") || 7);
@@ -74,27 +76,36 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   );
   if (prior) throw new HttpError(409, `This job already has estimate #${prior.number}. Edit that one in JobNimbus, or void it first.`);
   const products = await jnAll("/v2/products", {}, 5).catch(() => [] as any[]);
-  const product = products.find((p: any) => p.name === PRODUCT_NAME && p.is_active !== false);
+  const product =
+    products.find((p: any) => p.name === PRODUCT_NAME && p.is_active !== false) ||
+    products.find((p: any) => p.name === LEGACY_PRODUCT_NAME && p.is_active !== false);
   const unit = product?.uoms?.find((u: any) => u.uom === "SQ") || product?.uoms?.[0] || FALLBACK;
-  const mat = { cost: Number(unit.material?.cost ?? 14), price: Number(unit.material?.price ?? 65) };
-  const lab = { cost: Number(unit.labor?.cost ?? 20), price: Number(unit.labor?.price ?? 20) };
+  // A price-list item may carry its price in material, labor, or both; missing halves count as zero.
+  const d = unit === FALLBACK ? 1 : 0;
+  const mat = { cost: Number(unit.material?.cost ?? 14 * d), price: Number(unit.material?.price ?? 65 * d) };
+  const lab = { cost: Number(unit.labor?.cost ?? 20 * d), price: Number(unit.labor?.price ?? 20 * d) };
+  if (round2(mat.price + lab.price) !== 85 && !Netlify.env.get("PORTAL_PRICE_OVERRIDE_OK"))
+    throw new HttpError(409, `Price list item "${product?.name || PRODUCT_NAME}" adds up to $${round2(mat.price + lab.price)}/SQ, not $85. Fix the price list before building estimates.`);
 
   await fillContactIds();
   const acct = contractorFor(job);
   const estimateTemplate = acct?.estimateTemplateId || Netlify.env.get("PORTAL_ESTIMATE_TEMPLATE_ID") || undefined;
   const amount = round2(sq * (mat.price + lab.price));
-  const costTotal = round2(sq * (mat.cost + lab.cost));
+  const costTotal = round2(sq * (14 + LABOR_PER_SQ));
+  // One customer-facing line at the all-in square price. Internal cost stays in the cost field (not printed).
+  const unitPrice = round2(mat.price + lab.price);
+  // Internal cost for margin tracking only (material $14 + applicator labor); never printed on the document.
+  const unitCost = round2(14 + LABOR_PER_SQ);
   const item = {
     jnid: product?.jnid,
     name: product?.name || PRODUCT_NAME,
-    description: product?.description || "Peak 301 roof rejuvenation, installed as subcontractor for a Peak 301 referral partner.",
-    item_type: "labor+material",
+    description: "Peak 301 roof rejuvenation, priced per square from the EagleView measurement.",
+    item_type: "material",
     uom: "SQ",
     quantity: sq,
-    price: mat.price,
-    cost: mat.cost,
-    amount: round2(sq * mat.price),
-    labor: { price: lab.price, cost: lab.cost, amount: round2(sq * lab.price) },
+    price: unitPrice,
+    cost: unitCost,
+    amount: amount,
   };
   const estimate = await jnWrite("POST", "/v2/estimates", {
     related: relatedFor(job, acct),
@@ -134,7 +145,7 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
     sq < 10 || sq > 60 ? `Unusual size (${sq} sq) - compare against the EagleView report.` : "",
   ].filter(Boolean);
   const reviewBody = `Estimate #${estimate.number ?? ""} is built and waiting for approval. Review it, then click Send for signature.
-${sq} sq × $${mat.price + lab.price} = ${money(amount)} (Eddie labor ${money(labor)}). Net ${NET_DAYS} once invoiced.
+${sq} sq × $${unitPrice} = ${money(amount)} (Eddie labor ${money(labor)}). Net ${NET_DAYS} once invoiced.
 ${checks.join("\n")}
 When the contractor signs, the job moves to Scheduled and Eddie gets the production task automatically.`;
   await addTask(job, `APPROVE estimate #${estimate.number ?? ""} - ${job.name}`, reviewBody, USERS.gene, 0).catch((e) => console.error("review task failed", e));
