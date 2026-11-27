@@ -1,7 +1,7 @@
 // Internal staff notifications (Gene + Shadie). Never emails customers or partners.
 // Off until both are set in Netlify env:
 //   RESEND_API_KEY        - key from resend.com (sending domain verified there)
-//   PORTAL_NOTIFY_EMAILS  - comma list, e.g. "gene@godawgsroofroof.com,shadie@godawgsroofroof.com"
+//   PORTAL_NOTIFY_EMAILS  - comma-separated staff addresses on our own domains
 //   PORTAL_NOTIFY_FROM    - optional, default "Peak Pros GA Portal <portal@peakprosga.com>"
 // Recipients must be on our own domains; anything else is dropped.
 const INTERNAL = /@(godawgsroofroof\.com|peakprosga\.com|peakprosusa\.com|peak301pros\.com)$/i;
