@@ -1,5 +1,5 @@
 // Turns a peakprosga.com assignment (Netlify form "PeakProsGA-Assignment") into JobNimbus records:
-//   1. a homeowner contact
+//   1. the contractor as the job's main contact (homeowner details live on the job, not as a contact)
 //   2. a Peak 301 Referral job (status Assigned) under the right contractor, with the form details filled in
 //   3. a task for Shadie (who signs in as Gene) to order the EagleView QuickSquares report
 //   4. a task for Eddie with the job price and labor pay ($20 per square, confirmed from EagleView)
@@ -108,22 +108,26 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
   const addr = parseAddress(a.property_address || "");
   const tag = opts.test ? "TEST - " : opts.unverified ? "CHECK - " : "";
 
-  // 1. Homeowner contact
-  const homeowner = await jnWrite("POST", "/contacts", {
-    ...splitName(a.homeowner_name || "Homeowner"),
-    display_name: tag + clean(a.homeowner_name || "Homeowner"),
-    record_type_name: "Customer",
-    status_name: "New",
-    home_phone: clean(a.homeowner_phone),
-    ...addr,
-    description: "Peak 301 referral homeowner",
-    source_name: acct?.sources?.[0],
-    sales_rep: USERS.gene,
-  });
+  // 1. Main contact = the contractor (our client: they sign the estimate and pay the invoice).
+  //    The homeowner is assignment data on the job (description), not a JobNimbus contact, so nothing
+  //    in JobNimbus can ever message the homeowner. Only when no contractor is matched (unverified form)
+  //    do we create a flagged placeholder contact so the job can exist until a person fixes it.
+  let primaryId = acct?.contactId || null;
+  let placeholder: any = null;
+  if (!primaryId) {
+    placeholder = await jnWrite("POST", "/contacts", {
+      ...splitName(a.company || "Unmatched contractor"),
+      display_name: `CHECK - ${clean(a.company) || "Unmatched contractor"} (set the real contractor as main contact)`,
+      record_type_name: "Referral Partner",
+      status_name: "New",
+      description: "Placeholder: the assignment's contractor was not matched. Replace with the contractor's contact.",
+      sales_rep: USERS.gene,
+    });
+    primaryId = placeholder.jnid;
+  }
 
   // 2. Job under the contractor
-  const related: { id: string }[] = [{ id: homeowner.jnid }];
-  if (acct?.contactId) related.push({ id: acct.contactId });
+  const related: { id: string }[] = [{ id: primaryId! }];
   const fields: Record<string, unknown> = {};
   const age = roofAge(a.roof_age);
   if (age) fields["Roof Age"] = age;
@@ -132,7 +136,7 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
     name: tag + (addr.address_line1 || clean(a.property_address)),
     record_type_name: "Peak 301 Referral",
     status_name: "Assigned",
-    primary: { id: homeowner.jnid },
+    primary: { id: primaryId },
     related,
     ...addr,
     description: text,
@@ -171,5 +175,5 @@ export async function createFromAssignment(a: Assignment, opts: { test?: boolean
     date_end: t + 2 * day,
   });
 
-  return { contractor: acct?.key || null, homeowner: homeowner.jnid, job: job.jnid, tasks: [shadie.jnid, eddie.jnid] };
+  return { contractor: acct?.key || null, primaryContact: primaryId, placeholder: placeholder?.jnid || null, job: job.jnid, tasks: [shadie.jnid, eddie.jnid] };
 }

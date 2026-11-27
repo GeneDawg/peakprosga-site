@@ -1,9 +1,10 @@
 // Peak 301 referral billing.
 //   buildEstimate(job, squares): from the EagleView square count, creates the estimate (Draft) addressed to the contractor,
 //     using the JobNimbus estimate template (terms of service + signature block), updates Eddie's labor on his task,
-//     and gives Shadie a task to send it for signature.
+//     and gives Gene/Shadie an APPROVE task plus an internal email (notify.mts). Nothing is sent to the contractor automatically.
 //   createInvoiceFromEstimate(job, estimate): when the job reaches Job Completed, copies the estimate's lines into a
 //     Net 5 invoice (PORTAL_NET_DAYS) addressed to the contractor. Sending stays a one-click step in JobNimbus.
+import { notifyStaff } from "./notify.mts";
 import { accounts, env, fillContactIds, HttpError, jn, jnAll, peakSquares, type Account } from "./portal.mts";
 
 const JN_BASE = "https://app.jobnimbus.com/api1";
@@ -125,13 +126,23 @@ export async function buildEstimate(jobId: string, squares: number, opts: { skip
   } catch (e) {
     console.error("Eddie task update failed", e);
   }
-  // Shadie: send it for signature.
-  await addTask(
-    job,
-    `Shadie: send estimate #${estimate.number ?? ""} for signature - ${job.name}`,
-    `Open estimate #${estimate.number ?? ""} on this job and click Send for signature to ${acct?.name || "the contractor"}${acct ? "" : " (CONTRACTOR NOT MATCHED - check the job's contacts)"}.\n${sq} sq × $${mat.price + lab.price} = ${money(amount)}. Net ${NET_DAYS} once invoiced.\nWhen they sign, the job moves to Scheduled automatically.`,
-    USERS.gene,
-  ).catch((e) => console.error("Shadie task failed", e));
+  // Review gate: nothing goes to the contractor until Gene or Shadie approves it. Both get notified.
+  const primaryIsContractor = !!acct?.contactId && job.primary?.id === acct.contactId;
+  const checks = [
+    acct ? `Contractor: ${acct.name}` : "CONTRACTOR NOT MATCHED - check the job's contacts before sending",
+    primaryIsContractor ? "" : `WATCH THE RECIPIENT: the job's primary contact is ${job.primary?.name || "not set"}, not the contractor. When you click Send, pick ${acct?.name || "the contractor"} - never the homeowner.`,
+    sq < 10 || sq > 60 ? `Unusual size (${sq} sq) - compare against the EagleView report.` : "",
+  ].filter(Boolean);
+  const reviewBody = `Estimate #${estimate.number ?? ""} is built and waiting for approval. Review it, then click Send for signature.
+${sq} sq × $${mat.price + lab.price} = ${money(amount)} (Eddie labor ${money(labor)}). Net ${NET_DAYS} once invoiced.
+${checks.join("\n")}
+When the contractor signs, the job moves to Scheduled and Eddie gets the production task automatically.`;
+  await addTask(job, `APPROVE estimate #${estimate.number ?? ""} - ${job.name}`, reviewBody, USERS.gene, 0).catch((e) => console.error("review task failed", e));
+  await notifyStaff(`Approve estimate #${estimate.number ?? ""} - ${job.name} (${money(amount)})`, `${reviewBody}
+
+Open the job: https://app.jobnimbus.com/job/${job.jnid}
+
+Gene or Shadie - whoever gets to it first approves and sends.`).catch((e) => console.error("notify failed", e));
 
   return { squares: sq, price: amount, cost: costTotal, labor, contractor: acct?.name || null, estimateTemplate: estimateTemplate || null, estimate: { jnid: estimate.jnid, number: estimate.number }, eddieUpdated };
 }
