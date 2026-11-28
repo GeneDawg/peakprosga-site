@@ -7,15 +7,33 @@ import { matchJobs, parseSubject, verifySvix } from "../lib/eagleview.mts";
 // Resend "email.received" webhook. A Gmail filter forwards each EagleView "Report" email to the Resend receiving
 // address; this builds the draft estimate on the matching Peak 301 Referral job (status Assigned, no estimate yet).
 // Nothing is ever sent to a contractor from here: buildEstimate only drafts it and notifies Gene + Shadie.
-// Needs RESEND_WEBHOOK_SECRET (the webhook's signing secret, whsec_...). PORTAL_EV_INBOUND_OFF=true turns it off.
+// Trust: webhook signature (RESEND_WEBHOOK_SECRET) or, failing that, a lookup by email id (RESEND_API_KEY).
+// PORTAL_EV_INBOUND_OFF=true turns it off.
 export default async (req: Request) => {
-  const secret = Netlify.env.get("RESEND_WEBHOOK_SECRET") || "";
-  if (!secret || Netlify.env.get("PORTAL_EV_INBOUND_OFF") === "true") return new Response("off", { status: 503 });
+  if (Netlify.env.get("PORTAL_EV_INBOUND_OFF") === "true") return new Response("off", { status: 503 });
   const raw = await req.text();
-  if (!verifySvix(secret, req.headers, raw)) return new Response("bad signature", { status: 401 });
-  const evt = JSON.parse(raw || "{}");
+  let evt: any;
+  try { evt = JSON.parse(raw || "{}"); } catch { return new Response("bad json", { status: 400 }); }
   if (evt.type !== "email.received") return new Response("ignored");
-  const subject = String(evt.data?.subject || "");
+
+  // Trust check. First choice: Resend's webhook signature (RESEND_WEBHOOK_SECRET). Backup: look the email up in our own
+  // Resend account by its id with RESEND_API_KEY and use what Resend returns, not what was posted. A faked request can
+  // only make us re-read a real email we already received, and a second estimate on the same job is refused anyway.
+  const secret = Netlify.env.get("RESEND_WEBHOOK_SECRET") || "";
+  let subject = String(evt.data?.subject || "");
+  if (!(secret && verifySvix(secret, req.headers, raw))) {
+    const id = String(evt.data?.email_id || "");
+    const key = Netlify.env.get("RESEND_API_KEY") || "";
+    if (!/^[0-9a-f-]{36}$/i.test(id) || !key) return new Response("bad signature", { status: 401 });
+    const r = await fetch(`https://api.resend.com/emails/receiving/${id}`, { headers: { Authorization: `Bearer ${key}` } });
+    if (!r.ok) {
+      console.log("eagleview-inbound lookup failed", r.status);
+      return new Response("bad signature", { status: 401 });
+    }
+    const em: any = await r.json();
+    subject = String(em.subject || "");
+    console.log("eagleview-inbound verified by lookup");
+  }
 
   // Gmail sends a confirmation code here when the forwarding address is first added. Pass it to Gene.
   if (/forwarding confirmation/i.test(subject)) {
