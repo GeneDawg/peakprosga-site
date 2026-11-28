@@ -36,13 +36,23 @@ export function matchJobs(jobs: any[], address: string): any[] {
 
 /** Resend signs webhooks the Svix way: HMAC-SHA256 over "id.timestamp.body" with the base64 secret after "whsec_". */
 export function verifySvix(secret: string, headers: Headers, body: string): boolean {
-  const id = headers.get("svix-id"), ts = headers.get("svix-timestamp"), sigs = headers.get("svix-signature");
-  if (!secret || !id || !ts || !sigs) return false;
-  if (Math.abs(Date.now() / 1000 - Number(ts)) > 300) return false;
-  const key = Buffer.from(secret.replace(/^whsec_/, ""), "base64");
-  const expected = createHmac("sha256", key).update(`${id}.${ts}.${body}`).digest("base64");
-  return sigs.split(" ").some((part) => {
+  // Resend signs with Svix. Newer deliveries may use the "webhook-*" header names instead of "svix-*"; accept both.
+  const h = (n: string) => headers.get(`svix-${n}`) || headers.get(`webhook-${n}`);
+  const id = h("id"), ts = h("timestamp"), sigs = h("signature");
+  const clean = String(secret || "").trim().replace(/^whsec_/, "");
+  if (!clean || !id || !ts || !sigs) {
+    console.log("eagleview-inbound signature headers missing", { id: !!id, ts: !!ts, sig: !!sigs, secret: !!clean });
+    return false;
+  }
+  if (Math.abs(Date.now() / 1000 - Number(ts)) > 300) {
+    console.log("eagleview-inbound timestamp outside window");
+    return false;
+  }
+  const expected = createHmac("sha256", Buffer.from(clean, "base64")).update(`${id}.${ts}.${body}`).digest("base64");
+  const ok = sigs.split(" ").some((part) => {
     const sig = part.split(",")[1] || "";
     return sig.length === expected.length && timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
   });
+  if (!ok) console.log("eagleview-inbound signature mismatch (check RESEND_WEBHOOK_SECRET matches the webhook's signing secret)");
+  return ok;
 }
